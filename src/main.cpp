@@ -1,20 +1,20 @@
 #include "main.h"
 
 //Variables
-//const char* ssid = ""; //WIFI SSID
-//const char* password = ""; //WIFI password
+//const char* ssid = "DIRK2"; //WIFI SSID
+//const char* password = "09567970646048246574"; //WIFI password
 
 void setup() {
 
   Serial.begin(115200);
 
-  pinMode(latchPin1, OUTPUT);
-  pinMode(clockPin1, OUTPUT);
-  pinMode(dataPin1, OUTPUT);
+  //pinMode(latchPin1, OUTPUT);
+  ///pinMode(clockPin1, OUTPUT);
+  //pinMode(dataPin1, OUTPUT);
 
-  pinMode(latchPin2, OUTPUT);
-  pinMode(clockPin2, OUTPUT);
-  pinMode(dataPin2, OUTPUT);
+  //pinMode(latchPin2, OUTPUT);
+  //pinMode(clockPin2, OUTPUT);
+  //pinMode(dataPin2, OUTPUT);
 
   sensor_config_file_mutex = xSemaphoreCreateMutex();
   valve_position_file_mutex = xSemaphoreCreateMutex();
@@ -56,7 +56,7 @@ void setup() {
   }
 
   // First switch off all outputs which may have come randomly at power on
-  init_registers();
+  //init_registers();
 
   // Begin LittleFS
   if (!LittleFS.begin())
@@ -67,30 +67,30 @@ void setup() {
 
   //setup_wifi();
   start_task_wifi();
-  read_mqtt_config();
-  read_influxdb_config();
+  //read_mqtt_config();
+  //read_influxdb_config();
   read_i2c_config();
   read_time_settings();
-  read_fan_config();
-  sensor_config_data_read();
-  valve_settings_config_read();
+  //read_fan_config();
+  //sensor_config_data_read();
+  //valve_settings_config_read();
   
   //Wait a little after reading config
   vTaskDelay(100);
   
   //Start tasks
   startTaskwebcode();
-  start_task_valvecontrol();
+  //start_task_valvecontrol();
   start_task_i2c();
-  start_task_statemachine();
-  start_task_mqtt();
-  start_task_neopixel();
+  //start_task_statemachine();
+  //start_task_mqtt();
+  //start_task_neopixel();
   //start_task_system();
   start_task_wserial();
   
-  vTaskDelay(60000);                //Only write to influxDB when all tasks are running
+  //vTaskDelay(60000);                //Only write to influxDB when all tasks are running
   //start_task_espnow();
-  start_task_influxdb();
+  //start_task_influxdb();
 }
 
 void loop() { }

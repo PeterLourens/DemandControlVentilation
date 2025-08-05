@@ -346,7 +346,7 @@ void Taskwebcode(void *pvParameters) {
 	//Main page
 	//server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/index.html", String(), false, status_processor); });
 	//server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) { request->send_P(200, "text/html", "index_html", String(), status_processor); });
-	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/html", index_html, status_processor); });
+	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/html", index_html); });
 
 	//Request for CSS file
 	server.on("/css/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {	request->send(LittleFS, "/css/styles.css", "text/css");	});
