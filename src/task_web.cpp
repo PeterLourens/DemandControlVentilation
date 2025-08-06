@@ -343,26 +343,32 @@ void startTaskwebcode(void) {
 void Taskwebcode(void *pvParameters) {
 
 	//Main page
-	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/index.html", String(), false, status_processor); });
+	//server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/index.html", String(), false, status_processor); });
+	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/html", index_html, status_processor); });
 
 	//Request for CSS file
-	server.on("/css/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {	request->send(LittleFS, "/css/styles.css", "text/css");	});
+	//server.on("/css/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {	request->send(LittleFS, "/css/styles.css", "text/css");	});
+	server.on("styles.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", styles_css ); });
+	server.on("pure-min.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", pure_min_css ); });
 
 	//Request for Javascript file
-	server.on("/js/ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/js/ui.js", "text/javascript");	});
+	//server.on("/js/ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/js/ui.js", "text/javascript");	});
+	server.on("ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/javascript", ui_js ); });
 
 	//Not found handling
 	server.onNotFound([](AsyncWebServerRequest *request) { request->send(404, "text/plain", "The content you are looking for was not found.");	});
 
 	//Settings web pages processing
-	server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);	});
+	//server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);	});
+	server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/html", settings_html, settings_processor ); });
 
 	//Webserial handling
-	server.on("/web_serial", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/web_serial.html", String(), false, webserial_processor);	});
+	//server.on("/web_serial", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/web_serial.html", String(), false, webserial_processor);	});
+	server.on("/web_serial", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/html", web_serial_html, webserial_processor); });
 
 	//Reboot ESP32 button
 	server.on("/restart_esp32", HTTP_POST, [](AsyncWebServerRequest *request) {
-		request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		request->send(200, "text/html", settings_html, settings_processor);
 		esp_restart();
 	});
 
@@ -417,7 +423,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_network_data, settings_network_str);
 		write_config_file(path, settings_network_str);
-		request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		//request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		request->send(200, "text/html", settings_html, settings_processor);
 	});
 
 	//Save settings from MQTT settings
@@ -445,7 +452,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_mqtt_data, settings_mqtt_str);
 		write_config_file(path, settings_mqtt_str);	
-		request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		//request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		request->send(200, "text/html", settings_html, settings_processor);
 	});
 
 	//Save settings from I2C settings
@@ -473,7 +481,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_i2c_data, settings_i2c_str);
 		write_config_file(path, settings_i2c_str);
-		request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		//request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		request->send(200, "text/html", settings_html, settings_processor);
 	});
 
 	//Save settings from fan control settings
@@ -511,7 +520,8 @@ void Taskwebcode(void *pvParameters) {
 			}
 		}
 		write_config_file(path, settings_fan_str);
-		request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		//request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		request->send(200, "text/html", settings_html, settings_processor);
 	});
 
 	//Save settings from statemachine settings
@@ -567,7 +577,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_influxdb_data, settings_influxdb_str);
 		write_config_file(path, settings_influxdb_str);
-		request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		//request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		request->send(200, "text/html", settings_html, settings_processor);
 	});
 
 	//Save settings from RTC settings
@@ -592,7 +603,8 @@ void Taskwebcode(void *pvParameters) {
 
 		serializeJson(settings_rtc_data, settings_rtc_str);
 		write_config_file(path, settings_rtc_str);	
-		request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		//request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
+		request->send(200, "text/html", settings_html, settings_processor);
 	});
 
 	//Valve control web pages processing
@@ -790,7 +802,8 @@ void Taskwebcode(void *pvParameters) {
 				xSemaphoreGive(valve_control_data_mutex);
 			}
 		}
-		request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		//request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		request->send(200, "text/html", valvecontrol_html, valvecontrol_processor);
 		
 		// Disable valve moving when valves are already moving
 		if (lock_valve_move_mutex != NULL) {
@@ -813,14 +826,16 @@ void Taskwebcode(void *pvParameters) {
 	//POST on button create config file - name must match with action of the form submit
 	server.on("/create_config_file", HTTP_POST, [](AsyncWebServerRequest *request) {
 		valve_status_file_create();
-		request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		//request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		request->send(200, "text/html", valvecontrol_html, valvecontrol_processor);
 	});
     
 	//POST on button delete config file - name must match with action of the form submit
 	server.on("/delete_config_file", HTTP_POST, [](AsyncWebServerRequest *request) {
 		const char* path = "/json/valvepositions.json";
 		delete_file(path);
-		request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		//request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		request->send(200, "text/html", valvecontrol_html, valvecontrol_processor);
 	});
 
 	//Stop statemachine 
@@ -831,7 +846,8 @@ void Taskwebcode(void *pvParameters) {
 				xSemaphoreGive(statemachine_state_mutex);
 			}
 		}
-		request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		//request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		request->send(200, "text/html", valvecontrol_html, valvecontrol_processor);
 	});
   
   	//Start statemachine, back to init state
@@ -842,7 +858,8 @@ void Taskwebcode(void *pvParameters) {
 				xSemaphoreGive(statemachine_state_mutex);
 			}
 		}
-		request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		//request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);
+		request->send(200, "text/html", valvecontrol_html, valvecontrol_processor);
 	});
 
   	//Sensor config web page processing
@@ -852,14 +869,16 @@ void Taskwebcode(void *pvParameters) {
 	server.on("/delete_sensor_config_file1", HTTP_POST, [](AsyncWebServerRequest *request) {
 		const char* path = "/json/sensor_config1.json";
 		delete_file(path);
-		request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);
+		//request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);
+		request->send(200, "text/html", sensor_config_html, sensor_config_processor);
 	});
 
 	//Delete sensor config file 2
 	server.on("/delete_sensor_config_file2", HTTP_POST, [](AsyncWebServerRequest *request) {
 		const char* path = "/json/sensor_config2.json";
 		delete_file(path);
-		request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);
+		//request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);
+		request->send(200, "text/html", sensor_config_html, sensor_config_processor);
 	});
   
   	//Write sensor config input to file
@@ -956,7 +975,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(wire_sensor_data, sensor_config1);
 		write_config_file(path1, sensor_config1);
-		request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);
+		//request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);
+		request->send(200, "text/html", sensor_config_html, sensor_config_processor);
 	});
   
 	server.on("/sensorconfig2", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -1051,7 +1071,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(wire1_sensor_data, sensor_config2);
 		write_config_file(path2, sensor_config2);
-		request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);
+		//request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);
+		request->send(200, "text/html", sensor_config_html, sensor_config_processor);
 	});
 
 	//Statemachine web pages processing

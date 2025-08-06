@@ -15,6 +15,16 @@
 #include "globals.h"
 #include "general.h"
 
+#include "webroot/index_html.h"
+#include "webroot/sensor_config_html.h"
+#include "webroot/settings_html.h"
+#include "webroot/statemachine_html.h"
+#include "webroot/styles_css.h"
+#include "webroot/pure-min_css.h"
+#include "webroot/ui_js.h"
+#include "webroot/valvecontrol_html.h"
+#include "webroot/web_serial_html.h"
+
 // function declarations
 void startTaskwebcode(void);
 void Taskwebcode(void *pvParameters);
