@@ -6,9 +6,9 @@ const char settings_html[] PROGMEM = R"rawliteral(
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The front-end for configuration of the open source demand controlled ventilation system">
     <title>Open Source demand driven ventilation system &ndash; Configuration and Monitoring</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="pure-min.css">
+    <link rel="stylesheet" href="grids-responsive-min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -262,7 +262,7 @@ const char settings_html[] PROGMEM = R"rawliteral(
         </div>
     </div>
 
-    <script src="js/ui.js"></script>
+    <script src="ui.js"></script>
 
   </body>
   </html>

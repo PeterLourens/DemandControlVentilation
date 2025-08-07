@@ -348,12 +348,12 @@ void Taskwebcode(void *pvParameters) {
 
 	//Request for CSS file
 	//server.on("/css/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {	request->send(LittleFS, "/css/styles.css", "text/css");	});
-	server.on("styles.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", styles_css ); });
-	server.on("pure-min.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", pure_min_css ); });
+	server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", styles_css ); });
+	server.on("/pure-min.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", pure_min_css ); });
 
 	//Request for Javascript file
 	//server.on("/js/ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/js/ui.js", "text/javascript");	});
-	server.on("ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/javascript", ui_js ); });
+	server.on("/ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/javascript", ui_js ); });
 
 	//Not found handling
 	server.onNotFound([](AsyncWebServerRequest *request) { request->send(404, "text/plain", "The content you are looking for was not found.");	});
@@ -608,10 +608,12 @@ void Taskwebcode(void *pvParameters) {
 	});
 
 	//Valve control web pages processing
-	server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);	});
+	//server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);	});
   
 	//Valve control web pages processing
-	server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);	});
+	//server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);	});
+	server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request)
+			  { request->send(200, "text/html", valvecontrol_html, valvecontrol_processor); });
 
 	//Response for POST action in webform valvecontrol manual move valves
 	server.on("/valvecontrol", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -863,7 +865,9 @@ void Taskwebcode(void *pvParameters) {
 	});
 
   	//Sensor config web page processing
-	server.on("/sensorconfig", HTTP_GET, [](AsyncWebServerRequest *request){ request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);	});
+	//server.on("/sensorconfig", HTTP_GET, [](AsyncWebServerRequest *request){ request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);	});
+	server.on("/sensorconfig", HTTP_GET, [](AsyncWebServerRequest *request)
+			  { request->send(200, "text/html", sensor_config_html, sensor_config_processor); });
 
 	//Delete sensor config file 1
 	server.on("/delete_sensor_config_file1", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -1076,7 +1080,9 @@ void Taskwebcode(void *pvParameters) {
 	});
 
 	//Statemachine web pages processing
-	server.on("/statemachine", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state); });
+	//server.on("/statemachine", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state); });
+	server.on("/statemachine", HTTP_GET, [](AsyncWebServerRequest *request)
+			  { request->send(200, "text/html", statemachine_html, settings_valve_state); });
 
 	//Settings statemachine day
 	server.on("/settings_valve_day", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -1122,7 +1128,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_day, settings_state_day_str);
 		write_config_file(path_day, settings_state_day_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//equest->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
 
 	//Settings statemachine night
@@ -1169,7 +1176,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_night, settings_state_night_str);
 		write_config_file(path_night, settings_state_night_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
 
 	//Settings statemachine highco2day
@@ -1220,7 +1228,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_highco2day, settings_state_highco2day_str);
 		write_config_file(path_highco2day, settings_state_highco2day_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
   
 	//Settings statemachine highco2night
@@ -1271,7 +1280,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_highco2night, settings_state_highco2night_str);
 		write_config_file(path_highco2night, settings_state_highco2night_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
 
 	//Settings statemachine highrhday
@@ -1322,7 +1332,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_highrhday, settings_state_highrhday_str);
 		write_config_file(path_highrhday, settings_state_highrhday_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
 
 	//Settings statemachine highrhnight
@@ -1373,7 +1384,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_highrhnight, settings_state_highrhnight_str);
 		write_config_file(path_highrhnight, settings_state_highrhnight_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
 
 	//Settings statemachine cooking
@@ -1428,7 +1440,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_cooking, settings_state_cooking_str);
 		write_config_file(path_cooking, settings_state_cooking_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
 
 	//Settings statemachine valvecyclingday
@@ -1475,7 +1488,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_cyclingday, settings_state_cyclingday_str);
 		write_config_file(path_cyclingday, settings_state_cyclingday_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
 
 	//Settings statemachine valvecyclingnight
@@ -1522,7 +1536,8 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_cyclingnight, settings_state_cyclingnight_str);
 		write_config_file(path_cyclingnight, settings_state_cyclingnight_str);
-		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		//request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
+		request->send(200, "text/html", statemachine_html, settings_valve_state);
 	});
 
 	// Start server
