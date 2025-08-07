@@ -348,12 +348,12 @@ void Taskwebcode(void *pvParameters) {
 
 	//Request for CSS file
 	//server.on("/css/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) {	request->send(LittleFS, "/css/styles.css", "text/css");	});
-	server.on("styles.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", styles_css ); });
-	server.on("pure-min.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", pure_min_css ); });
+	server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", styles_css ); });
+	server.on("/pure-min.css", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/css", pure_min_css ); });
 
 	//Request for Javascript file
 	//server.on("/js/ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/js/ui.js", "text/javascript");	});
-	server.on("ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/javascript", ui_js ); });
+	server.on("/ui.js", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(200, "text/javascript", ui_js ); });
 
 	//Not found handling
 	server.onNotFound([](AsyncWebServerRequest *request) { request->send(404, "text/plain", "The content you are looking for was not found.");	});
