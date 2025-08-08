@@ -349,11 +349,11 @@ void Taskwebcode(void *pvParameters)
 			  { request->send(200, "text/html", index_html, status_processor); });
 
 	// Empty main page which will load the content
-	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+	server.on("/index_empty.html", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/html", index_empty_html); });
 
 	// Test content file
-	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+	server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/html", test_html); });
 
 	// Request for CSS file
