@@ -16,6 +16,7 @@
 #include "general.h"
 
 #include "webroot/index_html.h"
+#include "webroot/index_empty_html.h"
 #include "webroot/sensor_config_html.h"
 #include "webroot/settings_html.h"
 #include "webroot/statemachine_html.h"
@@ -24,6 +25,7 @@
 #include "webroot/ui_js.h"
 #include "webroot/valvecontrol_html.h"
 #include "webroot/web_serial_html.h"
+#include "webroot/test_html.h"
 
 // function declarations
 void startTaskwebcode(void);

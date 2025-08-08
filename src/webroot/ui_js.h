@@ -53,7 +53,33 @@ const char ui_js[] PROGMEM = R"rawliteral(
     document.addEventListener('click', handleEvent);
 
 }(this, this.document));
+
+$(document).ready(function () {
+    $('#main').append(systemstatus);
+    //handle menu clicks
+    $(document).on('click', 'ul.pure-menu-list li a', function (event) {
+        var page = $(this).attr('href');
+        console.log("click catched: " + page);
+        update_page(page);
+        $('li.pure-menu-item').removeClass("pure-menu-selected");
+        $(this).parent().addClass("pure-menu-selected");
+        event.preventDefault();
+    });
+    $(document).on('click', '#headingindex', function (event) {
+        update_page('index');
+        $('li.pure-menu-item').removeClass("pure-menu-selected");
+        event.preventDefault();
+    });
+    //Request data from server
+});
+
+//function to load html main content
+var lastPageReq = "";
+function update_page(page) {
+    lastPageReq = page;
+    $('#main').empty();
+    $('#main').css('max-width', '768px')
+    if (page == 'test_html') { $('#main').append(test_html); }
+}
+
 )rawliteral";
-
-
-
