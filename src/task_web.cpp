@@ -608,12 +608,10 @@ void Taskwebcode(void *pvParameters) {
 	});
 
 	//Valve control web pages processing
-	//server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);	});
+	server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);	});
   
 	//Valve control web pages processing
-	//server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);	});
-	server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/html", valvecontrol_html, valvecontrol_processor); });
+	server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/valvecontrol.html", String(), false, valvecontrol_processor);	});
 
 	//Response for POST action in webform valvecontrol manual move valves
 	server.on("/valvecontrol", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -865,9 +863,7 @@ void Taskwebcode(void *pvParameters) {
 	});
 
   	//Sensor config web page processing
-	//server.on("/sensorconfig", HTTP_GET, [](AsyncWebServerRequest *request){ request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);	});
-	server.on("/sensorconfig", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/html", sensor_config_html, sensor_config_processor); });
+	server.on("/sensorconfig", HTTP_GET, [](AsyncWebServerRequest *request){ request->send(LittleFS, "/html/sensor_config.html", String(), false, sensor_config_processor);	});
 
 	//Delete sensor config file 1
 	server.on("/delete_sensor_config_file1", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -1080,9 +1076,7 @@ void Taskwebcode(void *pvParameters) {
 	});
 
 	//Statemachine web pages processing
-	//server.on("/statemachine", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state); });
-	server.on("/statemachine", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/html", statemachine_html, settings_valve_state); });
+	server.on("/statemachine", HTTP_GET, [](AsyncWebServerRequest *request) { request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state); });
 
 	//Settings statemachine day
 	server.on("/settings_valve_day", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -1128,8 +1122,7 @@ void Taskwebcode(void *pvParameters) {
 		}
 		serializeJson(settings_state_day, settings_state_day_str);
 		write_config_file(path_day, settings_state_day_str);
-		//equest->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
-		request->send(200, "text/html", statemachine_html, settings_valve_state);
+		request->send(LittleFS, "/html/statemachine.html", String(), false, settings_valve_state);
 	});
 
 	//Settings statemachine night
