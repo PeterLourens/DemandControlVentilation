@@ -348,9 +348,9 @@ void Taskwebcode(void *pvParameters)
 	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/html", index_html, status_processor); });
 
-	// Empty main page which will load the content
-	server.on("/index_empty.html", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/html", index_empty_html); });
+	// Test main page
+	server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request)
+			  { request->send(200, "text/html", test2_html); });
 
 	// Test content file
 	server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -362,9 +362,11 @@ void Taskwebcode(void *pvParameters)
 	server.on("/pure-min.css", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/css", pure_min_css); });
 
-	// Request for Javascript file
+	// Request for Javascript files
 	server.on("/ui.js", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/javascript", ui_js); });
+	server.on("/websocket.js", HTTP_GET, [](AsyncWebServerRequest *request)
+			  { request->send(200, "text/javascript", websocket_js); });
 
 	// Not found handling
 	server.onNotFound([](AsyncWebServerRequest *request)

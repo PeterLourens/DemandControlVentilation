@@ -15,5 +15,9 @@
 // function declarations
 void start_task_websocket(void);
 void task_websocket_code(void * pvParameters);
+String create_json(void);
+void notifyClients(String);
+void handleWebSocketMessage(void *arg, uint8_t *data, size_t len);
+void onEvent(AsyncWebSocket *ws_server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
 
 #endif
