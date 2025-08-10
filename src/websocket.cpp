@@ -1,7 +1,109 @@
 #include "websocket.h"
 
-String create_json()
+/*
+1. Get data
+    a. Valve positions from file
+    b. sensor data from queue
+    c. time from global var
+    d.
+2. Merge everything in one JsonDocument
+3. Serialise JsonDocument
+4. Send string over websocket
+*/
+
+String create_index_page_json()
 {
-    String json_test = "{\"valve0_position\":1, \"valve1_position\":2, \"valve2_position\":3, \"valve3_position\":4, \"valve4_position\":5, \"valve5_position\":6, \"valve6_position\":7, \"valve7_position\":8, \"valve8_position\":9, \"valve9_position\":10, \"valve10_position\":11, \"valve11_position\":12}";
-    return json_test;
+    const char *path = "/json/valvepositions.json";
+    bool status_valve_file_present = 0;
+
+    String json = "";
+    String json_valves = "";
+    String message = "";
+    String state_tmp = "";
+    String fanspeed_tmp = "";
+    String date_time = "";
+
+    JsonDocument doc;
+
+    // Valve positions
+    if (valve_position_file_mutex != NULL)
+    {
+        if (xSemaphoreTake(valve_position_file_mutex, (TickType_t)10) == pdTRUE)
+        {
+            status_valve_file_present = check_file_exists(path);
+            if (status_valve_file_present == 1)
+            {
+                json_valves = read_config_file(path);
+            }
+            xSemaphoreGive(valve_position_file_mutex);
+        }
+    }
+
+    DeserializationError err = deserializeJson(doc, json_valves);
+    if (err)
+    {
+        message = "[ERROR] Failed to parse valvepositions.json: " + String(path) + ": " + String(err.c_str());
+        print_message(message);
+        return "";
+    }
+
+    // General
+    if (statemachine_state_mutex != NULL)
+    {
+        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+        {
+            state_tmp = state;
+            xSemaphoreGive(statemachine_state_mutex);
+        }
+    }
+
+    if (fanspeed_mutex != NULL)
+    {
+        if (xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+        {
+            fanspeed_tmp = fanspeed;
+            xSemaphoreGive(fanspeed_mutex);
+        }
+    }
+
+    date_time = formatted_datetime();
+
+    doc["statemachine_state"] = state_tmp;
+    doc["fanspeed"] = fanspeed_tmp;
+    doc["uptime"] = String(esp_timer_get_time() / 1000000 / 60);
+    doc["date_time"] = date_time;
+
+    // Bus0 sensors
+
+    // Bus1 sensors
+
+    // convert to JSON string
+    serializeJson(doc, json);
+    print_message(json);
+
+    return json;
+}
+
+String create_settings_json()
+{
+    String settings_json = "";
+    return settings_json;
+}
+
+String create_valvecontrol_json()
+{
+    String valvecontrol_json = "";
+    return valvecontrol_json;
+}
+
+String create_sensors_json()
+{
+    String sensors_json = "";
+    return sensors_json;
+}
+
+String create_statemachine_json()
+{
+    String statemachine_json = "";
+    return statemachine_json;
 }

@@ -10,8 +10,12 @@ function onload(event) {
     initWebSocket();
 }
 
-function getReadings(){
-    websocket.send("getReadings");
+//Request to server for readings
+function get_json(){
+    const page_name = window.location.pathname.split("/").pop() || "index";
+    //const page_name = window.location.pathname;
+    console.log(page_name);
+    websocket.send(page_name);
 }
 
 function initWebSocket() {
@@ -25,7 +29,7 @@ function initWebSocket() {
 // When websocket is established, call the getReadings() function
 function onOpen(event) {
     console.log('Connection opened');
-    getReadings();
+    get_json();
 }
 
 function onClose(event) {
@@ -33,7 +37,7 @@ function onClose(event) {
     setTimeout(initWebSocket, 2000);
 }
 
-// Function that receives the message from the ESP32 with the readings
+// Function that receives the message from the ESP32 with the readings and matches ids of the json with ids in the html
 function onMessage(event) {
     console.log(event.data);
     var myObj = JSON.parse(event.data);

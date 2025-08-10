@@ -40,11 +40,12 @@ const char index_html[] PROGMEM = R"rawliteral(
 
         <div class="content">
             <h2 class="content-subhead">General</h2>
-            <p>State statemachine: %STATEMACHINE_STATE% </p>
-            <p>Fan speed: %FANSPEED% </p>
-            <p>System uptime: %UPTIME% minutes</p>
-            <p>Time and date: %FORMATTEDTIME% </p>
-            <p></p>
+            <p>
+                State statemachine: <span id="statemachine_state"></span><br>
+                Fan speed: <span id="fanspeed"></span><br>
+                System uptime: <span id="uptime"></span> minutes<br>
+                Time and date: <span id="date_time"></span>
+            </p>
             <h2 class="content-subhead">Valve positions</h2>
             <p>
                 <table class="pure-table pure-table-bordered">
@@ -59,39 +60,39 @@ const char index_html[] PROGMEM = R"rawliteral(
                     <tbody>
                         <tr>
                             <td>0</td>
-                            <td>%VALVE0_POS%</td>
+                            <td id="valve0"></td>
                             <td>6</td>
-                            <td>%VALVE6_POS%</td>
+                            <td id="valve6"></td>
                         </tr>
                         <tr>
                             <td>1</td>
-                            <td>%VALVE1_POS%</td>
+                            <td id="valve1"></td>
                             <td>7</td>
-                            <td>%VALVE7_POS%</td>
+                            <td id="valve7"></td>
                         </tr>
                         <tr>
                             <td>2</td>
-                            <td>%VALVE2_POS%</td>
+                            <td id="valve2"></td>
                             <td>8</td>
-                            <td>%VALVE8_POS%</td>
+                            <td id="valve8"></td>
                         </tr>
                         <tr>
                             <td>3</td>
-                            <td>%VALVE3_POS%</td>
+                            <td id="valve3"></td>
                             <td>9</td>
-                            <td>%VALVE9_POS%</td>
+                            <td id="valve9"></td>
                         </tr>
                         <tr>
                             <td>4</td>
-                            <td>%VALVE4_POS%</td>
+                            <td id ="valve4"></td>
                             <td>10</td>
-                            <td>%VALVE10_POS%</td>
+                            <td id ="valve10"></td>
                         </tr>
                         <tr>
                             <td>5</td>
-                            <td>%VALVE5_POS%</td>
+                            <td id ="valve5"></td>
                             <td>11</td>
-                            <td>%VALVE11_POS%</td>
+                            <td id ="valve11"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -116,91 +117,91 @@ const char index_html[] PROGMEM = R"rawliteral(
                     <tbody>
                         <tr>
                             <td>0</td>
-                            <td>%BUS0_SENSOR0_TYPE%</td>
-                            <td>%BUS0_SENSOR0_TEMP%</td>
-                            <td>%BUS0_SENSOR0_HUM%</td>
-                            <td>%BUS0_SENSOR0_CO2%</td>
-                            <td>%BUS0_SENSOR0_VALVE%</td>
-                            <td>%BUS0_SENSOR0_LOCATION%</td>
-                            <td>%BUS0_SENSOR0_RHS%</td>
-                            <td>%BUS0_SENSOR0_CO2S%</td>
+                            <td id="bus0_sensor0_type"></td>
+                            <td id="bus0_sensor0_temp"></td>
+                            <td id="bus0_sensor0_hum"></td>
+                            <td id="bus0_sensor0_co2"></td>
+                            <td id="bus0_sensor0_valve"></td>
+                            <td id="bus0_sensor0_location"></td>
+                            <td id="bus0_sensor0_rhs"></td>
+                            <td id="bus0_sensor0_co2s"></td>
                         </tr>
                         <tr>
                             <td>1</td>
-                            <td>%BUS0_SENSOR1_TYPE%</td>
-                            <td>%BUS0_SENSOR1_TEMP%</td>
-                            <td>%BUS0_SENSOR1_HUM%</td>
-                            <td>%BUS0_SENSOR1_CO2%</td>
-                            <td>%BUS0_SENSOR1_VALVE%</td>
-                            <td>%BUS0_SENSOR1_LOCATION%</td>
-                            <td>%BUS0_SENSOR1_RHS%</td>
-                            <td>%BUS0_SENSOR1_CO2S%</td>
+                            <td id="bus0_sensor1_type"></td>
+                            <td id="bus0_sensor1_temp"></td>
+                            <td id="bus0_sensor1_hum"></td>
+                            <td id="bus0_sensor1_co2"></td>
+                            <td id="bus0_sensor1_valve"></td>
+                            <td id="bus0_sensor1_location"></td>
+                            <td id="bus0_sensor1_rhs"></td>
+                            <td id="bus0_sensor1_co2s"></td>
                         </tr>
                         <tr>
                             <td>2</td>
-                            <td>%BUS0_SENSOR2_TYPE%</td>
-                            <td>%BUS0_SENSOR2_TEMP%</td>
-                            <td>%BUS0_SENSOR2_HUM%</td>
-                            <td>%BUS0_SENSOR2_CO2%</td>
-                            <td>%BUS0_SENSOR2_VALVE%</td>
-                            <td>%BUS0_SENSOR2_LOCATION%</td>
-                            <td>%BUS0_SENSOR2_RHS%</td>
-                            <td>%BUS0_SENSOR2_CO2S%</td>
+                            <td id="bus0_sensor2_type"></td>
+                            <td id="bus0_sensor2_temp"></td>
+                            <td id="bus0_sensor2_hum"></td>
+                            <td id="bus0_sensor2_co2"></td>
+                            <td id="bus0_sensor2_valve"></td>
+                            <td id="bus0_sensor2_location"></td>
+                            <td id="bus0_sensor2_rhs"></td>
+                            <td id="bus0_sensor2_co2s"></td>
                         </tr>
                         <tr>
                             <td>3</td>
-                            <td>%BUS0_SENSOR3_TYPE%</td>
-                            <td>%BUS0_SENSOR3_TEMP%</td>
-                            <td>%BUS0_SENSOR3_HUM%</td>
-                            <td>%BUS0_SENSOR3_CO2%</td>
-                            <td>%BUS0_SENSOR3_VALVE%</td>
-                            <td>%BUS0_SENSOR3_LOCATION%</td>
-                            <td>%BUS0_SENSOR3_RHS%</td>
-                            <td>%BUS0_SENSOR3_CO2S%</td>
+                            <td id="bus0_sensor3_type"></td>
+                            <td id="bus0_sensor3_temp"></td>
+                            <td id="bus0_sensor3_hum"></td>
+                            <td id="bus0_sensor3_co2"></td>
+                            <td id="bus0_sensor3_valve"></td>
+                            <td id="bus0_sensor3_location"></td>
+                            <td id="bus0_sensor3_rhs"></td>
+                            <td id="bus0_sensor3_co2s"></td>
                         </tr>
                         <tr>
                             <td>4</td>
-                            <td>%BUS0_SENSOR4_TYPE%</td>
-                            <td>%BUS0_SENSOR4_TEMP%</td>
-                            <td>%BUS0_SENSOR4_HUM%</td>
-                            <td>%BUS0_SENSOR4_CO2%</td>
-                            <td>%BUS0_SENSOR4_VALVE%</td>
-                            <td>%BUS0_SENSOR4_LOCATION%</td>
-                            <td>%BUS0_SENSOR4_RHS%</td>
-                            <td>%BUS0_SENSOR4_CO2S%</td>
+                            <td id="bus0_sensor4_type"></td>
+                            <td id="bus0_sensor4_temp"></td>
+                            <td id="bus0_sensor4_hum"></td>
+                            <td id="bus0_sensor4_co2"></td>
+                            <td id="bus0_sensor4_valve"></td>
+                            <td id="bus0_sensor4_location"></td>
+                            <td id="bus0_sensor4_rhs"></td>
+                            <td id="bus0_sensor4_co2s"></td>
                         </tr>
                         <tr>
                             <td>5</td>
-                            <td>%BUS0_SENSOR5_TYPE%</td>
-                            <td>%BUS0_SENSOR5_TEMP%</td>
-                            <td>%BUS0_SENSOR5_HUM%</td>
-                            <td>%BUS0_SENSOR5_CO2%</td>
-                            <td>%BUS0_SENSOR5_VALVE%</td>
-                            <td>%BUS0_SENSOR5_LOCATION%</td>
-                            <td>%BUS0_SENSOR5_RHS%</td>
-                            <td>%BUS0_SENSOR5_CO2S%</td>
+                            <td id="bus0_sensor5_type"></td>
+                            <td id="bus0_sensor5_temp"></td>
+                            <td id="bus0_sensor5_hum"></td>
+                            <td id="bus0_sensor5_co2"></td>
+                            <td id="bus0_sensor5_valve"></td>
+                            <td id="bus0_sensor5_location"></td>
+                            <td id="bus0_sensor5_rhs"></td>
+                            <td id="bus0_sensor5_co2s"></td>
                         </tr>
                         <tr>
                             <td>6</td>
-                            <td>%BUS0_SENSOR6_TYPE%</td>
-                            <td>%BUS0_SENSOR6_TEMP%</td>
-                            <td>%BUS0_SENSOR6_HUM%</td>
-                            <td>%BUS0_SENSOR6_CO2%</td>
-                            <td>%BUS0_SENSOR6_VALVE%</td>
-                            <td>%BUS0_SENSOR6_LOCATION%</td>
-                            <td>%BUS0_SENSOR6_RHS%</td>
-                            <td>%BUS0_SENSOR6_CO2S%</td>
+                            <td id="bus0_sensor6_type"></td>
+                            <td id="bus0_sensor6_temp"></td>
+                            <td id="bus0_sensor6_hum"></td>
+                            <td id="bus0_sensor6_co2"></td>
+                            <td id="bus0_sensor6_valve"></td>
+                            <td id="bus0_sensor6_location"></td>
+                            <td id="bus0_sensor6_rhs"></td>
+                            <td id="bus0_sensor6_co2s"></td>
                         </tr>
                         <tr>
                             <td>7</td>
-                            <td>%BUS0_SENSOR7_TYPE%</td>
-                            <td>%BUS0_SENSOR7_TEMP%</td>
-                            <td>%BUS0_SENSOR7_HUM%</td>
-                            <td>%BUS0_SENSOR7_CO2%</td>
-                            <td>%BUS0_SENSOR7_VALVE%</td>
-                            <td>%BUS0_SENSOR7_LOCATION%</td>
-                            <td>%BUS0_SENSOR7_RHS%</td>
-                            <td>%BUS0_SENSOR7_CO2S%</td>
+                            <td id="bus0_sensor7_type"></td>
+                            <td id="bus0_sensor7_temp"></td>
+                            <td id="bus0_sensor7_hum"></td>
+                            <td id="bus0_sensor7_co2"></td>
+                            <td id="bus0_sensor7_valve"></td>
+                            <td id="bus0_sensor7_location"></td>
+                            <td id="bus0_sensor7_rhs"></td>
+                            <td id="bus0_sensor7_co2s"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -224,91 +225,91 @@ const char index_html[] PROGMEM = R"rawliteral(
                     <tbody>
                         <tr>
                             <td>0</td>
-                            <td>%BUS1_SENSOR0_TYPE%</td>
-                            <td>%BUS1_SENSOR0_TEMP%</td>
-                            <td>%BUS1_SENSOR0_HUM%</td>
-                            <td>%BUS1_SENSOR0_CO2%</td>
-                            <td>%BUS1_SENSOR0_VALVE%</td>
-                            <td>%BUS1_SENSOR0_LOCATION%</td>
-                            <td>%BUS1_SENSOR0_RHS%</td>
-                            <td>%BUS1_SENSOR0_CO2S%</td>
+                            <td id="bus1_sensor0_type"></td>
+                            <td id="bus1_sensor0_temp"></td>
+                            <td id="bus1_sensor0_hum"></td>
+                            <td id="bus1_sensor0_co2"></td>
+                            <td id="bus1_sensor0_valve"></td>
+                            <td id="bus1_sensor0_location"></td>
+                            <td id="bus1_sensor0_rhs"></td>
+                            <td id="bus1_sensor0_co2s"></td>
                         </tr>
                         <tr>
                             <td>1</td>
-                            <td>%BUS1_SENSOR1_TYPE%</td>
-                            <td>%BUS1_SENSOR1_TEMP%</td>
-                            <td>%BUS1_SENSOR1_HUM%</td>
-                            <td>%BUS1_SENSOR1_CO2%</td>
-                            <td>%BUS1_SENSOR1_VALVE%</td>
-                            <td>%BUS1_SENSOR1_LOCATION%</td>
-                            <td>%BUS1_SENSOR1_RHS%</td>
-                            <td>%BUS1_SENSOR1_CO2S%</td>
+                            <td id="bus1_sensor1_type"></td>
+                            <td id="bus1_sensor1_temp"></td>
+                            <td id="bus1_sensor1_hum"></td>
+                            <td id="bus1_sensor1_co2"></td>
+                            <td id="bus1_sensor1_valve"></td>
+                            <td id="bus1_sensor1_location"></td>
+                            <td id="bus1_sensor1_rhs"></td>
+                            <td id="bus1_sensor1_co2s"></td>
                         </tr>
                         <tr>
                             <td>2</td>
-                            <td>%BUS1_SENSOR2_TYPE%</td>
-                            <td>%BUS1_SENSOR2_TEMP%</td>
-                            <td>%BUS1_SENSOR2_HUM%</td>
-                            <td>%BUS1_SENSOR2_CO2%</td>
-                            <td>%BUS1_SENSOR2_VALVE%</td>
-                            <td>%BUS1_SENSOR2_LOCATION%</td>
-                            <td>%BUS1_SENSOR2_RHS%</td>
-                            <td>%BUS1_SENSOR2_CO2S%</td>
+                            <td id="bus1_sensor2_type"></td>
+                            <td id="bus1_sensor2_temp"></td>
+                            <td id="bus1_sensor2_hum"></td>
+                            <td id="bus1_sensor2_co2"></td>
+                            <td id="bus1_sensor2_valve"></td>
+                            <td id="bus1_sensor2_location"></td>
+                            <td id="bus1_sensor2_rhs"></td>
+                            <td id="bus1_sensor2_co2s"></td>
                         </tr>
                         <tr>
                             <td>3</td>
-                            <td>%BUS1_SENSOR3_TYPE%</td>
-                            <td>%BUS1_SENSOR3_TEMP%</td>
-                            <td>%BUS1_SENSOR3_HUM%</td>
-                            <td>%BUS1_SENSOR3_CO2%</td>
-                            <td>%BUS1_SENSOR3_VALVE%</td>
-                            <td>%BUS1_SENSOR3_LOCATION%</td>
-                            <td>%BUS1_SENSOR3_RHS%</td>
-                            <td>%BUS1_SENSOR3_CO2S%</td>
+                            <td id="bus1_sensor3_type"></td>
+                            <td id="bus1_sensor3_temp"></td>
+                            <td id="bus1_sensor3_hum"></td>
+                            <td id="bus1_sensor3_co2"></td>
+                            <td id="bus1_sensor3_valve"></td>
+                            <td id="bus1_sensor3_location"></td>
+                            <td id="bus1_sensor3_rhs"></td>
+                            <td id="bus1_sensor3_co2s"></td>
                         </tr>
                         <tr>
                             <td>4</td>
-                            <td>%BUS1_SENSOR4_TYPE%</td>
-                            <td>%BUS1_SENSOR4_TEMP%</td>
-                            <td>%BUS1_SENSOR4_HUM%</td>
-                            <td>%BUS1_SENSOR4_CO2%</td>
-                            <td>%BUS1_SENSOR4_VALVE%</td>
-                            <td>%BUS1_SENSOR4_LOCATION%</td>
-                            <td>%BUS1_SENSOR4_RHS%</td>
-                            <td>%BUS1_SENSOR4_CO2S%</td>
+                            <td id="bus1_sensor4_type"></td>
+                            <td id="bus1_sensor4_temp"></td>
+                            <td id="bus1_sensor4_hum"></td>
+                            <td id="bus1_sensor4_co2"></td>
+                            <td id="bus1_sensor4_valve"></td>
+                            <td id="bus1_sensor4_location"></td>
+                            <td id="bus1_sensor4_rhs"></td>
+                            <td id="bus1_sensor4_co2s"></td>
                         </tr>
                         <tr>
                             <td>5</td>
-                            <td>%BUS1_SENSOR5_TYPE%</td>
-                            <td>%BUS1_SENSOR5_TEMP%</td>
-                            <td>%BUS1_SENSOR5_HUM%</td>
-                            <td>%BUS1_SENSOR5_CO2%</td>
-                            <td>%BUS1_SENSOR5_VALVE%</td>
-                            <td>%BUS1_SENSOR5_LOCATION%</td>
-                            <td>%BUS1_SENSOR5_RHS%</td>
-                            <td>%BUS1_SENSOR5_CO2S%</td>
+                            <td id="bus1_sensor5_type"></td>
+                            <td id="bus1_sensor5_temp"></td>
+                            <td id="bus1_sensor5_hum"></td>
+                            <td id="bus1_sensor5_co2"></td>
+                            <td id="bus1_sensor5_valve"></td>
+                            <td id="bus1_sensor5_location"></td>
+                            <td id="bus1_sensor5_rhs"></td>
+                            <td id="bus1_sensor5_co2s"></td>
                         </tr>
                         <tr>
                             <td>6</td>
-                            <td>%BUS1_SENSOR6_TYPE%</td>
-                            <td>%BUS1_SENSOR6_TEMP%</td>
-                            <td>%BUS1_SENSOR6_HUM%</td>
-                            <td>%BUS1_SENSOR6_CO2%</td>
-                            <td>%BUS1_SENSOR6_VALVE%</td>
-                            <td>%BUS1_SENSOR6_LOCATION%</td>
-                            <td>%BUS1_SENSOR6_RHS%</td>
-                            <td>%BUS1_SENSOR6_CO2S%</td>
+                            <td id="bus1_sensor6_type"></td>
+                            <td id="bus1_sensor6_temp"></td>
+                            <td id="bus1_sensor6_hum"></td>
+                            <td id="bus1_sensor6_co2"></td>
+                            <td id="bus1_sensor6_valve"></td>
+                            <td id="bus1_sensor6_location"></td>
+                            <td id="bus1_sensor6_rhs"></td>
+                            <td id="bus1_sensor6_co2s"></td>
                         </tr>
                         <tr>
                             <td>7</td>
-                            <td>%BUS1_SENSOR7_TYPE%</td>
-                            <td>%BUS1_SENSOR7_TEMP%</td>
-                            <td>%BUS1_SENSOR7_HUM%</td>
-                            <td>%BUS1_SENSOR7_CO2%</td>
-                            <td>%BUS1_SENSOR7_VALVE%</td>
-                            <td>%BUS1_SENSOR7_LOCATION%</td>
-                            <td>%BUS1_SENSOR7_RHS%</td>
-                            <td>%BUS1_SENSOR7_CO2S%</td>
+                            <td id="bus1_sensor7_type"></td>
+                            <td id="bus1_sensor7_temp"></td>
+                            <td id="bus1_sensor7_hum"></td>
+                            <td id="bus1_sensor7_co2"></td>
+                            <td id="bus1_sensor7_valve"></td>
+                            <td id="bus1_sensor7_location"></td>
+                            <td id="bus1_sensor7_rhs"></td>
+                            <td id="bus1_sensor7_co2s"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -317,8 +318,8 @@ const char index_html[] PROGMEM = R"rawliteral(
     </div>
 
     <script src="ui.js"></script>
+    <script src="websocket.js"></script>
 
   </body>
   </html>
 )rawliteral";
-  

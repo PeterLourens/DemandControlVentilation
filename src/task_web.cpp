@@ -352,10 +352,6 @@ void Taskwebcode(void *pvParameters)
 	server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/html", test2_html); });
 
-	// Test content file
-	server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/html", test_html); });
-
 	// Request for CSS file
 	server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/css", styles_css); });
@@ -423,6 +419,8 @@ void Taskwebcode(void *pvParameters)
 			  { request->send(LittleFS, "/json/settings_state_night.json", "text/json", true); });
 	server.on("/settings_statemachine", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(LittleFS, "/json/settings_statemachine.json", "text/json", true); });
+	server.on("/valvepositions", HTTP_GET, [](AsyncWebServerRequest *request)
+			  { request->send(LittleFS, "/json/valvepositions.json", "text/json", true); });
 
 	// Save settings from network settings
 	server.on("/settings_network", HTTP_POST, [](AsyncWebServerRequest *request)

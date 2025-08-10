@@ -44,19 +44,28 @@ void notifyClients(String json)
     ws.textAll(json);
 }
 
-void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
+void handleWebSocketMessage(void *arg, uint8_t *data, size_t len, String page_name)
 {
     AwsFrameInfo *info = (AwsFrameInfo *)arg;
     if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
     {
-        String json = create_json();
-        Serial.print(json);
-        notifyClients(json);
+        if (page_name == "index") {
+            String json = create_index_page_json();
+            notifyClients(json);
+        }
+        else {
+            Serial.print("unknown page");
+        }
+        //String json = create_index_page_json();
+        //Serial.print(json);
+        
     }
 }
 
 void onEvent(AsyncWebSocket *ws_server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
 {
+    String page_name = "index";
+
     switch (type)
     {
     case WS_EVT_CONNECT:
@@ -66,7 +75,7 @@ void onEvent(AsyncWebSocket *ws_server, AsyncWebSocketClient *client, AwsEventTy
         Serial.printf("WebSocket client #%u disconnected\n", client->id());
         break;
     case WS_EVT_DATA:
-        handleWebSocketMessage(arg, data, len);
+        handleWebSocketMessage(arg, data, len, page_name);
         break;
     case WS_EVT_PONG:
     case WS_EVT_ERROR:
