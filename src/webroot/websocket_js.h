@@ -39,10 +39,12 @@ function onMessage(event) {
     var myObj = JSON.parse(event.data);
     var keys = Object.keys(myObj);
 
-    for (var i = 0; i < keys.length; i++){
-        var key = keys[i];
-        document.getElementById(key) = myObj[key];
+    for (const key in myObj) {
+      const element = document.getElementById(key);
+      if (element) {
+        element.textContent = myObj[key];
+      }
     }
-}
+};
 
 )rawliteral";

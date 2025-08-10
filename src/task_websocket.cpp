@@ -22,7 +22,7 @@ void task_websocket_code(void *pvParameters)
     webSerial.setBuffer(500);
     ws.onEvent(onEvent);
     ws_server.addHandler(&ws);
-    ws_server.begin();  
+    ws_server.begin();
 
     // Loop code for the task
     for (;;)
@@ -37,12 +37,6 @@ void task_websocket_code(void *pvParameters)
         }
         vTaskDelay(500);
     }
-}
-
-String create_json()
-{
-    String json_test = "{\"valve0\":0, \"valve1\":0, \"valve2\":0, \"valve3\":0, \"valve4\":0, \"valve5\":0, \"valve6\":0, \"valve7\":0, \"valve8\":0, \"valve9\":0, \"valve10\":0, \"valve11\":0}";
-    return json_test;
 }
 
 void notifyClients(String json)
@@ -79,4 +73,3 @@ void onEvent(AsyncWebSocket *ws_server, AsyncWebSocketClient *client, AwsEventTy
         break;
     }
 }
-
