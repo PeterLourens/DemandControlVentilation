@@ -32,8 +32,11 @@ function onClose(event) {
 
 // Request to server for readings
 function get_json(){
-    const page_name = window.location.pathname.split("/").pop() || "index";
+    //const page_name = window.location.pathname.split("/").pop() || "index";
     //const page_name = window.location.pathname;
+    $(document).on('click', 'ul.pure-menu-list li a', function (event) {
+        var page_name = $(this).attr('href');
+    });
 
     console.log(page_name);
     websocket.send(page_name);

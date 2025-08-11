@@ -56,8 +56,6 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
         for (size_t i = 0; i < len; i++)
         {
             page_name += (char)data[i];
-            message = "Request json for page: " + page_name;
-            print_message(message);
         }
         if (page_name == "index")
         {
@@ -66,10 +64,10 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
         }
         else
         {
-            Serial.print("unknown page");
+            page_name= "unknown page";
         }
-        // String json = create_index_page_json();
-        // Serial.print(json);
+        message = "Request json for page: " + page_name;
+        print_message(message);
     }
 }
 
