@@ -1,4 +1,4 @@
-const char websocket_js[] PROGMEM = R"rawliteral(
+const char websocket_js[] = R"rawliteral(
 
 var gateway = 'ws://' + window.location.hostname + ':8080/ws';
 var websocket;

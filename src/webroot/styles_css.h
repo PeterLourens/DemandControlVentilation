@@ -1,4 +1,4 @@
-const char styles_css[] PROGMEM = R"rawliteral(
+const char styles_css[] = R"rawliteral(
 body {
     color: #777;
 }

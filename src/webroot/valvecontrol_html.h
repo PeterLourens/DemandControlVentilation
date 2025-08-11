@@ -1,4 +1,4 @@
-const char valvecontrol_html[] PROGMEM = R"rawliteral(
+const char valvecontrol_html[] = R"rawliteral(
 <!doctype html>
 <html lang="en">
 <head>

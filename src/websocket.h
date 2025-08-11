@@ -10,7 +10,7 @@
 #include "general.h"
 
 // function declarations
-String create_index_page_json(void);
+String create_index_json(void);
 String create_settings_json(void);
 String create_valvecontrol_json(void);
 String create_sensors_json(void);

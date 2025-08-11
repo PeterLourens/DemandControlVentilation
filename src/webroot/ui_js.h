@@ -1,4 +1,4 @@
-const char ui_js[] PROGMEM = R"rawliteral(
+const char ui_js[] = R"rawliteral(
 
 //Original ui.js
 (function (window, document) {

@@ -1,4 +1,4 @@
-const char settings_html[] PROGMEM = R"rawliteral(
+const char settings_html[] = R"rawliteral(
 <!doctype html>
 <html lang="en">
 <head>
@@ -139,7 +139,7 @@ const char settings_html[] PROGMEM = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="enable_lcd">Enable display:</label>
-                                <select id="enable_lcd" name="enable_lcd" id="enable_lcd" class="pure-input-1-1">
+                                <select id="enable_lcd" name="enable_lcd" class="pure-input-1-1">
                                     <option selected>%ENABLE_LCD%</option>
                                     <option>On</option>
                                     <option>Off</option>

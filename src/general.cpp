@@ -41,3 +41,22 @@ String formatted_datetime(void) {
     return temp_datetime;
 }
 
+String concatJson(String json1, String json2)
+{
+    // Remove the closing brace from json1
+    if (json1.endsWith("}"))
+    {
+        json1.remove(json1.length() - 1);
+    }
+
+    // Remove the opening brace from json2
+    if (json2.startsWith("{"))
+    {
+        json2.remove(0, 1);
+    }
+
+    // Concatenate with a comma in between
+    String result = json1 + "," + json2 + "}";
+
+    return result;
+}

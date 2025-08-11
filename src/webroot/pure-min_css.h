@@ -1,4 +1,4 @@
-const char pure_min_css[] PROGMEM = R"rawliteral(
+const char pure_min_css[] = R"rawliteral(
 body {
     color: #777;
 }

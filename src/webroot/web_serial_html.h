@@ -1,4 +1,4 @@
-const char web_serial_html[] PROGMEM = R"rawliteral(
+const char web_serial_html[] = R"rawliteral(
 <!doctype html>
 <html lang="en">
 <head>

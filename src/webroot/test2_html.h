@@ -1,4 +1,4 @@
-const char test2_html[] PROGMEM = R"rawliteral(
+const char test2_html[] = R"rawliteral(
 <!doctype html>
 <html lang="en">
 <head>

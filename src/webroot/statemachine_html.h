@@ -1,4 +1,4 @@
-const char statemachine_html[] PROGMEM = R"rawliteral(
+const char statemachine_html[] = R"rawliteral(
 <!doctype html>
 <html lang="en">
 <head>

@@ -1,4 +1,4 @@
-const char sensor_config_html[] PROGMEM = R"rawliteral(
+const char sensor_config_html[] = R"rawliteral(
 <!doctype html>
 <html lang="en">
 <head>
