@@ -295,20 +295,309 @@ String create_settings_json()
     return settings_json;
 }
 
-String create_valvecontrol_json()
-{
-    String valvecontrol_json = "";
-    return valvecontrol_json;
-}
-
 String create_sensors_json()
 {
-    String sensors_json = "";
+    bool sensor_config1_file_present = 0;
+    bool sensor_config2_file_present = 0;
+
+    const char *path1 = "/json/sensor_config1.json";
+    const char *path2 = "/json/sensor_config2.json";
+
+    String sensor_config1_string = "";
+    String sensor_config2_string = "";
+    String message = "";
+    String sensors_json = "{}";
+
+    if (sensor_config_file_mutex != NULL)
+    {
+        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
+        {
+            sensor_config1_file_present = check_file_exists(path1);
+            if (sensor_config1_file_present == 1)
+            {
+                sensor_config1_string = read_config_file(path1);
+            }
+            xSemaphoreGive(sensor_config_file_mutex);
+        }
+    }
+    if (sensor_config1_string == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        sensors_json = concatJson(sensors_json, sensor_config1_string);
+    }
+
+    if (sensor_config_file_mutex != NULL)
+    {
+        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
+        {
+            sensor_config2_file_present = check_file_exists(path2);
+            if (sensor_config2_file_present == 1)
+            {
+                sensor_config2_string = read_config_file(path2);
+            }
+            xSemaphoreGive(sensor_config_file_mutex);
+        }
+    }
+    if (sensor_config2_string == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        sensors_json = concatJson(sensors_json, sensor_config2_string);
+    }
+
     return sensors_json;
 }
 
 String create_statemachine_json()
 {
-    String statemachine_json = "";
+    const char *settings_state_day_path = "/json/settings_state_day.json";
+    const char *settings_state_night_path = "/json/settings_state_night.json";
+    const char *settings_state_highco2day_path = "/json/settings_state_highco2day.json";
+    const char *settings_state_highco2night_path = "/json/settings_state_highco2night.json";
+    const char *settings_state_highrhday_path = "/json/settings_state_highrhday.json";
+    const char *settings_state_highrhnight_path = "/json/settings_state_highrhnight.json";
+    const char *settings_state_cooking_path = "/json/settings_state_cooking.json";
+    const char *settings_state_cyclingday_path = "/json/settings_state_cyclingday.json";
+    const char *settings_state_cyclingnight_path = "/json/settings_state_cyclingnight.json";
+    
+    bool settings_state_day_present = 0;
+    bool settings_state_night_present = 0;
+    bool settings_state_highco2day_present = 0;
+    bool settings_state_highco2night_present = 0;
+    bool settings_state_highrhday_present = 0;
+    bool settings_state_highrhnight_present = 0;
+    bool settings_state_cooking_present = 0;
+    bool settings_state_cyclingday_present = 0;
+    bool settings_state_cyclingnight_present = 0;
+    
+    String settings_state_day_str = "";
+    String settings_state_night_str = "";
+    String settings_state_highco2day_str = "";
+    String settings_state_highco2night_str = "";
+    String settings_state_highrhday_str = "";
+    String settings_state_highrhnight_str = "";
+    String settings_state_cooking_str = "";
+    String settings_state_cyclingday_str = "";
+    String settings_state_cyclingnight_str = "";
+    String message = "";
+    String statemachine_json = "{}";
+
+    if (settings_state_day_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_day_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_day_present = check_file_exists(settings_state_day_path);
+            if (settings_state_day_present == 1)
+            {
+                settings_state_day_str = read_config_file(settings_state_day_path);
+            }
+            xSemaphoreGive(settings_state_day_mutex);
+        }
+    }
+    if (settings_state_day_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_day_str);
+    }
+
+    if (settings_state_night_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_night_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_night_present = check_file_exists(settings_state_night_path);
+            if (settings_state_night_present == 1)
+            {
+                settings_state_night_str = read_config_file(settings_state_night_path);
+            }
+            xSemaphoreGive(settings_state_night_mutex);
+        }
+    }
+    if (settings_state_night_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_night_str);
+    }
+
+    if (settings_state_highco2day_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_highco2day_present = check_file_exists(settings_state_highco2day_path);
+            if (settings_state_highco2day_present == 1)
+            {
+                settings_state_highco2day_str = read_config_file(settings_state_highco2day_path);
+            }
+            xSemaphoreGive(settings_state_highco2day_mutex);
+        }
+    }
+    if (settings_state_highco2day_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_highco2day_str);
+    }
+
+    if (settings_state_highco2night_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_highco2night_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_highco2night_present = check_file_exists(settings_state_highco2night_path);
+            if (settings_state_highco2night_present == 1)
+            {
+                settings_state_highco2night_str = read_config_file(settings_state_highco2night_path);
+            }
+            xSemaphoreGive(settings_state_highco2night_mutex);
+        }
+    }
+    if (settings_state_highco2night_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_highco2night_str);
+    }
+
+    if (settings_state_highrhday_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_highrhday_present = check_file_exists(settings_state_highrhday_path);
+            if (settings_state_highrhday_present == 1)
+            {
+                settings_state_highrhday_str = read_config_file(settings_state_highrhday_path);
+            }
+            xSemaphoreGive(settings_state_highrhday_mutex);
+        }
+    }
+    if (settings_state_highrhday_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_highrhday_str);
+    }
+
+    if (settings_state_highrhnight_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_highrhnight_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_highrhnight_present = check_file_exists(settings_state_highrhnight_path);
+            if (settings_state_highrhnight_present == 1)
+            {
+                settings_state_highrhnight_str = read_config_file(settings_state_highrhnight_path);
+            }
+            xSemaphoreGive(settings_state_highrhnight_mutex);
+        }
+    }
+    if (settings_state_highrhnight_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_highrhnight_str);
+    }
+
+    if (settings_state_cooking_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_cooking_present = check_file_exists(settings_state_cooking_path);
+            if (settings_state_cooking_present == 1)
+            {
+                settings_state_cooking_str = read_config_file(settings_state_cooking_path);
+            }
+            xSemaphoreGive(settings_state_cooking_mutex);
+        }
+    }
+    if (settings_state_cooking_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_cooking_str);
+    }
+
+    if (settings_state_cyclingday_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_cyclingday_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_cyclingday_present = check_file_exists(settings_state_cyclingday_path);
+            if (settings_state_cyclingday_present == 1)
+            {
+                settings_state_cyclingday_str = read_config_file(settings_state_cyclingday_path);
+            }
+            xSemaphoreGive(settings_state_cyclingday_mutex);
+        }
+    }
+    if (settings_state_cyclingday_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_cyclingday_str);
+    }
+
+    if (settings_state_cyclingnight_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_state_cyclingnight_present = check_file_exists(settings_state_cyclingnight_path);
+            if (settings_state_cyclingnight_present == 1)
+            {
+                settings_state_cyclingnight_str = read_config_file(settings_state_cyclingnight_path);
+            }
+            xSemaphoreGive(settings_state_cyclingnight_mutex);
+        }
+    }
+    if (settings_state_cyclingnight_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_cyclingnight_str);
+    }
+
     return statemachine_json;
+    
 }

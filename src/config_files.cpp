@@ -346,7 +346,6 @@ void sensor_config_data_read()
 // Function to read settings (e.g. valve positions) for each state and put these in the global variable
 void valve_settings_config_read()
 {
-
     const char *settings_state_day_path = "/json/settings_state_day.json";
     const char *settings_state_night_path = "/json/settings_state_night.json";
     const char *settings_state_highco2day_path = "/json/settings_state_highco2day.json";
@@ -384,24 +383,24 @@ void valve_settings_config_read()
             if (settings_state_day_present == 1)
             {
                 settings_state_day_str = read_config_file(settings_state_day_path);
-                if (settings_state_day_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_day, settings_state_day_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_day_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_day_mutex);
+        }
+    }
+    if (settings_state_day_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_day, settings_state_day_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_day_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 
@@ -413,24 +412,24 @@ void valve_settings_config_read()
             if (settings_state_night_present == 1)
             {
                 settings_state_night_str = read_config_file(settings_state_night_path);
-                if (settings_state_night_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_night, settings_state_night_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_night_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_night_mutex);
+        }
+    }
+    if (settings_state_night_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_night, settings_state_night_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_night_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 
@@ -442,24 +441,24 @@ void valve_settings_config_read()
             if (settings_state_highco2day_present == 1)
             {
                 settings_state_highco2day_str = read_config_file(settings_state_highco2day_path);
-                if (settings_state_highco2day_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_highco2day, settings_state_highco2day_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_highco2day_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_highco2day_mutex);
+        }
+    }
+    if (settings_state_highco2day_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_highco2day, settings_state_highco2day_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_highco2day_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 
@@ -471,24 +470,24 @@ void valve_settings_config_read()
             if (settings_state_highco2night_present == 1)
             {
                 settings_state_highco2night_str = read_config_file(settings_state_highco2night_path);
-                if (settings_state_highco2night_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_highco2night, settings_state_highco2night_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_highco2night_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_highco2night_mutex);
+        }
+    }
+    if (settings_state_highco2night_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_highco2night, settings_state_highco2night_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_highco2night_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 
@@ -500,24 +499,24 @@ void valve_settings_config_read()
             if (settings_state_highrhday_present == 1)
             {
                 settings_state_highrhday_str = read_config_file(settings_state_highrhday_path);
-                if (settings_state_highrhday_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_highrhday, settings_state_highrhday_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_highrhday_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_highrhday_mutex);
+        }
+    }
+    if (settings_state_highrhday_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_highrhday, settings_state_highrhday_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_highrhday_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 
@@ -529,24 +528,24 @@ void valve_settings_config_read()
             if (settings_state_highrhnight_present == 1)
             {
                 settings_state_highrhnight_str = read_config_file(settings_state_highrhnight_path);
-                if (settings_state_highrhnight_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_highrhnight, settings_state_highrhnight_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_highrhnight_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_highrhnight_mutex);
+        }
+    }
+    if (settings_state_highrhnight_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_highrhnight, settings_state_highrhnight_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_highrhnight_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 
@@ -558,24 +557,24 @@ void valve_settings_config_read()
             if (settings_state_cooking_present == 1)
             {
                 settings_state_cooking_str = read_config_file(settings_state_cooking_path);
-                if (settings_state_cooking_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_cooking, settings_state_cooking_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_cooking_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_cooking_mutex);
+        }
+    }
+    if (settings_state_cooking_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_cooking, settings_state_cooking_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_cooking_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 
@@ -587,24 +586,24 @@ void valve_settings_config_read()
             if (settings_state_cyclingday_present == 1)
             {
                 settings_state_cyclingday_str = read_config_file(settings_state_cyclingday_path);
-                if (settings_state_cooking_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_cyclingday, settings_state_cyclingday_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_cyclingday_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_cyclingday_mutex);
+        }
+    }
+    if (settings_state_cyclingday_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_cyclingday, settings_state_cyclingday_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_cyclingday_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 
@@ -616,24 +615,24 @@ void valve_settings_config_read()
             if (settings_state_cyclingnight_present == 1)
             {
                 settings_state_cyclingnight_str = read_config_file(settings_state_cyclingnight_path);
-                if (settings_state_cyclingnight_str == "")
-                {
-                    message = "[ERROR] String is empty or failed to read file";
-                    print_message(message);
-                    return;
-                }
-                else
-                {
-                    DeserializationError err = deserializeJson(settings_state_cyclingnight, settings_state_cyclingnight_str);
-                    if (err)
-                    {
-                        message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_cyclingnight_path) + ": " + String(err.c_str());
-                        print_message(message);
-                        return;
-                    }
-                }
             }
             xSemaphoreGive(settings_state_cyclingnight_mutex);
+        }
+    }
+    if (settings_state_cyclingnight_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_state_cyclingnight, settings_state_cyclingnight_str);
+        if (err)
+        {
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(settings_state_cyclingnight_path) + ": " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 }

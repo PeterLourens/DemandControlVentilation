@@ -610,7 +610,6 @@ void high_co2_day_transitions(void)
     int co2highlevel = 0;
     int co2lowlevel = 0;
     int min_state_time = 600; // minimum time in seconds the statemachine should stay in this state
-    int valve = 0;
     int reading = 0;
     long new_time = 0;
     bool valve_move_locked = 0;
@@ -622,6 +621,7 @@ void high_co2_day_transitions(void)
     String state_valve_pos_path = "";
     String state_valve_pos_str = "";
     String message = "";
+    String valve = "";
 
     JsonDocument state_valve_pos_doc;
 
