@@ -892,8 +892,8 @@ const char sensor_config_html[] = R"rawliteral(
 
         </div>
     </div>
+    <div id="page_name">sensor_config</div>
 
-    <script src="jquery-min.js"></script>
     <script src="ui.js"></script>
     <script src="websocket.js"></script>
 

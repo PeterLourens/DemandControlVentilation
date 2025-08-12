@@ -260,8 +260,8 @@ const char settings_html[] = R"rawliteral(
             <p>Refer to <a href="https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html" target="_blank">GNU documentation on TZ-Variable</a> for more details on format.<br>For Europe/Amsterdam use: CET-1CEST,M3.5.0,M10.5.0/3</p>
         </div>
     </div>
+     <div id="page_name">settings</div>
 
-    <script src="jquery-min.js"></script>
     <script src="ui.js"></script>
     <script src="websocket.js"></script>
 
