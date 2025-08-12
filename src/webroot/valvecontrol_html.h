@@ -214,7 +214,7 @@ const char valvecontrol_html[] = R"rawliteral(
                                 <input type="hidden" name="store_valve_position_in_file" id="store_valve_position_in_file" value="false" />
                                 <input type="checkbox" name="store_valve_position_in_file" id="store_valve_position_in_file" value="true" />
                                 <label for="check_valve_position">Check valve position:</label>
-                                <input type="hidden"   name="check_valve_position" id="check_valve_position" value="false" />
+                                <input type="hidden" name="check_valve_position" id="check_valve_position" value="false" />
                                 <input type="checkbox" name="check_valve_position" id="check_valve_position" value="true" />
                             </div>
                         </div>

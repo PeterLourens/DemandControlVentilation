@@ -48,23 +48,42 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
 {
     String page_name = "";
     String message = "";
+    String json = "";
 
     AwsFrameInfo *info = (AwsFrameInfo *)arg;
-    
+
     if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
     {
+        // Compile page_name from js
         for (size_t i = 0; i < len; i++)
         {
             page_name += (char)data[i];
         }
+
+        // generate json based on page_name
         if (page_name == "index")
         {
             String json = create_index_json();
             notifyClients(json);
         }
+        else if (page_name = "settings")
+        {
+            json = create_settings_json();
+            notifyClients(json);
+        }
+        else if (page_name = "sensors")
+        {
+            json = create_sensors_json();
+            notifyClients(json);
+        }
+        else if (page_name = "statemachine")
+        {
+            json = create_statemachine_json();
+            notifyClients(json);
+        }
         else
         {
-            page_name= "unknown page";
+            page_name = "Page without form data requested, nothing to transmit over websocket";
         }
         message = "Request json for page: " + page_name;
         print_message(message);
@@ -73,8 +92,6 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
 
 void onEvent(AsyncWebSocket *ws_server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
 {
-    //String page_name = "index";
-
     switch (type)
     {
     case WS_EVT_CONNECT:

@@ -363,6 +363,8 @@ void Taskwebcode(void *pvParameters)
 			  { request->send(200, "text/javascript", ui_js); });
 	server.on("/websocket.js", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/javascript", websocket_js); });
+	server.on("/jquery-min.js", HTTP_GET, [](AsyncWebServerRequest *request)
+			  { request->send(200, "text/javascript", jquery_min_js); });
 
 	// Not found handling
 	server.onNotFound([](AsyncWebServerRequest *request)

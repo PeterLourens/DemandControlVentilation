@@ -12,7 +12,6 @@
 // function declarations
 String create_index_json(void);
 String create_settings_json(void);
-String create_valvecontrol_json(void);
 String create_sensors_json(void);
 String create_statemachine_json(void);
 

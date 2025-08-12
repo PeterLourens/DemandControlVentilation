@@ -1,11 +1,12 @@
 const char index_html[] = R"rawliteral(
+
 <!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The front-end for configuration of the open source demand controlled ventilation system">
-    <title>Open Source demand driven ventilation system &ndash; Configuration and Monitoring</title>
+    <html lang = "en">
+    <head>
+    <meta charset = "utf-8">
+    <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    <meta name = "description" content = "The front-end for configuration of the open source demand controlled ventilation system">
+    <title> Open Source demand driven ventilation system &ndash; Configuration and Monitoring</title>
     <link rel="stylesheet" href="pure-min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -21,7 +22,6 @@ const char index_html[] = R"rawliteral(
     <div id="menu">
         <div class="pure-menu">
             <li class="pure-menu-heading">OSVentilation</li>
-
             <ul class="pure-menu-list">
                 <li class="pure-menu-item"><a href="/" class="pure-menu-link">Status</a></li>
                 <li class="pure-menu-item"><a href="/settings" class="pure-menu-link">Settings</a></li>
@@ -317,6 +317,7 @@ const char index_html[] = R"rawliteral(
         </div>
     </div>
 
+    <script src="jquery-min.js"></script>
     <script src="ui.js"></script>
     <script src="websocket.js"></script>
 

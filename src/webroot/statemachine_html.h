@@ -824,7 +824,9 @@ const char statemachine_html[] = R"rawliteral(
         </div>
     </div>
 
+    <script src="jquery-min.js"></script>
     <script src="ui.js"></script>
+    <script src="websocket.js"></script>
 
   </body>
   </html>
