@@ -11,6 +11,17 @@ function onload(event) {
     initWebSocket();
 }
 
+$(document).ready(function () {
+    //handle menu clicks
+    $(document).on('click', 'ul.pure-menu-list li a', function (event) {
+        page = $(this).attr('href');
+        console.log("click catched: " + page);
+        $('li.pure-menu-item').removeClass("pure-menu-selected");
+        $(this).parent().addClass("pure-menu-selected");
+        event.preventDefault();
+    });
+});
+
 function initWebSocket() {
     console.log('Trying to open a WebSocket connection…');
     websocket = new WebSocket(gateway);
@@ -34,10 +45,9 @@ function onClose(event) {
 function get_json(){
     //const page_name = window.location.pathname.split("/").pop() || "index";
     //const page_name = window.location.pathname;
-    $(document).on('click', 'ul.pure-menu-list li a', function (event) {
-        var page_name = $(this).attr('href');
-    });
-
+    //$(document).on('click', 'ul.pure-menu-list li a', function (event) {
+        //var page_name = $(this).attr('href');
+    //});
     console.log(page_name);
     websocket.send(page_name);
 }
