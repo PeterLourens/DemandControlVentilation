@@ -35,22 +35,29 @@ function get_json(){
     //const page_name = window.location.pathname.split("/").pop() || "index";
     //const page_name = window.location.pathname;
     const page = document.getElementById("page_name");
-    console.log(page);
-    websocket.send(page);
+    //page = "index";
+    console.log(page.innerHTML);
+    websocket.send(page.innerHTML);
 }
 
 // Function that receives the message from the ESP32 with the readings and matches ids of the json with ids in the html
 function onMessage(event) {
-    //console.log(event.data);
+    console.log(event.data);
+    var myObj = JSON.stringify(event.data);
     var myObj = JSON.parse(event.data);
     var keys = Object.keys(myObj);
 
     for (const key in myObj) {
       const element = document.getElementById(key);
+      document.getElementById("3").selected=true;
+      console.log(element);
       if (element) {
         element.textContent = myObj[key];
+        element.value = myObj[key];
+        element.selected = myObj[key];
       }
     }
+
 };
 
 

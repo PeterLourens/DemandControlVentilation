@@ -56,7 +56,7 @@ String concatJson(String json1, String json2)
     }
 
     // Concatenate with a comma in between
-    String result = json1 + "," + json2 + "}";
+    String result = json1 + "," + json2;
 
     return result;
 }

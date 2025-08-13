@@ -346,7 +346,7 @@ void Taskwebcode(void *pvParameters)
 
 	// Main page
 	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/html", index_html, status_processor); });
+			  { request->send(200, "text/html", index_html); });
 
 	// Test main page
 	server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -372,7 +372,7 @@ void Taskwebcode(void *pvParameters)
 
 	// Settings web pages processing
 	server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/html", settings_html, settings_processor); });
+			  { request->send(200, "text/html", settings_html); });
 
 	// Webserial handling
 	server.on("/web_serial", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -381,7 +381,7 @@ void Taskwebcode(void *pvParameters)
 	// Reboot ESP32 button
 	server.on("/restart_esp32", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		request->send(200, "text/html", settings_html, settings_processor);
+		request->send(200, "text/html", settings_html);
 		esp_restart(); });
 
 	// Download JSON Config files
@@ -456,7 +456,7 @@ void Taskwebcode(void *pvParameters)
 		}
 		serializeJson(settings_network_data, settings_network_str);
 		write_config_file(path, settings_network_str);
-		request->send(200, "text/html", settings_html, settings_processor); });
+		request->send(200, "text/html", settings_html); });
 
 	// Save settings from MQTT settings
 	server.on("/settings_mqtt", HTTP_POST, [](AsyncWebServerRequest *request)
@@ -484,7 +484,7 @@ void Taskwebcode(void *pvParameters)
 		}
 		serializeJson(settings_mqtt_data, settings_mqtt_str);
 		write_config_file(path, settings_mqtt_str);	
-		request->send(200, "text/html", settings_html, settings_processor); });
+		request->send(200, "text/html", settings_html); });
 
 	// Save settings from I2C settings
 	server.on("/settings_i2c", HTTP_POST, [](AsyncWebServerRequest *request)
@@ -512,7 +512,7 @@ void Taskwebcode(void *pvParameters)
 		}
 		serializeJson(settings_i2c_data, settings_i2c_str);
 		write_config_file(path, settings_i2c_str);
-		request->send(200, "text/html", settings_html, settings_processor); });
+		request->send(200, "text/html", settings_html); });
 
 	// Save settings from fan control settings
 	server.on("/settings_fan", HTTP_POST, [](AsyncWebServerRequest *request)
@@ -550,7 +550,7 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		write_config_file(path, settings_fan_str);
-		request->send(200, "text/html", settings_html, settings_processor); });
+		request->send(200, "text/html", settings_html); });
 
 	// Save settings from statemachine settings
 	/*server.on("/settings_statemachine", HTTP_POST, [](AsyncWebServerRequest *request) {
@@ -606,7 +606,7 @@ void Taskwebcode(void *pvParameters)
 		}
 		serializeJson(settings_influxdb_data, settings_influxdb_str);
 		write_config_file(path, settings_influxdb_str);
-		request->send(200, "text/html", settings_html, settings_processor); });
+		request->send(200, "text/html", settings_html); });
 
 	// Save settings from RTC settings
 	server.on("/settings_rtc", HTTP_POST, [](AsyncWebServerRequest *request)
@@ -631,7 +631,7 @@ void Taskwebcode(void *pvParameters)
 
 		serializeJson(settings_rtc_data, settings_rtc_str);
 		write_config_file(path, settings_rtc_str);	
-		request->send(200, "text/html", settings_html, settings_processor); });
+		request->send(200, "text/html", settings_html); });
 
 	// Valve control web pages processing
 	server.on("/valvecontrol", HTTP_GET, [](AsyncWebServerRequest *request)
