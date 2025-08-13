@@ -48,14 +48,37 @@ function onMessage(event) {
     var keys = Object.keys(myObj);
 
     for (const key in myObj) {
-      const element = document.getElementById(key);
-      //document.getElementById("3").selected=true;
-      console.log(element);
-      if (element) {
-        element.textContent = myObj[key];
-        element.value = myObj[key];
-        //element.selected = myObj[key];
-      }
+        const element = document.getElementById(key);
+        console.log(element);
+        if (element) {
+            
+            // Works for tables and text boxes
+            // element.textContent = myObj[key];
+            // element.value = myObj[key];
+            
+            // For text boxes
+            if (element && (element.tagName === "INPUT" || element.tagName === "TEXTAREA")) {
+                element.value = myObj[key];
+            }
+
+            //For tables where each cell has unique id
+            if (element && (element.tagName === "TD" || element.tagName === "TH")) {
+                element.textContent = myObj[key];
+            }
+           
+            //For dropdown menus
+            if (element && element.tagName === "SELECT") {
+                const targetValue = myObj[key];
+                for (let option of element.options) {
+                    option.selected = option.value === targetValue;
+                }
+            }
+            
+            // For checkboxes
+            if (element && element.type === "checkbox") {
+                element.checked = Boolean(myObj[key]); // Sets checkbox to checked
+            }
+        }
     }
 
 };
