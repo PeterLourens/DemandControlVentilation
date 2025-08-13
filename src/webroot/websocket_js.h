@@ -54,7 +54,7 @@ function onMessage(event) {
       if (element) {
         element.textContent = myObj[key];
         element.value = myObj[key];
-        element.selected = myObj[key];
+        //element.selected = myObj[key];
       }
     }
 
