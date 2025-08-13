@@ -49,7 +49,7 @@ function onMessage(event) {
 
     for (const key in myObj) {
       const element = document.getElementById(key);
-      document.getElementById("3").selected=true;
+      //document.getElementById("3").selected=true;
       console.log(element);
       if (element) {
         element.textContent = myObj[key];
