@@ -59,7 +59,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekday_night_minute_start">Weekday night minutes start:</label>
-                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekday_day_minute_start" id="weekday_night_minute_start" />
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekday_night_minute_start" id="weekday_night_minute_start" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekend_day_hour_start">Weekend day hour start:</label>
