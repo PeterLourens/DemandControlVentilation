@@ -40,7 +40,7 @@ const char valvecontrol_html[] = R"rawliteral(
 
         <div class="content">
             <h2 class="content-subhead">Status valve positions file.</h2>
-            <p>Status valve position valve: %STATUS_VALVE_POSITION_FILE%</p>
+            <p>Status valve position valve: <span id="status_valve_position_file"></span></p>
             <p>If the valve position file is not present, the valves will not move if the "store valve positions" or "check valve position" checkbox is ticked.</p>        
             <h2 class="content-subhead">Create file with positions of the valves</h2>
             <p>
@@ -72,7 +72,7 @@ const char valvecontrol_html[] = R"rawliteral(
                     <input type="submit" value="Start statemachine">
                 </form>
             </p>
-            <p>State statemachine: <font color="green"> %STATEMACHINE_STATE% </font></p>
+            <p>State statemachine: <font color="green"><span id="statemachine_state"></span></font></p>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/valvecontrol">
                     <fieldset>
@@ -226,8 +226,10 @@ const char valvecontrol_html[] = R"rawliteral(
 
         </div>
     </div>
+    <div id="page_name">valvecontrol</div>
 
     <script src="ui.js"></script>
+    <script src="websocket.js"></script>
 
   </body>
   </html>

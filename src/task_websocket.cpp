@@ -81,6 +81,11 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
             json = create_statemachine_json();
             notifyClients(json);
         }
+        else if (page_name = "valvecontrol")
+        {
+            json = create_valvecontrol_json();
+            notifyClients(json);
+        }
         else
         {
             page_name = "Page without form data requested, nothing to transmit over websocket";

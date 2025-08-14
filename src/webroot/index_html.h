@@ -7,6 +7,7 @@ const char index_html[] = R"rawliteral(
     <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
     <meta name = "description" content = "The front-end for configuration of the open source demand controlled ventilation system">
     <title> Open Source demand driven ventilation system &ndash; Configuration and Monitoring</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="pure-min.css">
     <link rel="stylesheet" href="styles.css">
 </head>

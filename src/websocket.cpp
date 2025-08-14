@@ -5,7 +5,6 @@
     a. Valve positions from file
     b. sensor data from queue
     c. time from global var
-    d.
 2. Merge everything in one JsonDocument
 3. Serialise JsonDocument
 4. Send string over websocket
@@ -600,4 +599,44 @@ String create_statemachine_json()
 
     return statemachine_json;
     
+}
+
+String create_valvecontrol_json() {
+
+    const char *path = "/json/valvepositions.json";
+    bool status_file_present;
+
+    String json;
+    String valve_status_file_state = "";
+    String temp_state = "";
+    String valvecontrol_json = "";
+
+    JsonDocument doc;
+
+    status_file_present = check_file_exists(path);
+
+    if (status_file_present == 1)
+    {
+        valve_status_file_state = "<font color=\"green\">Valve status file found.</font>";
+        doc["status_valve_position_file"] = valve_status_file_state;
+    }
+    else
+    {
+        valve_status_file_state = "<font color=\"red\">Valve status file not found. Create a file with button below.</font>";
+        doc["status_valve_position_file"] = valve_status_file_state;
+    }
+
+    if (statemachine_state_mutex != NULL)
+    {
+        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+        {
+            temp_state = state;
+            xSemaphoreGive(statemachine_state_mutex);
+        }
+    }
+
+    doc["statemachine_state"] = temp_state;
+    serializeJson(doc, valvecontrol_json);
+
+    return valvecontrol_json;
 }
