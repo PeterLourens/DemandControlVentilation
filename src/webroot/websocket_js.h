@@ -35,7 +35,6 @@ function get_json(){
     //const page_name = window.location.pathname.split("/").pop() || "index";
     //const page_name = window.location.pathname;
     const page = document.getElementById("page_name");
-    //page = "index";
     console.log(page.innerHTML);
     websocket.send(page.innerHTML);
 }
@@ -59,6 +58,7 @@ function onMessage(event) {
             // For text boxes
             if (element && (element.tagName === "INPUT" || element.tagName === "TEXTAREA")) {
                 element.value = myObj[key];
+                element.textContent = myObj[key];
             }
 
             //For tables where each cell has unique id

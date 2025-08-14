@@ -66,22 +66,22 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
             String json = create_index_json();
             notifyClients(json);
         }
-        else if (page_name = "settings")
+        else if (page_name == "settings")
         {
             json = create_settings_json();
             notifyClients(json);
         }
-        else if (page_name = "sensors")
+        else if (page_name == "sensor_config")
         {
             json = create_sensors_json();
             notifyClients(json);
         }
-        else if (page_name = "statemachine")
+        else if (page_name == "statemachine")
         {
             json = create_statemachine_json();
             notifyClients(json);
         }
-        else if (page_name = "valvecontrol")
+        else if (page_name == "valvecontrol")
         {
             json = create_valvecontrol_json();
             notifyClients(json);

@@ -305,7 +305,7 @@ String create_sensors_json()
     String sensor_config1_string = "";
     String sensor_config2_string = "";
     String message = "";
-    String sensors_json = "{}";
+    String sensors_json = "";
 
     if (sensor_config_file_mutex != NULL)
     {
@@ -327,7 +327,7 @@ String create_sensors_json()
     }
     else
     {
-        sensors_json = concatJson(sensors_json, sensor_config1_string);
+        sensors_json = sensor_config1_string;
     }
 
     if (sensor_config_file_mutex != NULL)
@@ -358,6 +358,7 @@ String create_sensors_json()
 
 String create_statemachine_json()
 {
+    const char *settings_statemachine_path = "/json/settings_statemachine.json";
     const char *settings_state_day_path = "/json/settings_state_day.json";
     const char *settings_state_night_path = "/json/settings_state_night.json";
     const char *settings_state_highco2day_path = "/json/settings_state_highco2day.json";
@@ -367,7 +368,8 @@ String create_statemachine_json()
     const char *settings_state_cooking_path = "/json/settings_state_cooking.json";
     const char *settings_state_cyclingday_path = "/json/settings_state_cyclingday.json";
     const char *settings_state_cyclingnight_path = "/json/settings_state_cyclingnight.json";
-    
+
+    bool settings_statemachine_present = 0;
     bool settings_state_day_present = 0;
     bool settings_state_night_present = 0;
     bool settings_state_highco2day_present = 0;
@@ -377,7 +379,8 @@ String create_statemachine_json()
     bool settings_state_cooking_present = 0;
     bool settings_state_cyclingday_present = 0;
     bool settings_state_cyclingnight_present = 0;
-    
+
+    String settings_statemachine_str = "";
     String settings_state_day_str = "";
     String settings_state_night_str = "";
     String settings_state_highco2day_str = "";
@@ -387,8 +390,31 @@ String create_statemachine_json()
     String settings_state_cooking_str = "";
     String settings_state_cyclingday_str = "";
     String settings_state_cyclingnight_str = "";
+    String statemachine_json = "";
     String message = "";
-    String statemachine_json = "{}";
+
+    if (settings_statemachine_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_statemachine_present = check_file_exists(settings_statemachine_path);
+            if (settings_statemachine_present == 1)
+            {
+                settings_statemachine_str = read_config_file(settings_statemachine_path);
+            }
+            xSemaphoreGive(settings_statemachine_mutex);
+        }
+    }
+    if (settings_statemachine_str == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = settings_statemachine_str;
+    }
 
     if (settings_state_day_mutex != NULL)
     {
