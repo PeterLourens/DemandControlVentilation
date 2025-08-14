@@ -1,4 +1,13 @@
 {
-    "statemachine_rh_sensor":"",
-    "statemachine_co2_sensor":""
+    "weekday_day_hour_start": 8,
+    "weekday_day_minute_start": 0,
+    "weekday_night_hour_start": 21,
+    "weekday_night_minute_start": 0,
+    "weekend_day_hour_start": 8,
+    "weekend_day_minute_start": 0,
+    "weekend_night_hour_start": 21,
+    "weekend_night_minute_start": 30,
+    "weekend_day_1": "Saturday",
+    "Weekend_day_2": "Saturday",
+    "minimum_state_time": 1800
 }

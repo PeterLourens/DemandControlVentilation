@@ -45,7 +45,68 @@ const char statemachine_html[] = R"rawliteral(
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_statemachine">
                     <fieldset>
                         <div class="pure-g">
-                            
+                            <div class="pure-u-1 pure-u-md-1-4">
+                                <label for="weekday_day_hour_start">Weekday day hour start:</label>
+                                <input type="number" value="0" min="0" max="23" class="pure-input-1-1" name="weekday_day_hour_start" id="weekday_day_hour_start" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-4">
+                                <label for="weekday_day_minute_start">Weekday day minutes start:</label>
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekday_day_minute_start" id="weekday_day_hour_start" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-4">
+                                <label for="weekday_night_hour_start">Weekday night hour start:</label>
+                                <input type="number" value="0" min="0" max="23" class="pure-input-1-1" name="weekday_night_hour_start" id="weekday_night_hour_start" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-4">
+                                <label for="weekday_night_minute_start">Weekday night minutes start:</label>
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekday_day_minute_start" id="weekday_night_minute_start" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-4">
+                                <label for="weekend_day_hour_start">Weekend day hour start:</label>
+                                <input type="number" value="0" min="0" max="23" class="pure-input-1-1" name="weekend_day_hour_start" id="weekend_day_hour_start" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-4">
+                                <label for="weekend_day_minute_start">Weekend day minutes start:</label>
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekend_day_minute_start" id="weekend_day_hour_start" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-4">
+                                <label for="weekend_night_hour_start">Weekend night hour start:</label>
+                                <input type="number" value="0" min="0" max="23" class="pure-input-1-1" name="weekend_night_hour_start" id="weekend_night_hour_start" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-4">
+                                <label for="weekend_night_minute_start">Weekend night minutes start:</label>
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekend_day_minute_start" id="weekend_night_minute_start" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-2">
+                                <label for="weekend_day_1">Weekend day 1:</label>
+                                <select id="enable_state_day" name="weekend_day_1" id="weekend_day_1" class="pure-input-1-1">
+                                    <option selected></option>
+                                    <option>Sunday</option>
+                                    <option>Monday</option>
+                                    <option>Tuesday</option>
+                                    <option>Wednesday</option>
+                                    <option>Thursday</option>
+                                    <option>Friday</option>
+                                    <option>Saturday</option>
+                                </select>
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-2">
+                                <label for="weekend_day_2">Weekend day 2:</label>
+                                <select id="weekend_day_2" name="weekend_day_2" id="weekend_day_2" class="pure-input-1-1">
+                                    <option selected></option>
+                                    <option>Sunday</option>
+                                    <option>Monday</option>
+                                    <option>Tuesday</option>
+                                    <option>Wednesday</option>
+                                    <option>Thursday</option>
+                                    <option>Friday</option>
+                                    <option>Saturday</option>
+                                </select>
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-1">
+                                <label for=minimum_state_time">Minimum time to remain in a state (in sec):</label>
+                                <input type="number" value="0" min="0" max="1200" class="pure-input-1-1" name="minimum_state_time" id="minimum_state_time" />
+                            </div>
                         </div>
                     </fieldset>
                 </form>

@@ -52,7 +52,8 @@ void task_i2c_code(void * pvParameters)
             message = "Local time is: " + current_time();
             print_message(message);
             
-            message = "System uptime: " + String(esp_timer_get_time()/1000000/60) + " min";
+            //message = "System uptime: " + String(esp_timer_get_time()/1000000/60) + " min";
+            message = "System uptime: " + formatted_uptime();
             print_message(message);
 
             rtc_time_multiplier = 0;

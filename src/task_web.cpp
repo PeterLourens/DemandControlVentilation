@@ -147,10 +147,6 @@ const char *FAN_CONTROL_URL_HIGH_SPEED = "fan_control_url_high_speed";
 const char *FAN_CONTROL_URL_MEDIUM_SPEED = "fan_control_url_medium_speed";
 const char *FAN_CONTROL_URL_LOW_SPEED = "fan_control_url_low_speed";
 
-const char *STATUS_STATEMACHINE_CONFIG = "status_statemachine_config";
-const char *STATEMACHINE_RH_SENSOR = "statemachine_rh_sensor";
-const char *STATEMACHINE_CO2_SENSOR = "statemachine_co2_sensor";
-
 const char *STATUS_INFLUXDB_CONFIG = "status_influxdb_config";
 const char *ENABLE_INFLUXDB = "enable_influxdb";
 const char *INFLUXDB_URL = "influxdb_url";
@@ -161,6 +157,20 @@ const char *INFLUXDB_TOKEN = "influxdb_token";
 const char *STATUS_RTC_CONFIG = "status_rtc_config";
 const char *TIMEZONE = "timezone";
 const char *NTP_SERVER = "ntp_server";
+
+// Statemachine settings
+const char *STATUS_STATEMACHINE_CONFIG = "status_statemachine_config";
+const char *WEEKDAY_DAY_HOUR_START = "weekday_day_hour_start";
+const char *WEEKDAY_DAY_MINUTE_START = "weekday_day_minute_start";
+const char *WEEKDAY_NIGHT_HOUR_START = "weekday_night_hour_start";
+const char *WEEKDAY_NIGHT_MINUTE_START = "weekday_night_minute_start";
+const char *WEEKEND_DAY_HOUR_START = "weekend_day_hour_start";
+const char *WEEKEND_DAY_MINUTE_START = "weekend_day_minute_start";
+const char *WEEKEND_NIGHT_HOUR_START = "weekend_night_hour_start";
+const char *WEEKEND_NIGHT_MINUTE_START = "weekend_night_minute_start";
+const char *WEEKEND_DAY_1 = "weekend_day_1";
+const char *WEEKEND_DAY_2 = "weekend_day_2";
+const char *MINIMUM_STATE_TIME = "minimum_state_time";
 
 const char *STATUS_STATE_DAY_CONFIG = "status_state_day_config";
 const char *STATE_DAY_FANSPEED = "state_day_fanspeed";
@@ -1098,6 +1108,44 @@ void Taskwebcode(void *pvParameters)
 	// Statemachine web pages processing
 	server.on("/statemachine", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/html", statemachine_html); });
+
+	// Save settings from statemachine settings
+	server.on("/settings_statemachine", HTTP_POST, [](AsyncWebServerRequest *request)
+			  {
+		if (settings_statemachine_mutex != NULL) {
+			if(xSemaphoreTake(settings_statemachine_mutex, ( TickType_t ) 10 ) == pdTRUE) {
+				int params = request->params();
+				for(int i=0;i<params;i++){
+					const AsyncWebParameter* p = request->getParam(i);
+					if(p->isPost()){
+						if (p->name() == STATUS_STATEMACHINE_CONFIG)
+							settings_statemachine_data["status_statemachine_config"] = p->value().c_str();
+						if (p->name() == WEEKDAY_DAY_HOUR_START)
+							settings_statemachine_data["weekday_day_hour_start"] = p->value().c_str();
+						if (p->name() == WEEKDAY_DAY_MINUTE_START)
+							settings_statemachine_data["weekday_day_minute_start"] = p->value().c_str();
+						if (p->name() == WEEKDAY_NIGHT_HOUR_START)
+							settings_statemachine_data["weekday_night_hour_start"] = p->value().c_str();
+						if (p->name() == WEEKDAY_NIGHT_MINUTE_START)
+							settings_statemachine_data["weekday_night_minute_start"] = p->value().c_str();
+						if (p->name() == WEEKEND_DAY_HOUR_START)
+							settings_statemachine_data["weekend_day_hour_start"] = p->value().c_str();
+						if (p->name() == WEEKEND_DAY_MINUTE_START)
+							settings_statemachine_data["weekend_day_minute_start"] = p->value().c_str();
+						if (p->name() == WEEKEND_NIGHT_HOUR_START)
+							settings_statemachine_data["weekend_night_hour_start"] = p->value().c_str();
+						if (p->name() == WEEKEND_NIGHT_MINUTE_START)
+							settings_statemachine_data["weekend_night_minute_start"] = p->value().c_str();
+					}
+				}
+				const char* path = "/json/settings_statemachine.json";
+				String settings_statemachine_str;
+				serializeJson(settings_statemachine_data, settings_statemachine_str);
+				write_config_file(path, settings_statemachine_str);
+				xSemaphoreGive(settings_statemachine_mutex);
+			}
+		}
+		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine day
 	server.on("/settings_valve_day", HTTP_POST, [](AsyncWebServerRequest *request)

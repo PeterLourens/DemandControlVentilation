@@ -47,7 +47,7 @@ JsonDocument valve_control_data;                                // Global for va
 JsonDocument wire_sensor_data;                                  // Global for bus0 sensor configuration
 JsonDocument wire1_sensor_data;                                 // Global for bus1 sensor configuration
 JsonDocument settings_fan_data;                                 // Define global fanspeed settings
-//JsonDocument settings_statemachine_data;                        // Define global statemachine settings
+JsonDocument settings_statemachine_data;                        // Define global statemachine settings
 
 JsonDocument settings_state_day;                                // Settings for state day
 JsonDocument settings_state_night;                              // Settings for state night
