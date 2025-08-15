@@ -275,7 +275,8 @@ String create_sensors_json()
 }
 
 String create_statemachine_json()
-{   
+{
+    bool settings_statemachine_present = 0;
     bool settings_state_day_present = 0;
     bool settings_state_night_present = 0;
     bool settings_state_highco2day_present = 0;
@@ -285,7 +286,8 @@ String create_statemachine_json()
     bool settings_state_cooking_present = 0;
     bool settings_state_cyclingday_present = 0;
     bool settings_state_cyclingnight_present = 0;
-    
+
+    String settings_statemachine_str = "";
     String settings_state_day_str = "";
     String settings_state_night_str = "";
     String settings_state_highco2day_str = "";
@@ -302,10 +304,10 @@ String create_statemachine_json()
     {
         if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)100) == pdTRUE)
         {
-            settings_statemachine_present = check_file_exists(settings_statemachine_path);
+            settings_statemachine_present = check_file_exists(SETTINGS_STATEMACHINE_PATH);
             if (settings_statemachine_present == 1)
             {
-                settings_statemachine_str = read_config_file(settings_statemachine_path);
+                settings_statemachine_str = read_config_file(SETTINGS_STATEMACHINE_PATH);
             }
             xSemaphoreGive(settings_statemachine_mutex);
         }

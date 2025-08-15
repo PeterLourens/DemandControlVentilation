@@ -17,6 +17,7 @@
 // #define TCAADDR 0x70                                                //TCA9548 address
 
 // File path definitions
+#define SETTINGS_STATEMACHINE_PATH "/json/settings_statemachine.json"
 #define SETTINGS_STATE_DAY_PATH "/json/settings_state_day.json"
 #define SETTINGS_STATE_NIGHT_PATH "/json/settings_state_night.json"
 #define SETTINGS_STATE_HIGHCO2DAY_PATH "/json/settings_state_highco2day.json"
