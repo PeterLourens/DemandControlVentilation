@@ -49,7 +49,7 @@ void set_fanspeed(String speed)
         {
             message = "[ERROR] Failed to parse: " + String(SETTINGS_FAN_PATH) + " with error: " + String(err.c_str());
             print_message(message);
-            return "";
+            return;
         }
     }
 

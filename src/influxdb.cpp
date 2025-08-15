@@ -149,8 +149,6 @@ void write_avg_sensor_data(void) {
 
     if (xQueuePeek(sensor_avg_queue, &queue_avg_sensor_data, 0) == pdTRUE) {     
         if (client.validateConnection()) {    
-            //message = "Connection to influxDB validated. Writing sensor data to influxDB.";
-            //print_message(message);
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 8; j++) {           
                     if (queue_avg_sensor_data[i][j][0] > 0) {
@@ -202,7 +200,6 @@ void write_avg_sensor_data(void) {
 
 void write_valve_position_data(void) {
     
-    const char* path = "/json/valvepositions.json";
     bool status_file_present = false;
     int valve_pos_temp = 0;
     int valve_pos_sum = 0;
@@ -231,26 +228,24 @@ void write_valve_position_data(void) {
     InfluxDBClient client(influxdb_url_tmp, influxdb_org_tmp, influxdb_bucket_tmp, influxdb_token_tmp);
     Point sensor("Valves");
     
-    status_file_present = check_file_exists(path);
+    status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
 
     if (status_file_present == 1) {
         if (valve_position_file_mutex != NULL) {
             if(xSemaphoreTake(valve_position_file_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-                json = read_config_file(path);
+                json = read_config_file(VALVE_POSITIONS_PATH);
                 xSemaphoreGive(valve_position_file_mutex);
             }
         }
 
         DeserializationError err = deserializeJson(doc, json);
         if (err) {
-            message = "[ERROR] Failed to parse valvepositions.json: " + String(path) + ": " + String(err.c_str());
+            message = "[ERROR] Failed to parse valvepositions.json: " + String(VALVE_POSITIONS_PATH) + ": " + String(err.c_str());
             print_message(message);
             return;
         }
 
         if (client.validateConnection()) {    
-            //message = "Connection to influxDB validated. Writing sensor data to influxDB.";
-            //print_message(message);
             for(int i=0;i<12;i++) {
                 
                 valve_pos_temp = doc["valve"+String(i)];
@@ -302,14 +297,11 @@ void write_system_uptime(void) {
     }
 
     InfluxDBClient client(influxdb_url_tmp, influxdb_org_tmp, influxdb_bucket_tmp, influxdb_token_tmp);
-    //InfluxDBClient client(INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN);
     Point sensor("System");
 
     uptime = (esp_timer_get_time())/1000000;        //in sec
     
     if (client.validateConnection()) {    
-        //message = "Connection to influxDB validated. Writing sensor data to influxDB.";
-        //print_message(message);
         sensor.clearFields();
         sensor.clearTags();
         sensor.addField("uptime", uptime);
@@ -402,8 +394,6 @@ void write_state_info(void) {
     }
 
     if (client.validateConnection()) {    
-        //message = "Connection to influxDB validated. Writing sensor data to influxDB.";
-        //print_message(message);
         sensor.clearFields();
         sensor.clearTags();
         sensor.addField("state", temp_state_nr);
@@ -467,8 +457,6 @@ void write_fanspeed(void) {
     }
 
     if (client.validateConnection()) {    
-        //message = "Connection to influxDB validated. Writing sensor data to influxDB.";
-        //print_message(message);
         sensor.clearFields();
         sensor.clearTags();
         sensor.addField("fanspeed", temp_fanspeed_nr);
@@ -518,8 +506,6 @@ void write_heap_info(void) {
     Point sensor("System_stats");
 
     if (client.validateConnection()) {    
-        //message = "Connection to influxDB validated. Writing sensor data to influxDB.";
-        //print_message(message);
         sensor.clearFields();
         sensor.clearTags();
         sensor.addField("min_free_heap_size_ever", minimum_ever_free_heap_size);

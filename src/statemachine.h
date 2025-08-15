@@ -12,7 +12,6 @@
 #include "timefunctions.h"
 #include "fancontrol.h"
 #include "valvecontrol.h"
-//#include "mqtt.h"
 
 // function declarations
 void init_statemachine(void);

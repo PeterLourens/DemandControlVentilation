@@ -146,7 +146,6 @@ void publish_avg_sensor_data(void) {
 
 void publish_valve_positions(void) {
 
-    const char* path = "/json/valvepositions.json";
     char mqtt_server_addr[50]; 
     char valve_pos[4];
     char valve_nr[10];
@@ -185,11 +184,11 @@ void publish_valve_positions(void) {
     if (valve_position_file_mutex != NULL) {
         if(xSemaphoreTake(valve_position_file_mutex, ( TickType_t ) 10 ) == pdTRUE) {
     
-            status_file_present = check_file_exists(path);
+            status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
 
             if (status_file_present == 1) {
 
-                json = read_config_file(path);
+                json = read_config_file(VALVE_POSITIONS_PATH);
                 deserializeJson(doc, json);
             }
             xSemaphoreGive(valve_position_file_mutex);
