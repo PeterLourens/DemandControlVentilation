@@ -174,3 +174,8 @@ void fifoPush(int bus, int slot, int measurement, float value, int pos)
     Serial.print("\t\t");
     Serial.print(avg[pos]);*/
 }
+
+float roundToTwoDecimals(float value)
+{
+    return roundf(value * 100) / 100;
+}

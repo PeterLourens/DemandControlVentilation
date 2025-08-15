@@ -101,9 +101,9 @@ String create_index_json()
         doc["bus0_sensor" + String(i) + "_location"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_location"];
         doc["bus0_sensor" + String(i) + "_rhs"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_rh"];
         doc["bus0_sensor" + String(i) + "_co2s"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_co2"];
-        doc["bus0_sensor" + String(i) + "_temp"] = temp_sensor_data[0][i][0];
-        doc["bus0_sensor" + String(i) + "_hum"] = temp_sensor_data[0][i][1];
-        doc["bus0_sensor" + String(i) + "_co2"] = temp_sensor_data[0][i][2];
+        doc["bus0_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[0][i][0]);
+        doc["bus0_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[0][i][1]);
+        doc["bus0_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[0][i][2]);
 
         // Bus1 sensor data
         doc["bus1_sensor" + String(i) + "_type"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_type"];
@@ -111,9 +111,9 @@ String create_index_json()
         doc["bus1_sensor" + String(i) + "_location"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_location"];
         doc["bus1_sensor" + String(i) + "_rhs"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_rh"];
         doc["bus1_sensor" + String(i) + "_co2s"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_co2"];
-        doc["bus1_sensor" + String(i) + "_temp"] = temp_sensor_data[1][i][0];
-        doc["bus1_sensor" + String(i) + "_hum"] = temp_sensor_data[1][i][1];
-        doc["bus1_sensor" + String(i) + "_co2"] = temp_sensor_data[1][i][2];
+        doc["bus1_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[1][i][0]);
+        doc["bus1_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[1][i][1]);
+        doc["bus1_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[1][i][2]);
     }
 
     // convert to JSON string

@@ -4,6 +4,7 @@
 #define MAX_FIFO_SIZE 30
 
 #include <Arduino.h>
+#include <math.h>
 
 #include "globals.h"
 
@@ -14,5 +15,6 @@ String concatJson(String, String);
 String formatted_uptime(void);
 void sensor_data_average(void);
 void fifoPush(int, int, int, float, int);
+float roundToTwoDecimals(float);
 
 #endif
