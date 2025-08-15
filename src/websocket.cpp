@@ -275,17 +275,7 @@ String create_sensors_json()
 }
 
 String create_statemachine_json()
-{
-    const char *settings_state_day_path = "/json/settings_state_day.json";
-    const char *settings_state_night_path = "/json/settings_state_night.json";
-    const char *settings_state_highco2day_path = "/json/settings_state_highco2day.json";
-    const char *settings_state_highco2night_path = "/json/settings_state_highco2night.json";
-    const char *settings_state_highrhday_path = "/json/settings_state_highrhday.json";
-    const char *settings_state_highrhnight_path = "/json/settings_state_highrhnight.json";
-    const char *settings_state_cooking_path = "/json/settings_state_cooking.json";
-    const char *settings_state_cyclingday_path = "/json/settings_state_cyclingday.json";
-    const char *settings_state_cyclingnight_path = "/json/settings_state_cyclingnight.json";
-    
+{   
     bool settings_state_day_present = 0;
     bool settings_state_night_present = 0;
     bool settings_state_highco2day_present = 0;
