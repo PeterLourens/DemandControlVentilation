@@ -51,7 +51,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekday_day_minute_start">Weekday day minutes start:</label>
-                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekday_day_minute_start" id="weekday_day_hour_start" />
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekday_day_minute_start" id="weekday_day_minute_start" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekday_night_hour_start">Weekday night hour start:</label>
@@ -59,7 +59,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekday_night_minute_start">Weekday night minutes start:</label>
-                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekday_day_minute_start" id="weekday_night_minute_start" />
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekday_night_minute_start" id="weekday_night_minute_start" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekend_day_hour_start">Weekend day hour start:</label>
@@ -67,7 +67,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekend_day_minute_start">Weekend day minutes start:</label>
-                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekend_day_minute_start" id="weekend_day_hour_start" />
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekend_day_minute_start" id="weekend_day_minute_start" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekend_night_hour_start">Weekend night hour start:</label>
@@ -75,11 +75,11 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="weekend_night_minute_start">Weekend night minutes start:</label>
-                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekend_day_minute_start" id="weekend_night_minute_start" />
+                                <input type="number" value="0" min="0" max="59" class="pure-input-1-1" name="weekend_night_minute_start" id="weekend_night_minute_start" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="weekend_day_1">Weekend day 1:</label>
-                                <select id="enable_state_day" name="weekend_day_1" id="weekend_day_1" class="pure-input-1-1">
+                                <select id="weekend_day_1" name="weekend_day_1" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Sunday</option>
                                     <option>Monday</option>
@@ -92,7 +92,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="weekend_day_2">Weekend day 2:</label>
-                                <select id="weekend_day_2" name="weekend_day_2" id="weekend_day_2" class="pure-input-1-1">
+                                <select id="weekend_day_2" name="weekend_day_2" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Sunday</option>
                                     <option>Monday</option>
@@ -108,6 +108,8 @@ const char statemachine_html[] = R"rawliteral(
                                 <input type="number" value="0" min="0" max="1200" class="pure-input-1-1" name="minimum_state_time" id="minimum_state_time" />
                             </div>
                         </div>
+                        <br>
+                        <input type="submit" value="Store statemachine settings" class="button-xsmall pure-button-primary pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -118,7 +120,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_day">State:</label>
-                                <select id="enable_state_day" name="enable_state_day" id="enable_state_day" class="pure-input-1-1">
+                                <select id="enable_state_day" name="enable_state_day" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -126,7 +128,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_day_fanspeed">Fan speed:</label>
-                                <select id="state_day_fanspeed" name="state_day_fanspeed" id="state_day_fanspeed" class="pure-input-1-1">
+                                <select id="state_day_fanspeed" name="state_day_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
@@ -198,7 +200,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_night">State:</label>
-                                <select id="enable_state_night" name="enable_state_night" id="enable_state_night" class="pure-input-1-1">
+                                <select id="enable_state_night" name="enable_state_night" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -206,7 +208,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_night_fanspeed">Fan speed:</label>
-                                <select id="state_night_fanspeed" name="state_night_fanspeed" id="state_night_fanspeed" class="pure-input-1-1">
+                                <select id="state_night_fanspeed" name="state_night_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
@@ -278,7 +280,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_highco2day">State:</label>
-                                <select id="enable_state_highco2day" name="enable_state_highco2day" id="enable_state_highco2day" class="pure-input-1-1">
+                                <select id="enable_state_highco2day" name="enable_state_highco2day" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -286,7 +288,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highco2day_fanspeed">Fan speed:</label>
-                                <select id="state_highco2day_fanspeed" name="state_highco2day_fanspeed" id="state_highco2day_fanspeed" class="pure-input-1-1">
+                                <select id="state_highco2day_fanspeed" name="state_highco2day_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
