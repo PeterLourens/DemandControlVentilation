@@ -14,7 +14,42 @@
 #define LCD_COLUMNS 20                                              // LCD display columns
 #define LCDADDR 0x27                                                // LCD I2C address
 
-//#define TCAADDR 0x70                                                //TCA9548 address
+// #define TCAADDR 0x70                                                //TCA9548 address
+
+// File path definitions
+#define SETTINGS_STATE_DAY_PATH "/json/settings_state_day.json"
+#define SETTINGS_STATE_NIGHT_PATH "/json/settings_state_night.json"
+#define SETTINGS_STATE_HIGHCO2DAY_PATH "/json/settings_state_highco2day.json"
+#define SETTINGS_STATE_HIGHCO2NIGHT_PATH "/json/settings_state_highco2night.json"
+#define SETTINGS_STATE_HIGHRHDAY_PATH "/json/settings_state_highrhday.json"
+#define SETTINGS_STATE_HIGHRHNIGHT_PATH "/json/settings_state_highrhnight.json"
+#define SETTINGS_STATE_COOKING_PATH "/json/settings_state_cooking.json"
+#define SETTINGS_STATE_CYCLINGDAY_PATH "/json/settings_state_cyclingday.json"
+#define SETTINGS_STATE_CYCLINGNIGHT_PATH "/json/settings_state_cyclingnight.json"
+
+#define SETTINGS_RTC_PATH "/json/settings_rtc.json"
+#define SETTINGS_INFLUDB_PATH "/json/settings_influxdb.json"
+#define SETTINGS_I2C_PATH "/json/settings_i2c.json"
+#define SETTINGS_MQTT_PATH "/json/settings_mqtt.json"
+#define SETTINGS_FAN_PATH "/json/settings_fan.json"
+
+#define SENSOR_CONFIG1_PATH "/json/sensor_config1.json"
+#define SENSOR_CONFIG2_PATH "/json/sensor_config2.json"
+
+#define VALVE_POSITIONS_PATH "/json/valvepositions.json"
+
+extern const char *settings_state_day_path;
+extern const char *settings_state_night_path;
+extern const char *settings_state_highco2day_path;
+extern const char *settings_state_highco2night_path;
+extern const char *settings_state_highrhday_path;
+extern const char *settings_state_highrhnight_path;
+extern const char *settings_state_cooking_path;
+extern const char *settings_state_cyclingday_path;
+extern const char *settings_state_cyclingnight_path;
+extern const char *sensor_config1_path;
+extern const char *sensor_config2_path;
+extern const char *valve_positions_path;
 
 extern TaskHandle_t task_influxdb;
 extern TaskHandle_t task_i2c;

@@ -58,8 +58,8 @@ void write_sensor_data(void) {
                         sensor.clearFields();
                         sensor.clearTags();      
                         if (i == 0) {
-                            String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j)]["valve"];
-                            String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j)]["location"];
+                            String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j) + "_valve"];
+                            String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty()) {
                                 sensor.addTag("valve", sensor_valve);
                             }
@@ -68,8 +68,8 @@ void write_sensor_data(void) {
                             }
                         }
                         else {
-                            String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j)]["valve"];
-                            String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j)]["location"];
+                            String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_valve"];
+                            String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty()) {
                                 sensor.addTag("valve", sensor_valve);
                             }
@@ -157,8 +157,8 @@ void write_avg_sensor_data(void) {
                         sensor.clearFields();
                         sensor.clearTags();      
                         if (i == 0) {
-                            String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j)]["valve"];
-                            String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j)]["location"];
+                            String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j) + "_valve"];
+                            String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty()) {
                                 sensor.addTag("valve", sensor_valve);
                             }
@@ -167,8 +167,8 @@ void write_avg_sensor_data(void) {
                             }
                         }
                         else {
-                            String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j)]["valve"];
-                            String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j)]["location"];
+                            String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_valve"];
+                            String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty()) {
                                 sensor.addTag("valve", sensor_valve);
                             }

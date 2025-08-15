@@ -25,6 +25,7 @@
 
 #include "valvecontrol.h"
 #include "globals.h"
+#include "general.h"
 
 // function declarations
 void setup_wifi(void);

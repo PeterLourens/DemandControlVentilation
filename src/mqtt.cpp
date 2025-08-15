@@ -249,8 +249,9 @@ void publish_uptime(void) {
     
     if (client.connect("OSventilation")) {
         (mqtt_base_topic_str + "/system/uptime").toCharArray(topic,100);
-        uptime_str = String(esp_timer_get_time()/1000000/60) + " minutes";                   //in minutes
-        uptime_str.toCharArray(uptime,200);
+        //uptime_str = String(esp_timer_get_time()/1000000/60) + " minutes";                   //in minutes
+        uptime_str = formatted_uptime();
+        uptime_str.toCharArray(uptime, 200);
         //(uptime_formatter::getUptime()).toCharArray(uptime,200);
         client.publish(topic,uptime);
     }

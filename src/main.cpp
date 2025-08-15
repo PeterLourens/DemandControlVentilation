@@ -70,7 +70,7 @@ void setup() {
   read_mqtt_config();
   read_influxdb_config();
   read_i2c_config();
-  read_time_settings();
+  read_rtc_config();
   read_fan_config();
   sensor_config_data_read();
   valve_settings_config_read();

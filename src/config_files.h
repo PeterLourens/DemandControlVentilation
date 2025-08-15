@@ -9,16 +9,20 @@
 #include "general.h"
 
 // Function definitions
-void read_time_settings(void);
-void read_influxdb_config(void);
-void read_i2c_config(void);
-void read_mqtt_config(void);
-void read_fan_config(void);
+String read_rtc_config(void);
+void process_rtc_config(void);
+String read_influxdb_config(void);
+void process_influxdb_config(void);
+String read_i2c_config(void);
+void process_i2c_config(void);
+String read_mqtt_config(void);
+void process_mqtt_config(void);
+String read_fan_config(void);
+void process_fan_config(void);
 void valve_status_file_create(void);
 void delete_file(const char *);
 bool check_file_exists(const char *);
 String read_config_file(const char *);
-// bool verify_valve_position_file_contents(void);
 bool write_config_file(const char *, String);
 void sensor_config_data_read(void);
 void valve_settings_config_read(void);
