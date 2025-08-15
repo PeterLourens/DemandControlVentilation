@@ -232,7 +232,7 @@ const char settings_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Save InfluxDB settings" class="pure-button-primary button-ssmall pure-button">
+                        <input type="submit" value="Save InfluxDB settings" class="pure-button-primary button-xsmall pure-button">
                         <br>
                     </fieldset>
                 </form>

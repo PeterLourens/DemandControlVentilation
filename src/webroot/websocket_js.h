@@ -58,6 +58,10 @@ function onMessage(event) {
             // For text boxes
             if (element && (element.tagName === "INPUT" || element.tagName === "TEXTAREA")) {
                 element.value = myObj[key];
+            }
+            
+            // For span element
+            if (element && element.tagName === "SPAN") {
                 element.textContent = myObj[key];
             }
 

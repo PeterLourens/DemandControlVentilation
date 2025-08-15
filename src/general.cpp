@@ -76,19 +76,20 @@ String formatted_uptime(void)
     int uptime_hour;
     int uptime_minute;
     int uptime_second;
+
+    char formatted_uptime[64];
+
+    uint64_t uptime = esp_timer_get_time() / 1000000; // in sec
     
-    String formatted_uptime;
-    uint64_t uptime;
+    uptime_day = uptime / (60 * 60 * 24);             // in full days
+    uptime_hour = (uptime / (60 * 60)) % 24;          // in full hours
+    uptime_minute = (uptime / 60) % 60;               // in full minutes
+    uptime_second = uptime % 60;                      // in full seconds
 
-    uptime = esp_timer_get_time() / 1000000;                                                         // in sec
-    uptime_day = floor(uptime / 1000000 / 60 / 60 / 24);                                             // in full days
-    uptime_hour = floor(uptime - uptime_day * 60 * 60 * 24);                                         // in full hours
-    uptime_minute = floor(uptime - uptime_day * 60 * 60 * 24 - uptime_hour * 60 * 60);               // in full minutes
-    uptime_second = floor(uptime - uptime_day * 60 * 60 * 24 - uptime_hour * 60 * 60 - uptime * 60); // in full seconds
+    snprintf(formatted_uptime, sizeof(formatted_uptime), "%d days, %02d hours, %02d minutes, %02d seconds",
+             uptime_day, uptime_hour, uptime_minute, uptime_second);
 
-    formatted_uptime = String(uptime_day) + "days, " + String(uptime_hour) + "hours, " + String(uptime_minute) + "minutes, " + String(uptime_second) + "seconds";
-
-    return formatted_uptime;
+    return String(formatted_uptime);
 }
 
 /*

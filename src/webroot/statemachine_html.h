@@ -109,7 +109,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store statemachine settings" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store statemachine settings" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -189,7 +189,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store day valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store day valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -269,7 +269,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store night valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store night valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -358,7 +358,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store highco2day valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store highco2day valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -369,7 +369,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_highco2night">State:</label>
-                                <select id="enable_state_highco2night" name="enable_state_highco2night" id="enable_state_highco2night" class="pure-input-1-1">
+                                <select id="enable_state_highco2night" name="enable_state_highco2night" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -377,7 +377,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highco2night_fanspeed">Fan speed:</label>
-                                <select id="state_highco2night_fanspeed" name="state_highco2night_fanspeed" id="state_highco2night_fanspeed" class="pure-input-1-1">
+                                <select id="state_highco2night_fanspeed" name="state_highco2night_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
@@ -447,7 +447,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store highco2night valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store highco2night valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -458,7 +458,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_highrhday">State:</label>
-                                <select id="enable_state_highrhday" name="enable_state_highrhday" id="enable_state_highrhday" class="pure-input-1-1">
+                                <select id="enable_state_highrhday" name="enable_state_highrhday" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -466,7 +466,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highrhday_fanspeed">Fan speed:</label>
-                                <select id="state_highhrday_fanspeed" name="state_highrhday_fanspeed" id="state_highrhday_fanspeed" class="pure-input-1-1">
+                                <select id="state_highhrday_fanspeed" name="state_highrhday_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
@@ -536,7 +536,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store highrhday valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store highrhday valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -547,7 +547,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_highrhnight">State:</label>
-                                <select id="enable_state_highrhnight" name="enable_state_highrhnight" id="enable_state_highrhnight" class="pure-input-1-1">
+                                <select id="enable_state_highrhnight" name="enable_state_highrhnight" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -555,7 +555,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highrhnight_fanspeed">Fan speed:</label>
-                                <select id="state_highrhnight_fanspeed" name="state_highrhnight_fanspeed" id="state_highrhnight_fanspeed" class="pure-input-1-1">
+                                <select id="state_highrhnight_fanspeed" name="state_highrhnight_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
@@ -625,7 +625,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store highrhnight valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store highrhnight valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -636,7 +636,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_cooking">State:</label>
-                                <select id="enable_state_cooking" name="enable_state_cooking" id="enable_state_cooking" class="pure-input-1-1">
+                                <select id="enable_state_cooking" name="enable_state_cooking" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -644,7 +644,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_cooking_fanspeed">Fan speed:</label>
-                                <select id="state_cooking_fanspeed" name="state_cooking_fanspeed" id="state_cooking_fanspeed" class="pure-input-1-1">
+                                <select id="state_cooking_fanspeed" name="state_cooking_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
@@ -721,7 +721,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store cooking valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store cooking valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -732,7 +732,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_cyclingday">State:</label>
-                                <select id="enable_state_cyclingday" name="enable_state_cyclingday" id="enable_state_cyclingday" class="pure-input-1-1">
+                                <select id="enable_state_cyclingday" name="enable_state_cyclingday" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -740,7 +740,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_cyclingday_fanspeed">Fan speed:</label>
-                                <select id="state_cyclingday_fanspeed" name="state_cyclingday_fanspeed" id="state_cyclingday_fanspeed" class="pure-input-1-1">
+                                <select id="state_cyclingday_fanspeed" name="state_cyclingday_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
@@ -801,7 +801,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store cyclingday valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store cyclingday valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -812,7 +812,7 @@ const char statemachine_html[] = R"rawliteral(
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_cyclingnight">State:</label>
-                                <select id="enable_state_cyclingnight" name="enable_state_cyclingnight" id="enable_state_cyclingnight" class="pure-input-1-1">
+                                <select id="enable_state_cyclingnight" name="enable_state_cyclingnight" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
@@ -820,7 +820,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_cyclingnight_fanspeed">Fan speed:</label>
-                                <select id="state_cyclingnight_fanspeed" name="state_cyclingnight_fanspeed" id="state_cyclingnight_fanspeed" class="pure-input-1-1">
+                                <select id="state_cyclingnight_fanspeed" name="state_cyclingnight_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
@@ -881,7 +881,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Store cyclingnight valve position" class="button-xsmall pure-button-primary pure-button">
+                        <input type="submit" value="Store cyclingnight valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
