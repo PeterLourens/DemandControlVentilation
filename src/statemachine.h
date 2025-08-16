@@ -12,6 +12,7 @@
 #include "timefunctions.h"
 #include "fancontrol.h"
 #include "valvecontrol.h"
+#include "config_files.h"
 
 // function declarations
 void init_statemachine(void);
@@ -30,6 +31,5 @@ void valve_cycle_day_transitions(void);
 void valve_cycle_night_transitions(void);
 void manual_high_speed_transitions(void);
 void select_sensors(void);
-
 
 #endif

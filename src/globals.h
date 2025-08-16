@@ -114,6 +114,19 @@ extern JsonDocument settings_state_temp;
 extern String wire_sensor_config_string;
 extern String wire1_sensor_config_string;
 
+// Statemachine variables
+extern int weekday_day_hour_start;
+extern int weekday_day_minute_start;
+extern int weekday_night_hour_start;
+extern int weekday_night_minute_start;
+extern int weekend_day_hour_start;
+extern int weekend_day_minute_start;
+extern int weekend_night_hour_start;
+extern int weekend_night_minute_start;
+extern String weekend_day_1;
+extern String weekend_day_2;
+extern int minimum_state_time;
+
 // MQTT settings
 extern String enable_mqtt;
 extern String mqtt_server;

@@ -48,7 +48,7 @@ void process_rtc_config(void)
 {
     String settings_rtc_string = "";
     String message = "";
-    
+
     JsonDocument settings_rtc_doc;
 
     settings_rtc_string = read_rtc_config();
@@ -110,7 +110,7 @@ void process_influxdb_config(void)
 {
     String settings_influxdb_string = "";
     String message = "";
-    
+
     JsonDocument settings_influxdb_doc;
 
     settings_influxdb_string = read_influxdb_config();
@@ -222,7 +222,6 @@ void process_i2c_config(void)
 String read_mqtt_config(void)
 {
     bool settings_mqtt_file_present = 0;
-
     String settings_mqtt_string = "";
 
     if (settings_mqtt_mutex != NULL)
@@ -284,12 +283,13 @@ void process_mqtt_config(void)
     }
 }
 
-String read_fan_config()
+// Fan control settings are handled in fancontrol.cpp
+String read_fan_config(void)
 {
     bool settings_fan_file_present = 0;
-    const char *path = "/json/settings_fan.json";
-
     String settings_fan_string = "";
+
+    settings_fan_string = read_fan_config();
 
     if (settings_fan_mutex != NULL)
     {
@@ -321,12 +321,81 @@ void process_fan_config(void)
     }
     else
     {
-        DeserializationError err = deserializeJson(settings_fan_data, settings_fan_string);
+        DeserializationError err = deserializeJson(settings_fan_doc, settings_fan_string);
         if (err)
         {
             message = message = "[ERROR] Failed to parse: " + String(SETTINGS_FAN_PATH) + " with error: " + String(err.c_str());
             print_message(message);
             return;
+        }
+    }
+}
+
+// Read statemachine config. Needs to be updated at runtime, not once at startup
+String read_statemachine_config(void)
+{
+    bool settings_statemachine_file_present = 0;
+
+    String settings_statemachine_string = "";
+
+    if (settings_statemachine_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_statemachine_file_present = check_file_exists(SETTINGS_STATEMACHINE_PATH);
+            if (settings_statemachine_file_present == 1)
+            {
+                settings_statemachine_string = read_config_file(SETTINGS_STATEMACHINE_PATH);
+            }
+            xSemaphoreGive(settings_statemachine_mutex);
+        }
+    }
+    return settings_statemachine_string;
+}
+
+void process_statemachine_config(void)
+{
+    String settings_statemachine_string = "";
+    String message = "";
+
+    JsonDocument settings_statemachine_doc;
+
+    if (settings_statemachine_string == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(settings_statemachine_doc, settings_statemachine_string);
+        if (err)
+        {
+            message = message = "[ERROR] Failed to parse: " + String(SETTINGS_STATEMACHINE_PATH) + " with error: " + String(err.c_str());
+            print_message(message);
+            return;
+        }
+    }
+
+    String weekend_day_1_temp = settings_statemachine_data["weekend_day_1"];
+    String weekend_day_2_temp = settings_statemachine_data["weekend_day_2"];
+
+    if (settings_statemachine_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)100) == pdTRUE)
+        {
+            weekday_day_hour_start = settings_statemachine_data["weekday_day_hour_start"];
+            weekday_day_minute_start = settings_statemachine_data["weekday_day_hour_start"];
+            weekday_night_hour_start = settings_statemachine_data["weekday_night_hour_start"];
+            weekday_night_minute_start = settings_statemachine_data["weekday_night_hour_start"];
+            weekend_day_hour_start = settings_statemachine_data["weekend_day_hour_start"];
+            weekend_day_minute_start = settings_statemachine_data["weekend_day_hour_start"];
+            weekend_night_hour_start = settings_statemachine_data["weekend_night_hour_start"];
+            weekend_night_minute_start = settings_statemachine_data["weekend_night_hour_start"];
+            weekend_day_1 = weekend_day_1_temp;
+            weekend_day_2 = weekend_day_2_temp;
+            minimum_state_time = settings_statemachine_data["minimum_state_time"];
+            xSemaphoreGive(settings_statemachine_mutex);
         }
     }
 }

@@ -415,6 +415,8 @@ void Taskwebcode(void *pvParameters)
 			  { request->send(LittleFS, "/json/settings_network.json", "text/json", true); });
 	server.on("/settings_rtc", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(LittleFS, "/json/settings_rtc.json", "text/json", true); });
+	server.on("/settings_statemachine", HTTP_GET, [](AsyncWebServerRequest *request)
+			  { request->send(LittleFS, "/json/settings_statemachine.json", "text/json", true); });
 	server.on("/settings_state_cooking", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(LittleFS, "/json/settings_state_cooking.json", "text/json", true); });
 	server.on("/settings_state_cyclingday", HTTP_GET, [](AsyncWebServerRequest *request)

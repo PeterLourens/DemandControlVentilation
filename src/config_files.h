@@ -20,6 +20,8 @@ String read_mqtt_config(void);
 void process_mqtt_config(void);
 String read_fan_config(void);
 void process_fan_config(void);
+String read_statemachine_config(void);
+void process_statemachine_config(void);
 void valve_status_file_create(void);
 void delete_file(const char *);
 bool check_file_exists(const char *);

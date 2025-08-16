@@ -76,6 +76,9 @@ void run_statemachine(void)
     message = "Read average sensor data from queue for statemachine.";
     print_message(message);
 
+    // Refresh config for statemachine
+    process_statemachine_config();
+
     if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) == pdTRUE)
     {
     }
@@ -139,7 +142,6 @@ void run_statemachine(void)
 
 void stopped_transitions(void)
 {
-
     String message = "";
 
     // Actions for this state
@@ -167,6 +169,18 @@ void init_transitions(void)
     String temp_fanspeed = "Low";
     String temp_day_of_week = "";
     String message = "";
+
+    int weekday_day_hour_start_temp;
+    int weekday_day_minute_start_temp;
+    int weekday_night_hour_start_temp;
+    int weekday_night_minute_start_temp;
+    int weekend_day_hour_start_temp;
+    int weekend_day_minute_start_temp;
+    int weekend_night_hour_start_temp;
+    int weekend_night_minute_start_temp;
+    String weekend_day_1_temp;
+    String weekend_day_2_temp;
+    int minimum_state_time_temp;
 
     // Actions for this state
     if (statemachine_state_mutex != NULL)
@@ -198,19 +212,38 @@ void init_transitions(void)
         }
     }
 
+    if (settings_statemachine_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10) == pdTRUE)
+        {
+            weekday_day_hour_start_temp = weekday_day_hour_start;
+            weekday_day_minute_start_temp = weekday_day_minute_start;
+            weekday_night_hour_start_temp = weekday_night_hour_start;
+            weekday_night_minute_start_temp = weekday_night_minute_start;
+            weekend_day_hour_start_temp = weekend_day_hour_start;
+            weekend_day_minute_start_temp = weekend_day_minute_start;
+            weekend_night_hour_start_temp = weekend_night_hour_start;
+            weekend_night_minute_start_temp = weekday_night_minute_start;
+            weekend_day_1_temp = weekend_day_1;
+            weekend_day_2_temp = weekend_day_2;
+            minimum_state_time_temp = minimum_state_time;
+            xSemaphoreGive(settings_statemachine_mutex);
+        }
+    }
+
     message = "Statemachine in state " + statemachine_state + ". It is " + temp_hour + ":" + temp_minute + " and day of week is " + temp_day_of_week + ", fanspeed is " + temp_fanspeed;
     print_message(message);
     set_fanspeed(temp_fanspeed);
 
     // Conditions to transit to other state, only evalaution based on time and day of week
     if (temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")
-    {
+    { // Weekday
         message = "It is after 8, before 21 and a weekday. Transit to day.";
         print_message(message);
         new_state = "day";
     }
     else if (temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday"))
-    {
+    { // Weekend
         message = "It is after 9 and before 21 and weekend. Transit to day.";
         print_message(message);
         new_state = "day";
@@ -1876,10 +1909,6 @@ void manual_high_speed_transitions(void)
 
 void select_sensors(void)
 {
-
-    const char *path1 = "/json/sensor_config1.json";
-    const char *path2 = "/json/sensor_config2.json";
-
     String sensor_config1_string = "";
     String sensor_config2_string = "";
     String co2_sensor_wire = "";
@@ -1900,41 +1929,73 @@ void select_sensors(void)
 
     float sensor_data[2][8][3];
 
+    // Sensor config 1
     if (sensor_config_file_mutex != NULL)
     {
         if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
         {
-            sensor_config1_file_present = check_file_exists(path1);
+            sensor_config1_file_present = check_file_exists(SENSOR_CONFIG1_PATH);
             if (sensor_config1_file_present == 1)
             {
-                File file = LittleFS.open(path1, "r");
+                File file = LittleFS.open(SENSOR_CONFIG1_PATH, "r");
                 while (file.available())
                 {
                     sensor_config1_string = file.readString();
                 }
                 file.close();
-                deserializeJson(wire_sensor_data, sensor_config1_string);
             }
             xSemaphoreGive(sensor_config_file_mutex);
         }
     }
+    if (sensor_config1_string == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err1 = deserializeJson(wire_sensor_data, sensor_config1_string);
+        if (err1)
+        {
+            message = message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG1_PATH) + " with error: " + String(err1.c_str());
+            print_message(message);
+            return;
+        }
+    }
 
+    // Sensor config 2
     if (sensor_config_file_mutex != NULL)
     {
         if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
         {
-            sensor_config2_file_present = check_file_exists(path2);
+            sensor_config2_file_present = check_file_exists(SENSOR_CONFIG2_PATH);
             if (sensor_config2_file_present == 1)
             {
-                File file = LittleFS.open(path2, "r");
+                File file = LittleFS.open(SENSOR_CONFIG2_PATH, "r");
                 while (file.available())
                 {
                     sensor_config2_string = file.readString();
                 }
                 file.close();
-                deserializeJson(wire1_sensor_data, sensor_config2_string);
             }
             xSemaphoreGive(sensor_config_file_mutex);
+        }
+    }
+    if (sensor_config2_string == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err2 = deserializeJson(wire1_sensor_data, sensor_config2_string);
+        if (err2)
+        {
+            message = message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG2_PATH) + " with error: " + String(err2.c_str());
+            print_message(message);
+            return;
         }
     }
 
