@@ -360,6 +360,8 @@ void process_statemachine_config(void)
 
     JsonDocument settings_statemachine_doc;
 
+    settings_statemachine_string = read_statemachine_config();
+
     if (settings_statemachine_string == "")
     {
         message = "[ERROR] String is empty or failed to read file";

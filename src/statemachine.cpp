@@ -75,13 +75,12 @@ void run_statemachine(void)
 
     message = "Read average sensor data from queue for statemachine.";
     print_message(message);
-
-    // Refresh config for statemachine
-    process_statemachine_config();
-
     if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) == pdTRUE)
     {
     }
+
+    // Refresh config for statemachine
+    process_statemachine_config();
 
     if (temp_state == "init")
     {
@@ -214,7 +213,7 @@ void init_transitions(void)
 
     if (settings_statemachine_mutex != NULL)
     {
-        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10) == pdTRUE)
+        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)20) == pdTRUE)
         {
             weekday_day_hour_start_temp = weekday_day_hour_start;
             weekday_day_minute_start_temp = weekday_day_minute_start;
@@ -236,13 +235,13 @@ void init_transitions(void)
     set_fanspeed(temp_fanspeed);
 
     // Conditions to transit to other state, only evalaution based on time and day of week
-    if (temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")
+    if (temp_hour >= weekday_day_hour_start_temp && temp_hour < weekday_night_hour_start_temp && temp_day_of_week != weekend_day_1_temp && temp_day_of_week != weekend_day_2_temp)
     { // Weekday
         message = "It is after 8, before 21 and a weekday. Transit to day.";
         print_message(message);
         new_state = "day";
     }
-    else if (temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday"))
+    else if (temp_hour >= weekend_day_hour_start_temp && temp_hour < weekend_night_hour_start_temp && (temp_day_of_week == weekend_day_1_temp || temp_day_of_week == weekend_day_2_temp))
     { // Weekend
         message = "It is after 9 and before 21 and weekend. Transit to day.";
         print_message(message);
