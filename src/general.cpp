@@ -80,13 +80,13 @@ String formatted_uptime(void)
     char formatted_uptime[64];
 
     uint64_t uptime = esp_timer_get_time() / 1000000; // in sec
-    
-    uptime_day = uptime / (60 * 60 * 24);             // in full days
-    uptime_hour = (uptime / (60 * 60)) % 24;          // in full hours
-    uptime_minute = (uptime / 60) % 60;               // in full minutes
-    uptime_second = uptime % 60;                      // in full seconds
 
-    snprintf(formatted_uptime, sizeof(formatted_uptime), "%d days, %02d hours, %02d minutes, %02d seconds",
+    uptime_day = uptime / (60 * 60 * 24);    // in full days
+    uptime_hour = (uptime / (60 * 60)) % 24; // in full hours
+    uptime_minute = (uptime / 60) % 60;      // in full minutes
+    uptime_second = uptime % 60;             // in full seconds
+
+    snprintf(formatted_uptime, sizeof(formatted_uptime), "%d d, %d h, %02d m, %02d s",
              uptime_day, uptime_hour, uptime_minute, uptime_second);
 
     return String(formatted_uptime);
