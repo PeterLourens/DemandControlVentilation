@@ -49,12 +49,12 @@ const char valvecontrol_html[] = R"rawliteral(
             </p>
             <p>
                 <form method ="POST" action="/create_config_file">
-                    <input type="submit" value="Create new config file">
+                    <input type="submit" value="Create new config file" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
             <p>
                 <form method ="POST" action="/delete_config_file">
-                    <input type="submit" value="Delete config file">
+                    <input type="submit" value="Delete config file" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
 
@@ -64,12 +64,12 @@ const char valvecontrol_html[] = R"rawliteral(
             </p>
             <p>
                 <form method ="POST" action="/stop_statemachine">
-                    <input type="submit" value="Stop statemachine">
+                    <input type="submit" value="Stop statemachine" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
             <p>
                 <form method ="POST" action="/start_statemachine">
-                    <input type="submit" value="Start statemachine">
+                    <input type="submit" value="Start statemachine" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
             <p>State statemachine: <font color="green"><span id="statemachine_state"></span></font></p>
@@ -219,7 +219,7 @@ const char valvecontrol_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br><br>
-                        <input type="submit" value="Update valve position">
+                        <input type="submit" value="Update valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>

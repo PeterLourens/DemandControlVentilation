@@ -42,7 +42,7 @@ const char settings_html[] = R"rawliteral(
         <div class="content">
             <p>
                 <form method ="POST" action="/restart_esp32">
-                    <input type="submit" value="Restart ESP32" class="pure-button-primary button-small pure-button">
+                    <input type="submit" value="Restart ESP32" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
             <h4 class="content-subhead">Network configuration (requires ESP32 restart): <span id="status_network_config"></span></h4>
@@ -53,7 +53,6 @@ const char settings_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-1">
                                 <label for="enable_dhcp">Enable DHCP:</label>
                                 <select name="enable_dhcp" id="enable_dhcp" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -88,7 +87,7 @@ const char settings_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Save network configuration" class="pure-button-primary button-small pure-button">
+                        <input type="submit" value="Save network configuration" class="pure-button-primary button-xsmall pure-button">
                         <br>
                     </fieldset>
                 </form>
@@ -101,7 +100,6 @@ const char settings_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-1">
                                 <label for="enable_mqtt">Enable MQTT:</label>
                                 <select name="enable_mqtt" id="enable_mqtt" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -120,7 +118,7 @@ const char settings_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br>
-                        <input type="submit" value="Save MQTT settings" class="pure-button-primary button-ssmall pure-button">
+                        <input type="submit" value="Save MQTT settings" class="pure-button-primary button-xsmall pure-button">
                         <br>
                     </fieldset>
                 </form>
@@ -141,7 +139,6 @@ const char settings_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="enable_lcd">Enable display:</label>
                                 <select id="enable_lcd" name="enable_lcd" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -165,7 +162,6 @@ const char settings_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-1">
                                 <label for="fan_control_mode">Fan control mode:</label>
                                 <select id="fan_control_mode" name="fan_control_mode" id="fan_control_mode" class="pure-input-1-4">
-                                    <option selected></option>
                                     <option>MQTT subscribe</option>
                                     <option>HTTP API</option>
                                 </select>
@@ -209,7 +205,6 @@ const char settings_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-1">
                                 <label for="enable_influxdb">Enable InfluxDB:</label>
                                 <select id="enable_influxdb" name="enable_influxdb" id="enable_influxdb" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>

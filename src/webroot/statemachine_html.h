@@ -80,7 +80,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="weekend_day_1">Weekend day 1:</label>
                                 <select id="weekend_day_1" name="weekend_day_1" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Sunday</option>
                                     <option>Monday</option>
                                     <option>Tuesday</option>
@@ -93,7 +92,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="weekend_day_2">Weekend day 2:</label>
                                 <select id="weekend_day_2" name="weekend_day_2" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Sunday</option>
                                     <option>Monday</option>
                                     <option>Tuesday</option>
@@ -121,7 +119,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_day">State:</label>
                                 <select id="enable_state_day" name="enable_state_day" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -129,7 +126,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_day_fanspeed">Fan speed:</label>
                                 <select id="state_day_fanspeed" name="state_day_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>
@@ -201,7 +197,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_night">State:</label>
                                 <select id="enable_state_night" name="enable_state_night" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -209,7 +204,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_night_fanspeed">Fan speed:</label>
                                 <select id="state_night_fanspeed" name="state_night_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>
@@ -281,7 +275,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_highco2day">State:</label>
                                 <select id="enable_state_highco2day" name="enable_state_highco2day" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -289,7 +282,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highco2day_fanspeed">Fan speed:</label>
                                 <select id="state_highco2day_fanspeed" name="state_highco2day_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>
@@ -370,7 +362,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_highco2night">State:</label>
                                 <select id="enable_state_highco2night" name="enable_state_highco2night" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -378,7 +369,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highco2night_fanspeed">Fan speed:</label>
                                 <select id="state_highco2night_fanspeed" name="state_highco2night_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>
@@ -459,7 +449,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_highrhday">State:</label>
                                 <select id="enable_state_highrhday" name="enable_state_highrhday" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -467,7 +456,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highrhday_fanspeed">Fan speed:</label>
                                 <select id="state_highrhday_fanspeed" name="state_highrhday_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>
@@ -548,7 +536,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_highrhnight">State:</label>
                                 <select id="enable_state_highrhnight" name="enable_state_highrhnight" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -556,7 +543,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highrhnight_fanspeed">Fan speed:</label>
                                 <select id="state_highrhnight_fanspeed" name="state_highrhnight_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>
@@ -637,7 +623,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_cooking">State:</label>
                                 <select id="enable_state_cooking" name="enable_state_cooking" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -645,7 +630,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_cooking_fanspeed">Fan speed:</label>
                                 <select id="state_cooking_fanspeed" name="state_cooking_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>
@@ -733,7 +717,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_cyclingday">State:</label>
                                 <select id="enable_state_cyclingday" name="enable_state_cyclingday" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -741,7 +724,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_cyclingday_fanspeed">Fan speed:</label>
                                 <select id="state_cyclingday_fanspeed" name="state_cyclingday_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>
@@ -813,7 +795,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_cyclingnight">State:</label>
                                 <select id="enable_state_cyclingnight" name="enable_state_cyclingnight" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -821,7 +802,6 @@ const char statemachine_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_cyclingnight_fanspeed">Fan speed:</label>
                                 <select id="state_cyclingnight_fanspeed" name="state_cyclingnight_fanspeed" class="pure-input-1-1">
-                                    <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>
                                     <option>High</option>

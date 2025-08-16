@@ -46,10 +46,10 @@ const char sensor_config_html[] = R"rawliteral(
             </p>
             <div>
                 <form method ="POST" action="/delete_sensor_config_file1">
-                    <input type="submit" value="Delete sensor config file1">
+                    <input type="submit" value="Delete sensor config file1" class="pure-button-primary button-xsmall pure-button">
                 </form>
                 <form method ="POST" action="/delete_sensor_config_file2">
-                    <input type="submit" value="Delete sensor config file2">
+                    <input type="submit" value="Delete sensor config file2" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </div>
             <p>
@@ -60,7 +60,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor0_type">Type:</label>
                                 <select id="wire_sensor0_type" name="wire_sensor0_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -71,7 +70,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor0_valve">Sensor location:</label>
                                 <select id="wire_sensor0_valve" name="wire_sensor0_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -95,7 +93,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor0_rh">RH:</label>
                                 <select id="wire_sensor0_rh" name="wire_sensor0_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -103,7 +100,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor0_co2">CO2:</label>
                                 <select id="wire_sensor0_co2" name="wire_sensor0_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -111,7 +107,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor1_type">Type:</label>
                                 <select id="wire_sensor1_type" name="wire_sensor1_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -121,8 +116,7 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor1_valve">Sensor location:</label>
-                                <select id="wire_sensor1_vlave" name="wire_sensor1_valve" class="pure-input-3-4">
-                                    <option selected></option>
+                                <select id="wire_sensor1_valve" name="wire_sensor1_valve" class="pure-input-3-4">
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -146,7 +140,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor1_rh">RH:</label>
                                 <select id="wire_sensor1_rh" name="wire_sensor1_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -154,7 +147,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor1_co2">CO2:</label>
                                 <select id="wire_sensor1_co2" name="wire_sensor1_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -162,7 +154,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor2_type">Type:</label>
                                 <select id="wire_sensor2_type" name="wire_sensor2_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -173,7 +164,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor2_valve">Sensor location:</label>
                                 <select id="wire_sensor2_valve" name="wire_sensor2_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -197,7 +187,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor2_rh">RH:</label>
                                 <select id="wire_sensor2_rh" name="wire_sensor2_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -205,7 +194,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor2_co2">CO2:</label>
                                 <select id="wire_sensor2_co2" name="wire_sensor2_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -213,7 +201,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor3_type">Type:</label>
                                 <select id="wire_sensor3_type" name="wire_sensor3_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -224,7 +211,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor3_valve">Sensor location:</label>
                                 <select id="wire_sensor3_valve" name="wire_sensor3_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -248,7 +234,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor3_rh">RH:</label>
                                 <select id="wire_sensor3_rh" name="wire_sensor3_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -256,7 +241,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor3_co2">CO2:</label>
                                 <select id="wire_sensor3_co2" name="wire_sensor3_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -264,7 +248,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor4_type">Type:</label>
                                 <select id="wire_sensor4_type" name="wire_sensor4_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -275,7 +258,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor4_valve">Sensor location:</label>
                                 <select id="wire_sensor4_valve" name="wire_sensor4_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -299,7 +281,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor4_rh">RH:</label>
                                 <select id="wire_sensor4_rh" name="wire_sensor4_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -307,7 +288,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor4_co2">CO2:</label>
                                 <select id="wire_sensor4_co2" name="wire_sensor4_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -315,7 +295,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor5_type">Type:</label>
                                 <select id="wire_sensor5_type" name="wire_sensor5_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -326,7 +305,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor5_valve">Sensor location:</label>
                                 <select id="wire_sensor5_valve" name="wire_sensor5_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -350,7 +328,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor5_rh">RH:</label>
                                 <select id="wire_sensor5_rh" name="wire_sensor5_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -358,7 +335,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor5_co2">CO2:</label>
                                 <select id="wire_sensor5_co2" name="wire_sensor5_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -366,7 +342,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor6_type">Type:</label>
                                 <select id="wire_sensor6_type" name="wire_sensor6_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -377,7 +352,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor6_valve">Sensor location:</label>
                                 <select id="wire_sensor6_valve" name="wire_sensor6_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -401,7 +375,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor6_rh">RH:</label>
                                 <select id="wire_sensor6_rh" name="wire_sensor6_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -409,7 +382,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor6_co2">CO2:</label>
                                 <select id="wire_sensor6_co2" name="wire_sensor6_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -417,7 +389,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor7_type">Type:</label>
                                 <select id="wire_sensor7_type" name="wire_sensor7_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -428,7 +399,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor7_valve">Sensor location:</label>
                                 <select id="wire_sensor7_valve" name="wire_sensor7_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -452,7 +422,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor7_rh">RH:</label>
                                 <select id="wire_sensor7_rh" name="wire_sensor7_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -460,14 +429,13 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor7_co2">CO2:</label>
                                 <select id="wire_sensor7_co2" name="wire_sensor7_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
                             </div>
                         </div>
                         <br><br>
-                        <input type="submit" value="Save sensor configuration" class="pure-button-primary button-small pure-button">
+                        <input type="submit" value="Save sensor configuration" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
@@ -479,7 +447,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor0_type">Type:</label>
                                 <select id="wire1_sensor0_type" name="wire1_sensor0_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -490,7 +457,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor0_valve">Sensor location:</label>
                                 <select id="wire1_sensor0_valve" name="wire1_sensor0_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -514,7 +480,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor0_rh">RH:</label>
                                 <select id="wire1_sensor0_rh" name="wire1_sensor0_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -522,7 +487,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor0_co2">CO2:</label>
                                 <select id="wire1_sensor0_co2" name="wire1_sensor0_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -530,7 +494,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor1_type">Type:</label>
                                 <select id="wire1_sensor1_type" name="wire1_sensor1_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -541,7 +504,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor1_valve">Sensor location:</label>
                                 <select id="wire1_sensor1_valve" name="wire1_sensor1_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -565,7 +527,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor1_rh">RH:</label>
                                 <select id="wire1_sensor1_rh" name="wire1_sensor1_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -573,7 +534,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor1_co2">CO2:</label>
                                 <select id="wire1_sensor1_co2" name="wire1_sensor1_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -581,7 +541,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor2_type">Type:</label>
                                 <select id="wire1_sensor2_type" name="wire1_sensor2_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -592,7 +551,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor2_valve">Sensor location:</label>
                                 <select id="wire1_sensor2_valve" name="wire1_sensor2_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -616,7 +574,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor2_rh">RH:</label>
                                 <select id="wire1_sensor2_rh" name="wire1_sensor2_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -624,7 +581,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor2_co2">CO2:</label>
                                 <select id="wire1_sensor2_co2" name="wire1_sensor2_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -632,7 +588,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor3_type">Type:</label>
                                 <select id="wire1_sensor3_type" name="wire1_sensor3_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -643,7 +598,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor3_valve">Sensor location:</label>
                                 <select id="wire1_sensor3_valve" name="wire1_sensor3_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -667,7 +621,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor3_rh">RH:</label>
                                 <select id="wire1_sensor3_rh" name="wire1_sensor3_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -675,7 +628,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor3_co2">CO2:</label>
                                 <select id="wire1_sensor3_co2" name="wire1_sensor3_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -683,7 +635,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor4_type">Type:</label>
                                 <select id="wire1_sensor4_type" name="wire1_sensor4_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -694,7 +645,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor4_valve">Sensor location:</label>
                                 <select id="wire1_sensor4_valve" name="wire1_sensor4_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -718,7 +668,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor4_rh">RH:</label>
                                 <select id="wire1_sensor4_rh" name="wire1_sensor4_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -726,7 +675,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor4_co2">CO2:</label>
                                 <select id="wire1_sensor4_co2" name="wire1_sensor4_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -734,7 +682,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor5_type">Type:</label>
                                 <select id="wire1_sensor5_type" name="wire1_sensor5_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -745,7 +692,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor5_valve">Sensor location:</label>
                                 <select id="wire1_sensor5_valve" name="wire1_sensor5_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -769,7 +715,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor5_rh">RH:</label>
                                 <select id="wire1_sensor5_rh" name="wire1_sensor5_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -777,7 +722,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor5_co2">CO2:</label>
                                 <select id="wire1_sensor5_co2" name="wire1_sensor5_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -785,7 +729,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor6_type">Type:</label>
                                 <select id="wire1_sensor6_type" name="wire1_sensor6_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -796,7 +739,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor6_valve">Sensor location:</label>
                                 <select id="wire1_sensor6_valve" name="wire1_sensor6_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -820,7 +762,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor6_rh">RH:</label>
                                 <select id="wire1_sensor6_rh" name="wire1_sensor6_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -828,7 +769,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor6_co2">CO2:</label>
                                 <select id="wire1_sensor6_co2" name="wire1_sensor6_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -836,7 +776,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor7_type">Type:</label>
                                 <select id="wire1_sensor7_type" name="wire1_sensor7_type" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>DHT20</option>
                                     <option>AHT20</option>
@@ -847,7 +786,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor7_valve">Sensor location:</label>
                                 <select id="wire1_sensor7_valve" name="wire1_sensor7_valve" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>None</option>
                                     <option>Fan inlet</option>
                                     <option>valve0</option>
@@ -871,7 +809,6 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor7_rh">RH:</label>
                                 <select id="wire1_sensor7_rh" name="wire1_sensor7_rh" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
@@ -879,14 +816,13 @@ const char sensor_config_html[] = R"rawliteral(
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor7_co2">CO2:</label>
                                 <select id="wire1_sensor7_co2" name="wire1_sensor7_co2" class="pure-input-3-4">
-                                    <option selected></option>
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
                             </div>
                         </div>
                         <br><br>
-                        <input type="submit" value="Save sensor configuration" class="pure-button-primary button-small pure-button">
+                        <input type="submit" value="Save sensor configuration" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
