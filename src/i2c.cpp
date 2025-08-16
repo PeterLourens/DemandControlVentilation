@@ -10,7 +10,6 @@ void read_sensors(void)
     float temp_sensor_data[2][8][3] = {0};
 
     String sensor_type = "";
-    String sensor_address = "";
     String sensor = "";
     String message = "";
 
@@ -54,9 +53,7 @@ void read_sensors(void)
                         if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
                         {
                             String sensor_type_temp = wire_sensor_data[sensor + "_type"];
-                            String sensor_address_temp = wire_sensor_data[sensor + "_address"];
                             sensor_type = sensor_type_temp;
-                            sensor_address = sensor_address_temp;
                             xSemaphoreGive(sensor_config_file_mutex);
                         }
                     }
@@ -72,9 +69,7 @@ void read_sensors(void)
                         if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
                         {
                             String sensor_type_temp = wire1_sensor_data[sensor + "_type"];
-                            String sensor_address_temp = wire1_sensor_data[sensor + "_address"];
                             sensor_type = sensor_type_temp;
-                            sensor_address = sensor_address_temp;
                             xSemaphoreGive(sensor_config_file_mutex);
                         }
                     }
@@ -162,6 +157,7 @@ void read_sensors(void)
                         uint16_t co2 = 0;
                         float temperature = 0.0f;
                         float humidity = 0.0f;
+                        // bool isDataReady = false;
 
                         error = SCD4X_1.readMeasurement(co2, temperature, humidity);
                         if (error)
@@ -192,6 +188,7 @@ void read_sensors(void)
                         uint16_t co2 = 0;
                         float temperature = 0.0f;
                         float humidity = 0.0f;
+                        // bool isDataReady = false;
 
                         error = SCD4X_2.readMeasurement(co2, temperature, humidity);
                         if (error)
@@ -396,12 +393,13 @@ void display_valve_positions(void)
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
     lcd.backlight();
-    
+
+    status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
+
     if (valve_position_file_mutex != NULL)
     {
         if (xSemaphoreTake(valve_position_file_mutex, (TickType_t)100) == pdTRUE)
         {
-            status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
             if (status_file_present == 1)
             {
                 json = read_config_file(VALVE_POSITIONS_PATH);
@@ -425,63 +423,61 @@ void display_valve_positions(void)
             print_message(message);
             return;
         }
-        else
-        {
-            String valve0_pos = doc[String("valve0")];
-            String valve1_pos = doc[String("valve1")];
-            String valve2_pos = doc[String("valve2")];
-            String valve3_pos = doc[String("valve3")];
-            String valve4_pos = doc[String("valve4")];
-            String valve5_pos = doc[String("valve5")];
-            String valve6_pos = doc[String("valve6")];
-            String valve7_pos = doc[String("valve7")];
-            String valve8_pos = doc[String("valve8")];
-            String valve9_pos = doc[String("valve9")];
-            String valve10_pos = doc[String("valve10")];
-            String valve11_pos = doc[String("valve11")];
 
-            lcd.setCursor(0, 0);
-            lcd.print("v0:");
-            lcd.print(valve0_pos);
-            lcd.setCursor(7, 0);
-            lcd.print("v1:");
-            lcd.print(valve1_pos);
-            lcd.setCursor(14, 0);
-            lcd.print("v2:");
-            lcd.print(valve2_pos);
+        String valve0_pos = doc[String("valve0")];
+        String valve1_pos = doc[String("valve1")];
+        String valve2_pos = doc[String("valve2")];
+        String valve3_pos = doc[String("valve3")];
+        String valve4_pos = doc[String("valve4")];
+        String valve5_pos = doc[String("valve5")];
+        String valve6_pos = doc[String("valve6")];
+        String valve7_pos = doc[String("valve7")];
+        String valve8_pos = doc[String("valve8")];
+        String valve9_pos = doc[String("valve9")];
+        String valve10_pos = doc[String("valve10")];
+        String valve11_pos = doc[String("valve11")];
 
-            lcd.setCursor(0, 1);
-            lcd.print("v3:");
-            lcd.print(valve3_pos);
-            lcd.setCursor(7, 1);
-            lcd.print("v4:");
-            lcd.print(valve4_pos);
-            lcd.setCursor(14, 1);
-            lcd.print("v5:");
-            lcd.print(valve5_pos);
+        lcd.setCursor(0, 0);
+        lcd.print("v0:");
+        lcd.print(valve0_pos);
+        lcd.setCursor(7, 0);
+        lcd.print("v1:");
+        lcd.print(valve1_pos);
+        lcd.setCursor(14, 0);
+        lcd.print("v2:");
+        lcd.print(valve2_pos);
 
-            lcd.setCursor(0, 2);
-            lcd.print("v6:");
-            lcd.print(valve6_pos);
-            lcd.setCursor(7, 2);
-            lcd.print("v7:");
-            lcd.print(valve7_pos);
-            lcd.setCursor(14, 2);
-            lcd.print("v8:");
-            lcd.print(valve8_pos);
+        lcd.setCursor(0, 1);
+        lcd.print("v3:");
+        lcd.print(valve3_pos);
+        lcd.setCursor(7, 1);
+        lcd.print("v4:");
+        lcd.print(valve4_pos);
+        lcd.setCursor(14, 1);
+        lcd.print("v5:");
+        lcd.print(valve5_pos);
 
-            lcd.setCursor(0, 3);
-            lcd.print("v9:");
-            lcd.print(valve9_pos);
-            lcd.setCursor(6, 3);
-            lcd.print("v10:");
-            lcd.print(valve10_pos);
-            lcd.setCursor(13, 3);
-            lcd.print("v11:");
-            lcd.print(valve11_pos);
-            vTaskDelay(5000);
-            lcd.clear();
-        }
+        lcd.setCursor(0, 2);
+        lcd.print("v6:");
+        lcd.print(valve6_pos);
+        lcd.setCursor(7, 2);
+        lcd.print("v7:");
+        lcd.print(valve7_pos);
+        lcd.setCursor(14, 2);
+        lcd.print("v8:");
+        lcd.print(valve8_pos);
+
+        lcd.setCursor(0, 3);
+        lcd.print("v9:");
+        lcd.print(valve9_pos);
+        lcd.setCursor(6, 3);
+        lcd.print("v10:");
+        lcd.print(valve10_pos);
+        lcd.setCursor(13, 3);
+        lcd.print("v11:");
+        lcd.print(valve11_pos);
+        vTaskDelay(5000);
+        lcd.clear();
     }
     Wire1.endTransmission();
 }
@@ -500,7 +496,6 @@ void display_time_and_date(void)
 
     int64_t uptime = 0;
     int display_i2c_addr_tmp = 0;
-
     String temp_dayOfWeek = "";
     String temp_dayStr = "";
     String temp_monthStr = "";
@@ -512,6 +507,7 @@ void display_time_and_date(void)
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
     lcd.backlight();
+
     if (date_time_mutex != NULL)
     {
         if (xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
@@ -662,6 +658,7 @@ void sync_rtc_ntp(void)
     ntp_server_str.toCharArray(ntp_server_tmp, 50);
     timezone_str.toCharArray(timezone_tmp, 50);
 
+    // configTzTime("CET-1CEST,M3.5.0,M10.5.0/3", "pool.ntp.org");
     configTzTime(timezone_tmp, ntp_server_tmp);
     if (!getLocalTime(&timeinfo))
     {
@@ -687,12 +684,12 @@ void IRAM_ATTR lcd_baclight_pb_isr()
 
 void pb_start_display(void)
 {
-    int display_i2c_addr_tmp;
-
-    String enable_lcd_tmp = "";
-    String message = "";
 
     pb_toggle = false; // global variable
+
+    int display_i2c_addr_tmp;
+    String enable_lcd_tmp = "";
+    String message = "";
 
     // Only start display when enabled. Configured with global variable
     if (settings_i2c_mutex != NULL)
@@ -707,6 +704,7 @@ void pb_start_display(void)
 
     if (enable_lcd_tmp == "On")
     {
+
         display_time_and_date();
         display_state_fan();
         display_sensors();

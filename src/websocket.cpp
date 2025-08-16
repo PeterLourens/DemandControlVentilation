@@ -90,7 +90,7 @@ String create_index_json()
 
     doc["statemachine_state"] = state_tmp;
     doc["fanspeed"] = fanspeed_tmp;
-    doc["uptime"] = String(esp_timer_get_time() / 1000000 / 60);
+    doc["uptime"] = formatted_uptime();
     doc["date_time"] = date_time;
 
     for (int i = 0; i < 12; i++)
@@ -200,8 +200,8 @@ String create_settings_json()
     }
 
     // Network config
-    settings_fan_string = read_fan_config();
-    if (settings_fan_string == "")
+    settings_network_string = read_network_config();
+    if (settings_network_string == "")
     {
         message = "[ERROR] String is empty or failed to read file";
         print_message(message);

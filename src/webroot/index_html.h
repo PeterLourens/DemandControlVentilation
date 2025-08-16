@@ -44,7 +44,7 @@ const char index_html[] = R"rawliteral(
             <p>
                 State statemachine: <span id="statemachine_state"></span><br>
                 Fan speed: <span id="fanspeed"></span><br>
-                System uptime: <span id="uptime"></span> minutes<br>
+                System uptime: <span id="uptime"></span><br>
                 Time and date: <span id="date_time"></span>
             </p>
             <h2 class="content-subhead">Valve positions</h2>

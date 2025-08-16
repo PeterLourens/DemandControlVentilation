@@ -103,7 +103,7 @@ Rolling  average for sensors
 - The new average function is stored globally (similar structure to sensor readings)
 */
 
-float sensor_fifo[2][8][3][20];
+float sensor_fifo[2][8][3][MAX_FIFO_SIZE];
 float sum[48] = {0.0};
 float avg[48] = {0.0};
 int fifoSize[48] = {0}; // Current number of elements in the FIFO.

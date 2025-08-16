@@ -466,7 +466,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_highrhday_fanspeed">Fan speed:</label>
-                                <select id="state_highhrday_fanspeed" name="state_highrhday_fanspeed" class="pure-input-1-1">
+                                <select id="state_highrhday_fanspeed" name="state_highrhday_fanspeed" class="pure-input-1-1">
                                     <option selected></option>
                                     <option>Low</option>
                                     <option>Medium</option>

@@ -42,7 +42,7 @@ const char settings_html[] = R"rawliteral(
         <div class="content">
             <p>
                 <form method ="POST" action="/restart_esp32">
-                    <input type="submit" value="Restart ESP32">
+                    <input type="submit" value="Restart ESP32" class="pure-button-primary button-small pure-button">
                 </form>
             </p>
             <h4 class="content-subhead">Network configuration (requires ESP32 restart): <span id="status_network_config"></span></h4>

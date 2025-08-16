@@ -1,5 +1,27 @@
 #include "config_files.h"
 
+// Read network settings
+String read_network_config(void)
+{
+    bool settings_network_file_present = 0;
+
+    String settings_network_string = "";
+
+    if (settings_network_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_network_mutex, (TickType_t)100) == pdTRUE)
+        {
+            settings_network_file_present = check_file_exists(SETTINGS_NETWORK_PATH);
+            if (settings_network_file_present == 1)
+            {
+                settings_network_string = read_config_file(SETTINGS_NETWORK_PATH);
+            }
+            xSemaphoreGive(settings_network_mutex);
+        }
+    }
+    return settings_network_string;
+}
+
 // Read time settings
 String read_rtc_config(void)
 {

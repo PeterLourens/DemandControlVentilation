@@ -69,10 +69,15 @@ void setup()
 	// setup_wifi();
 	start_task_wifi();
 	read_mqtt_config();
+	process_mqtt_config();
 	read_influxdb_config();
+	process_influxdb_config();
 	read_i2c_config();
+	process_i2c_config();
 	read_rtc_config();
+	process_rtc_config();
 	read_fan_config();
+	process_fan_config();
 	sensor_config_data_read();
 	valve_settings_config_read();
 
@@ -86,7 +91,7 @@ void setup()
 	start_task_statemachine();
 	start_task_mqtt();
 	start_task_neopixel();
-	// start_task_system();
+	start_task_system();
 	start_task_websocket();
 
 	vTaskDelay(60000); // Only write to influxDB when all tasks are running

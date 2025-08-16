@@ -182,7 +182,7 @@ void publish_valve_positions(void) {
     client.setServer(mqtt_server_addr, mqtt_port_tmp); 
 
     if (valve_position_file_mutex != NULL) {
-        if(xSemaphoreTake(valve_position_file_mutex, ( TickType_t ) 10 ) == pdTRUE) {
+        if(xSemaphoreTake(valve_position_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
     
             status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
 
@@ -215,7 +215,7 @@ void publish_valve_positions(void) {
 void publish_uptime(void) {
 
     char topic[100];
-    char uptime[200];
+    char uptime[300];
 
     //For MQTT settings
     char mqtt_server_addr[50];
@@ -248,10 +248,8 @@ void publish_uptime(void) {
     
     if (client.connect("OSventilation")) {
         (mqtt_base_topic_str + "/system/uptime").toCharArray(topic,100);
-        //uptime_str = String(esp_timer_get_time()/1000000/60) + " minutes";                   //in minutes
         uptime_str = formatted_uptime();
-        uptime_str.toCharArray(uptime, 200);
-        //(uptime_formatter::getUptime()).toCharArray(uptime,200);
+        uptime_str.toCharArray(uptime, 300);
         client.publish(topic,uptime);
     }
     else {

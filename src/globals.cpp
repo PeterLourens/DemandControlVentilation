@@ -1,18 +1,5 @@
 #include "globals.h"
 
-const char *settings_state_day_path = "/json/settings_state_day.json";
-const char *settings_state_night_path = "/json/settings_state_night.json";
-const char *settings_state_highco2day_path = "/json/settings_state_highco2day.json";
-const char *settings_state_highco2night_path = "/json/settings_state_highco2night.json";
-const char *settings_state_highrhday_path = "/json/settings_state_highrhday.json";
-const char *settings_state_highrhnight_path = "/json/settings_state_highrhnight.json";
-const char *settings_state_cooking_path = "/json/settings_state_cooking.json";
-const char *settings_state_cyclingday_path = "/json/settings_state_cyclingday.json";
-const char *settings_state_cyclingnight_path = "/json/settings_state_cyclingnight.json";
-const char *sensor_config1_path = "/json/sensor_config1.json";
-const char *sensor_config2_path = "/json/sensor_config2.json";
-const char *valve_positions_path = "/json/valvepositions.json";
-
 TaskHandle_t task_influxdb;
 TaskHandle_t task_i2c;
 TaskHandle_t task_mqtt;

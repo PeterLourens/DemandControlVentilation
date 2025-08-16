@@ -5,16 +5,14 @@
 #include <ArduinoJson.h>
 #include <RTClib.h>
 
-#define I2C_SCL1 38                                                 // Wire I/O settings (SDA1/SCL1) and 
+#define I2C_SCL1 38 // Wire I/O settings (SDA1/SCL1) and
 #define I2C_SDA1 39
-#define I2C_SCL2 40                                                 // Wire1 I/O settings (SDA2/SCL2)
+#define I2C_SCL2 40 // Wire1 I/O settings (SDA2/SCL2)
 #define I2C_SDA2 41
 
-#define LCD_ROWS 4                                                  // LCD display rows
-#define LCD_COLUMNS 20                                              // LCD display columns
-#define LCDADDR 0x27                                                // LCD I2C address
-
-// #define TCAADDR 0x70                                                //TCA9548 address
+#define LCD_ROWS 4     // LCD display rows
+#define LCD_COLUMNS 20 // LCD display columns
+#define LCDADDR 0x27   // LCD I2C address
 
 // File path definitions
 #define SETTINGS_STATEMACHINE_PATH "/json/settings_statemachine.json"
@@ -28,6 +26,7 @@
 #define SETTINGS_STATE_CYCLINGDAY_PATH "/json/settings_state_cyclingday.json"
 #define SETTINGS_STATE_CYCLINGNIGHT_PATH "/json/settings_state_cyclingnight.json"
 
+#define SETTINGS_NETWORK_PATH "/json/settings_network.json"
 #define SETTINGS_RTC_PATH "/json/settings_rtc.json"
 #define SETTINGS_INFLUDB_PATH "/json/settings_influxdb.json"
 #define SETTINGS_I2C_PATH "/json/settings_i2c.json"
@@ -74,7 +73,7 @@ extern SemaphoreHandle_t settings_i2c_mutex;
 extern SemaphoreHandle_t settings_fan_mutex;
 extern SemaphoreHandle_t settings_statemachine_mutex;
 extern SemaphoreHandle_t settings_influxdb_mutex;
-extern SemaphoreHandle_t settings_rtc_mutex; 
+extern SemaphoreHandle_t settings_rtc_mutex;
 extern SemaphoreHandle_t statemachine_state_mutex;
 extern SemaphoreHandle_t fanspeed_mutex;
 extern SemaphoreHandle_t lock_valve_move_mutex;
@@ -115,30 +114,30 @@ extern JsonDocument settings_state_temp;
 extern String wire_sensor_config_string;
 extern String wire1_sensor_config_string;
 
-//MQTT settings
+// MQTT settings
 extern String enable_mqtt;
 extern String mqtt_server;
 extern int mqtt_port;
 extern String mqtt_base_topic;
 
-//InfluxDB settings
+// InfluxDB settings
 extern String enable_influxdb;
 extern String influxdb_url;
 extern String influxdb_org;
 extern String influxdb_bucket;
 extern String influxdb_token;
 
-//Settings i2C
+// Settings i2C
 extern int bus0_multiplexer_addr;
 extern int bus1_multiplexer_addr;
 extern String enable_lcd;
 extern int display_i2c_addr;
 
-//Settings RTC
+// Settings RTC
 extern String ntp_server;
 extern String timezone;
 
-//Fan speed control settings
+// Fan speed control settings
 extern String fan_control_mode;
 extern String fan_control_mqtt_server;
 extern String fan_control_mqtt_port;
@@ -147,7 +146,7 @@ extern String fan_control_url_high_speed;
 extern String fan_control_url_medium_speed;
 extern String fan_control_url_low_speed;
 
-//Date time data from RTC
+// Date time data from RTC
 extern String yearStr;
 extern String monthStr;
 extern String dayStr;
@@ -164,16 +163,16 @@ extern bool pb_toggle;
 extern bool ap_active;
 extern bool debug_mode;
 
-//Data pins for 74HC595
-extern int clockPin1; 
-extern int latchPin1; 
-extern int dataPin1; 
+// Data pins for 74HC595
+extern int clockPin1;
+extern int latchPin1;
+extern int dataPin1;
 
-//Data pins for 74HC595
-extern int clockPin2; 
-extern int latchPin2; 
-extern int dataPin2;  
+// Data pins for 74HC595
+extern int clockPin2;
+extern int latchPin2;
+extern int dataPin2;
 
-//Function definitions
+// Function definitions
 
 #endif

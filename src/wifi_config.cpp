@@ -6,28 +6,28 @@
 
 void config_wifi(void)
 {
-    const char *path = "/json/settings_network.json";
     bool network_config_file_present = 0;
 
-    String network_config_string;
+    String settings_network_config_string = "";
+    String message = "";
     JsonDocument network_config;
 
-    if (settings_network_mutex != NULL)
+    settings_network_config_string = read_network_config();
+
+    if (settings_network_config_string == "")
     {
-        if (xSemaphoreTake(settings_network_mutex, (TickType_t)100) == pdTRUE)
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err = deserializeJson(network_config, settings_network_config_string);
+        if (err)
         {
-            network_config_file_present = check_file_exists(path);
-            if (network_config_file_present == 1)
-            {
-                File file = LittleFS.open(path, "r");
-                while (file.available())
-                {
-                    network_config_string = file.readString();
-                }
-                file.close();
-                deserializeJson(network_config, network_config_string);
-            }
-            xSemaphoreGive(settings_network_mutex);
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_NETWORK_PATH) + " with error: " + String(err.c_str());
+            print_message(message);
+            return;
         }
     }
 

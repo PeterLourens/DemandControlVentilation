@@ -32,7 +32,7 @@ void move_valve(void) {
     JsonDocument doc;
 
     if (valve_control_data_mutex != NULL) {
-        if(xSemaphoreTake(valve_control_data_mutex, ( TickType_t ) 100 ) == pdTRUE) {
+        if(xSemaphoreTake(valve_control_data_mutex, ( TickType_t ) 10 ) == pdTRUE) {
             store_valve_position = valve_control_data["checks"][0];
             check_valve_position = valve_control_data["checks"][1];
             xSemaphoreGive(valve_control_data_mutex);

@@ -55,8 +55,17 @@ void init_statemachine(void)
 
 void run_statemachine(void)
 {
-
     String message = "";
+    String temp_state = "";
+
+    if (statemachine_state_mutex != NULL)
+    {
+        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+        {
+            temp_state = state;
+            xSemaphoreGive(statemachine_state_mutex);
+        }
+    }
 
     message = "Read sensor data from queue for statemachine.";
     print_message(message);
@@ -66,61 +75,64 @@ void run_statemachine(void)
 
     message = "Read average sensor data from queue for statemachine.";
     print_message(message);
+
     if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) == pdTRUE)
     {
     }
 
-    if (state == "init")
+    if (temp_state == "init")
     {
         init_transitions();
     }
-    else if (state == "stopped")
+    else if (temp_state == "stopped")
     {
         stopped_transitions();
     }
-    else if (state == "day")
+    else if (temp_state == "day")
     {
         day_transitions();
     }
-    else if (state == "night")
+    else if (temp_state == "night")
     {
         night_transitions();
     }
-    else if (state == "highco2day")
+    else if (temp_state == "highco2day")
     {
         high_co2_day_transitions();
     }
-    else if (state == "highco2night")
+    else if (temp_state == "highco2night")
     {
         high_co2_night_transitions();
     }
-    else if (state == "highrhday")
+    else if (temp_state == "highrhday")
     {
         high_rh_day_transitions();
     }
-    else if (state == "highrhnight")
+    else if (temp_state == "highrhnight")
     {
         high_rh_night_transitions();
     }
-    else if (state == "cooking")
+    else if (temp_state == "cooking")
     {
         cooking_transitions();
     }
-    else if (state == "cyclingday")
+    else if (temp_state == "cyclingday")
     {
         valve_cycle_day_transitions();
     }
-    else if (state == "cyclingnight")
+    else if (temp_state == "cyclingnight")
     {
         valve_cycle_night_transitions();
     }
-    else if (state == "fanhighspeed")
+    else if (temp_state == "fanhighspeed")
     {
         manual_high_speed_transitions();
     }
     else
     {
         // This state should normally never be entered. Back to init of statemachine to keep it running
+        message = "Error in state number, back to init state";
+        print_message(message);
         init_transitions();
     }
 }
@@ -186,7 +198,7 @@ void init_transitions(void)
         }
     }
 
-    message = "Statemachine in state " + statemachine_state + "It is " + temp_hour + ":" + temp_minute + " and day of week is " + temp_day_of_week + ", fanspeed is " + temp_fanspeed;
+    message = "Statemachine in state " + statemachine_state + ". It is " + temp_hour + ":" + temp_minute + " and day of week is " + temp_day_of_week + ", fanspeed is " + temp_fanspeed;
     print_message(message);
     set_fanspeed(temp_fanspeed);
 
@@ -1469,7 +1481,6 @@ void cooking_transitions(void)
 
 void valve_cycle_day_transitions(void)
 {
-
     int co2_sensors_high = 0;
     int rh_sensors_high = 0;
     int temp_hour = 0;

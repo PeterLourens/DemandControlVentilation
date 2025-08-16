@@ -937,7 +937,7 @@ void Taskwebcode(void *pvParameters)
 				if (p->name() == WIRE_SENSOR1_TYPE) 
 					wire_sensor_data["wire_sensor1_type"] = p->value().c_str();   
 				if (p->name() == WIRE_SENSOR1_VALVE)
-					wire_sensor_data["wire_sensor1"]["valve"] = p->value().c_str();
+					wire_sensor_data["wire_sensor1_valve"] = p->value().c_str();
 				if (p->name() == WIRE_SENSOR1_LOCATION)
 					wire_sensor_data["wire_sensor1 location"] = p->value().c_str();
 				if (p->name() == WIRE_SENSOR1_RH)
