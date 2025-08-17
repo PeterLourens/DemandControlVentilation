@@ -5,16 +5,80 @@ RTC_DS3231 rtc;
 
 void read_sensors(void)
 {
-
-    bool sensor_config_file_present = 0;
     float temp_sensor_data[2][8][3] = {0};
+
+    bool sensor_config1_file_present = "";
+    bool sensor_config2_file_present = "";
+
+    int bus0_multiplexer_addr_tmp = 0;
+    int bus1_multiplexer_addr_tmp = 0;
 
     String sensor_type = "";
     String sensor = "";
     String message = "";
+    String sensor_config1_string = "";
+    String sensor_config2_string = "";
 
-    int bus0_multiplexer_addr_tmp;
-    int bus1_multiplexer_addr_tmp;
+    JsonDocument sensor1_doc;
+    JsonDocument sensor2_doc;
+
+    if (sensor_config_file_mutex != NULL)
+    {
+        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
+        {
+            sensor_config1_file_present = check_file_exists(SENSOR_CONFIG1_PATH);
+            if (sensor_config1_file_present == 1)
+            {
+                sensor_config1_string = read_config_file(SENSOR_CONFIG1_PATH);
+            }
+            xSemaphoreGive(sensor_config_file_mutex);
+        }
+    }
+    if (sensor_config1_string == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err1 = deserializeJson(sensor1_doc, sensor_config1_string);
+        if (err1)
+        {
+            message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG1_PATH) + " with error: " + String(err1.c_str());
+            print_message(message);
+            return;
+        }
+    }
+
+    if (sensor_config_file_mutex != NULL)
+    {
+        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
+        {
+            sensor_config2_file_present = check_file_exists(SENSOR_CONFIG2_PATH);
+            if (sensor_config2_file_present == 1)
+            {
+                sensor_config2_string = read_config_file(SENSOR_CONFIG2_PATH);
+            }
+            xSemaphoreGive(sensor_config_file_mutex);
+        }
+    }
+    if (sensor_config2_string == "")
+    {
+        message = "[ERROR] String is empty or failed to read file";
+        print_message(message);
+        return;
+    }
+    else
+    {
+        DeserializationError err2 = deserializeJson(sensor2_doc, sensor_config2_string);
+        if (err2)
+        {
+            message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG2_PATH) + " with error: " + String(err2.c_str());
+            print_message(message);
+            return;
+        }
+    }
 
     // Read address for TCA9548. I2C address for TCA9548 may be differently configured with resistors on the board.
     if (settings_i2c_mutex != NULL)
@@ -33,188 +97,172 @@ void read_sensors(void)
         if (bus == 0)
         {
             Wire.begin(I2C_SDA1, I2C_SCL1, 100000);
-            sensor_config_file_present = check_file_exists(SENSOR_CONFIG1_PATH);
+            sensor_config1_file_present = check_file_exists(SENSOR_CONFIG1_PATH);
         }
         if (bus == 1)
         {
             Wire1.begin(I2C_SDA2, I2C_SCL2, 100000);
-            sensor_config_file_present = check_file_exists(SENSOR_CONFIG2_PATH);
+            sensor_config2_file_present = check_file_exists(SENSOR_CONFIG2_PATH);
         }
 
-        if (sensor_config_file_present == 1)
+        for (int slot = 0; slot < 8; slot++)
         {
-            for (int slot = 0; slot < 8; slot++)
+            if (bus == 0 && sensor_config1_file_present == 1)
+            {
+                sensor = "wire_sensor" + String(slot);
+                String sensor_type_temp = sensor1_doc[sensor + "_type"];
+                sensor_type = sensor_type_temp;
+                Wire.beginTransmission(bus0_multiplexer_addr_tmp);
+                Wire.write(1 << slot);
+                Wire.endTransmission();
+            }
+            if (bus == 1 && sensor_config2_file_present == 1)
+            {
+                sensor = "wire1_sensor" + String(slot);
+                String sensor_type_temp = sensor2_doc[sensor + "_type"];
+                sensor_type = sensor_type_temp;
+
+                Wire1.beginTransmission(bus1_multiplexer_addr_tmp);
+                Wire1.write(1 << slot);
+                Wire1.endTransmission();
+            }
+            if (sensor_type == "DHT20" || sensor_type == "AHT20")
             {
                 if (bus == 0)
                 {
-                    sensor = "wire_sensor" + String(slot);
-                    if (sensor_config_file_mutex != NULL)
-                    {
-                        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
-                        {
-                            String sensor_type_temp = wire_sensor_data[sensor + "_type"];
-                            sensor_type = sensor_type_temp;
-                            xSemaphoreGive(sensor_config_file_mutex);
-                        }
-                    }
-                    Wire.beginTransmission(bus0_multiplexer_addr_tmp);
-                    Wire.write(1 << slot);
+                    DHT20 DHT1(&Wire);
+                    DHT1.begin();
+                    DHT1.read();
+
+                    temp_sensor_data[bus][slot][0] = DHT1.getTemperature();
+                    temp_sensor_data[bus][slot][1] = DHT1.getHumidity();
                     Wire.endTransmission();
                 }
                 if (bus == 1)
                 {
-                    sensor = "wire1_sensor" + String(slot);
-                    if (sensor_config_file_mutex != NULL)
-                    {
-                        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
-                        {
-                            String sensor_type_temp = wire1_sensor_data[sensor + "_type"];
-                            sensor_type = sensor_type_temp;
-                            xSemaphoreGive(sensor_config_file_mutex);
-                        }
-                    }
-                    Wire1.beginTransmission(bus1_multiplexer_addr_tmp);
-                    Wire1.write(1 << slot);
+                    DHT20 DHT2(&Wire1);
+                    DHT2.begin();
+                    DHT2.read();
+
+                    temp_sensor_data[bus][slot][0] = DHT2.getTemperature();
+                    temp_sensor_data[bus][slot][1] = DHT2.getHumidity();
                     Wire1.endTransmission();
                 }
-                if (sensor_type == "DHT20" || sensor_type == "AHT20")
-                {
-                    if (bus == 0)
-                    {
-                        DHT20 DHT1(&Wire);
-                        DHT1.begin();
-                        DHT1.read();
+            }
 
-                        temp_sensor_data[bus][slot][0] = DHT1.getTemperature();
-                        temp_sensor_data[bus][slot][1] = DHT1.getHumidity();
-                        Wire.endTransmission();
-                    }
-                    if (bus == 1)
-                    {
-                        DHT20 DHT2(&Wire1);
-                        DHT2.begin();
-                        DHT2.read();
+            /*
+            else if (sensor_type_temp == "AHT20") {
+                if (bus==0) {
 
-                        temp_sensor_data[bus][slot][0] = DHT2.getTemperature();
-                        temp_sensor_data[bus][slot][1] = DHT2.getHumidity();
-                        Wire1.endTransmission();
-                    }
+                    Adafruit_AHTX0 AHT20_1;
+                    sensors_event_t humidity, temperature;
+
+                    AHT20_1.begin();
+                    AHT20_1.getEvent(&humidity, &temperature);
+
+                    temp_sensor_data[bus][slot][0] = temperature.temperature;
+                    temp_sensor_data[bus][slot][1] = humidity.relative_humidity;
+
+                    Wire.endTransmission();
+
+                    DFRobot_AHT20 AHT20_1;
+                    AHT20_1.begin();
+                    temp_sensor_data[bus][slot][0] = AHT20_1.getTemperature_C();
+                    temp_sensor_data[bus][slot][1] = AHT20_1.getHumidity_RH();
+                    Wire.endTransmission();
+
                 }
+                if (bus==1) {
+                    Adafruit_AHTX0 AHT20_2;
+                    sensors_event_t humidity, temperature;
 
-                /*
-                else if (sensor_type_temp == "AHT20") {
-                    if (bus==0) {
+                    AHT20_2.begin();
+                    AHT20_2.getEvent(&humidity, &temperature);
 
-                        Adafruit_AHTX0 AHT20_1;
-                        sensors_event_t humidity, temperature;
+                    temp_sensor_data[bus][slot][0] = temperature.temperature;
+                    temp_sensor_data[bus][slot][1] = humidity.relative_humidity;
 
-                        AHT20_1.begin();
-                        AHT20_1.getEvent(&humidity, &temperature);
+                    Wire1.endTransmission();
 
-                        temp_sensor_data[bus][slot][0] = temperature.temperature;
-                        temp_sensor_data[bus][slot][1] = humidity.relative_humidity;
-
-                        Wire.endTransmission();
-
-                        DFRobot_AHT20 AHT20_1;
-                        AHT20_1.begin();
-                        temp_sensor_data[bus][slot][0] = AHT20_1.getTemperature_C();
-                        temp_sensor_data[bus][slot][1] = AHT20_1.getHumidity_RH();
-                        Wire.endTransmission();
-
-                    }
-                    if (bus==1) {
-                        Adafruit_AHTX0 AHT20_2;
-                        sensors_event_t humidity, temperature;
-
-                        AHT20_2.begin();
-                        AHT20_2.getEvent(&humidity, &temperature);
-
-                        temp_sensor_data[bus][slot][0] = temperature.temperature;
-                        temp_sensor_data[bus][slot][1] = humidity.relative_humidity;
-
-                        Wire1.endTransmission();
-
-                        DFRobot_AHT20 AHT20_2;
-                        AHT20_2.begin();
-                        temp_sensor_data[bus][slot][0] = AHT20_2.getTemperature_C();
-                        temp_sensor_data[bus][slot][1] = AHT20_2.getHumidity_RH();
-                        Wire.endTransmission();
-                    }
-                }*/
-
-                else if (sensor_type == "SCD40" || sensor_type == "SCD41")
-                {
-
-                    if (bus == 0)
-                    {
-                        SensirionI2cScd4x SCD4X_1;
-                        SCD4X_1.begin(Wire, SCD41_I2C_ADDR_62);
-                        SCD4X_1.startPeriodicMeasurement();
-
-                        uint16_t error;
-                        uint16_t co2 = 0;
-                        float temperature = 0.0f;
-                        float humidity = 0.0f;
-                        // bool isDataReady = false;
-
-                        error = SCD4X_1.readMeasurement(co2, temperature, humidity);
-                        if (error)
-                        {
-                            message = "[Error] Failed to execute readMeasurement().";
-                            print_message(message);
-                        }
-                        else if (co2 == 0)
-                        {
-                            message = "[Error] Invalid sample detected, skipping.";
-                            print_message(message);
-                        }
-                        else
-                        {
-                            temp_sensor_data[bus][slot][0] = temperature;
-                            temp_sensor_data[bus][slot][1] = humidity;
-                            temp_sensor_data[bus][slot][2] = co2;
-                        }
-                        Wire.endTransmission();
-                    }
-                    if (bus == 1)
-                    {
-                        SensirionI2cScd4x SCD4X_2;
-                        SCD4X_2.begin(Wire1, SCD41_I2C_ADDR_62);
-                        SCD4X_2.startPeriodicMeasurement();
-
-                        uint16_t error;
-                        uint16_t co2 = 0;
-                        float temperature = 0.0f;
-                        float humidity = 0.0f;
-                        // bool isDataReady = false;
-
-                        error = SCD4X_2.readMeasurement(co2, temperature, humidity);
-                        if (error)
-                        {
-                            message = "[Error] Failed to execute readMeasurement().";
-                            print_message(message);
-                        }
-                        else if (co2 == 0)
-                        {
-                            message = "[Error] Invalid sample detected, skipping.";
-                            print_message(message);
-                        }
-                        else
-                        {
-                            temp_sensor_data[bus][slot][0] = temperature;
-                            temp_sensor_data[bus][slot][1] = humidity;
-                            temp_sensor_data[bus][slot][2] = co2;
-                        }
-                        Wire1.endTransmission();
-                    }
+                    DFRobot_AHT20 AHT20_2;
+                    AHT20_2.begin();
+                    temp_sensor_data[bus][slot][0] = AHT20_2.getTemperature_C();
+                    temp_sensor_data[bus][slot][1] = AHT20_2.getHumidity_RH();
+                    Wire.endTransmission();
                 }
-                else
+            }*/
+
+            else if (sensor_type == "SCD40" || sensor_type == "SCD41")
+            {
+
+                if (bus == 0)
                 {
-                    temp_sensor_data[bus][slot][0] = 0.00;
-                    temp_sensor_data[bus][slot][1] = 0.00;
-                    temp_sensor_data[bus][slot][2] = 0.00;
+                    SensirionI2cScd4x SCD4X_1;
+                    SCD4X_1.begin(Wire, SCD41_I2C_ADDR_62);
+                    SCD4X_1.startPeriodicMeasurement();
+
+                    uint16_t error;
+                    uint16_t co2 = 0;
+                    float temperature = 0.0f;
+                    float humidity = 0.0f;
+                    // bool isDataReady = false;
+
+                    error = SCD4X_1.readMeasurement(co2, temperature, humidity);
+                    if (error)
+                    {
+                        message = "[Error] Failed to execute readMeasurement().";
+                        print_message(message);
+                    }
+                    else if (co2 == 0)
+                    {
+                        message = "[Error] Invalid sample detected, skipping.";
+                        print_message(message);
+                    }
+                    else
+                    {
+                        temp_sensor_data[bus][slot][0] = temperature;
+                        temp_sensor_data[bus][slot][1] = humidity;
+                        temp_sensor_data[bus][slot][2] = co2;
+                    }
+                    Wire.endTransmission();
                 }
+                if (bus == 1)
+                {
+                    SensirionI2cScd4x SCD4X_2;
+                    SCD4X_2.begin(Wire1, SCD41_I2C_ADDR_62);
+                    SCD4X_2.startPeriodicMeasurement();
+
+                    uint16_t error;
+                    uint16_t co2 = 0;
+                    float temperature = 0.0f;
+                    float humidity = 0.0f;
+                    // bool isDataReady = false;
+
+                    error = SCD4X_2.readMeasurement(co2, temperature, humidity);
+                    if (error)
+                    {
+                        message = "[Error] Failed to execute readMeasurement().";
+                        print_message(message);
+                    }
+                    else if (co2 == 0)
+                    {
+                        message = "[Error] Invalid sample detected, skipping.";
+                        print_message(message);
+                    }
+                    else
+                    {
+                        temp_sensor_data[bus][slot][0] = temperature;
+                        temp_sensor_data[bus][slot][1] = humidity;
+                        temp_sensor_data[bus][slot][2] = co2;
+                    }
+                    Wire1.endTransmission();
+                }
+            }
+            else
+            {
+                temp_sensor_data[bus][slot][0] = 0.00;
+                temp_sensor_data[bus][slot][1] = 0.00;
+                temp_sensor_data[bus][slot][2] = 0.00;
             }
         }
     }

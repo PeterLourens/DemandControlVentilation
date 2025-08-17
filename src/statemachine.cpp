@@ -80,7 +80,7 @@ void run_statemachine(void)
     }
 
     // Refresh config for statemachine
-    process_statemachine_config();
+    // process_statemachine_config();
 
     if (temp_state == "init")
     {
@@ -169,7 +169,7 @@ void init_transitions(void)
     String temp_day_of_week = "";
     String message = "";
 
-    int weekday_day_hour_start_temp;
+    /*int weekday_day_hour_start_temp;
     int weekday_day_minute_start_temp;
     int weekday_night_hour_start_temp;
     int weekday_night_minute_start_temp;
@@ -179,7 +179,7 @@ void init_transitions(void)
     int weekend_night_minute_start_temp;
     String weekend_day_1_temp;
     String weekend_day_2_temp;
-    int minimum_state_time_temp;
+    int minimum_state_time_temp;*/
 
     // Actions for this state
     if (statemachine_state_mutex != NULL)
@@ -211,7 +211,7 @@ void init_transitions(void)
         }
     }
 
-    if (settings_statemachine_mutex != NULL)
+    /*if (settings_statemachine_mutex != NULL)
     {
         if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)20) == pdTRUE)
         {
@@ -228,23 +228,25 @@ void init_transitions(void)
             minimum_state_time_temp = minimum_state_time;
             xSemaphoreGive(settings_statemachine_mutex);
         }
-    }
+    }*/
 
     message = "Statemachine in state " + statemachine_state + ". It is " + temp_hour + ":" + temp_minute + " and day of week is " + temp_day_of_week + ", fanspeed is " + temp_fanspeed;
     print_message(message);
     set_fanspeed(temp_fanspeed);
 
     // Conditions to transit to other state, only evalaution based on time and day of week
-    if (temp_hour >= weekday_day_hour_start_temp && 
-        temp_hour < weekday_night_hour_start_temp && 
-        temp_day_of_week != weekend_day_1_temp && 
-        temp_day_of_week != weekend_day_2_temp)
+    /*if (temp_hour >= weekday_day_hour_start_temp &&
+        temp_hour < weekday_night_hour_start_temp &&
+        temp_day_of_week != weekend_day_1_temp &&
+        temp_day_of_week != weekend_day_2_temp)*/
+    if (temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")
     { // Weekday
         message = "It is after 8, before 21 and a weekday. Transit to day.";
         print_message(message);
         new_state = "day";
     }
-    else if (temp_hour >= weekend_day_hour_start_temp && temp_hour < weekend_night_hour_start_temp && (temp_day_of_week == weekend_day_1_temp || temp_day_of_week == weekend_day_2_temp))
+    //else if (temp_hour >= weekend_day_hour_start_temp && temp_hour < weekend_night_hour_start_temp && (temp_day_of_week == weekend_day_1_temp || temp_day_of_week == weekend_day_2_temp))
+    else if (temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday"))
     { // Weekend
         message = "It is after 9 and before 21 and weekend. Transit to day.";
         print_message(message);
