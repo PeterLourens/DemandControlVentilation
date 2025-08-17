@@ -12,7 +12,7 @@ function onload(event) {
 }
 
 function initWebSocket() {
-    console.log('Trying to open a WebSocket connection…');
+    //console.log('Trying to open a WebSocket connection…');
     websocket = new WebSocket(gateway);
     websocket.onopen = onOpen;
     websocket.onclose = onClose;
@@ -21,7 +21,7 @@ function initWebSocket() {
 
 // When websocket is established, call the get_json() function
 function onOpen(event) {
-    console.log('Connection opened');
+    //console.log('Connection opened');
     get_json();
 }
 
@@ -35,20 +35,20 @@ function get_json(){
     //const page_name = window.location.pathname.split("/").pop() || "index";
     //const page_name = window.location.pathname;
     const page = document.getElementById("page_name");
-    console.log(page.innerHTML);
+    //console.log(page.innerHTML);
     websocket.send(page.innerHTML);
 }
 
 // Function that receives the message from the ESP32 with the readings and matches ids of the json with ids in the html
 function onMessage(event) {
-    console.log(event.data);
+    //console.log(event.data);
     var myObj = JSON.stringify(event.data);
     var myObj = JSON.parse(event.data);
     var keys = Object.keys(myObj);
 
     for (const key in myObj) {
         const element = document.getElementById(key);
-        console.log(element);
+        //console.log(element);
         if (element) {
             
             // Works for tables and text boxes

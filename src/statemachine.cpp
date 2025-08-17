@@ -235,7 +235,10 @@ void init_transitions(void)
     set_fanspeed(temp_fanspeed);
 
     // Conditions to transit to other state, only evalaution based on time and day of week
-    if (temp_hour >= weekday_day_hour_start_temp && temp_hour < weekday_night_hour_start_temp && temp_day_of_week != weekend_day_1_temp && temp_day_of_week != weekend_day_2_temp)
+    if (temp_hour >= weekday_day_hour_start_temp && 
+        temp_hour < weekday_night_hour_start_temp && 
+        temp_day_of_week != weekend_day_1_temp && 
+        temp_day_of_week != weekend_day_2_temp)
     { // Weekday
         message = "It is after 8, before 21 and a weekday. Transit to day.";
         print_message(message);

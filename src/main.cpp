@@ -68,17 +68,12 @@ void setup()
 
 	// setup_wifi();
 	start_task_wifi();
-	// read_mqtt_config();
 	process_mqtt_config();
-	// read_influxdb_config();
 	process_influxdb_config();
-	// read_i2c_config();
 	process_i2c_config();
-	// read_rtc_config();
 	process_rtc_config();
-	// read_fan_config();
 	process_statemachine_config();
-	//process_fan_config();		//Fan config is handled in fancontrol.cpp
+	process_fan_config();
 	sensor_config_data_read();
 	valve_settings_config_read();
 

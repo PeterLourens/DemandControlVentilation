@@ -443,9 +443,7 @@ void Taskwebcode(void *pvParameters)
 	// Save settings from network settings
 	server.on("/settings_network", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path = "/json/settings_network.json";
 		String settings_network_str;
 		JsonDocument settings_network_data;
 		
@@ -471,15 +469,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_network_data, settings_network_str);
-		write_config_file(path, settings_network_str);
+		write_config_file(SETTINGS_NETWORK_PATH, settings_network_str);
 		request->send(200, "text/html", settings_html); });
 
 	// Save settings from MQTT settings
 	server.on("/settings_mqtt", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path = "/json/settings_mqtt.json";
 		String settings_mqtt_str;
 		JsonDocument settings_mqtt_data;
 
@@ -499,15 +495,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_mqtt_data, settings_mqtt_str);
-		write_config_file(path, settings_mqtt_str);	
+		write_config_file(SETTINGS_MQTT_PATH, settings_mqtt_str);	
 		request->send(200, "text/html", settings_html); });
 
 	// Save settings from I2C settings
 	server.on("/settings_i2c", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path = "/json/settings_i2c.json";
 		String settings_i2c_str;
 		JsonDocument settings_i2c_data;
 
@@ -527,19 +521,17 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_i2c_data, settings_i2c_str);
-		write_config_file(path, settings_i2c_str);
+		write_config_file(SETTINGS_I2C_PATH, settings_i2c_str);
 		request->send(200, "text/html", settings_html); });
 
 	// Save settings from fan control settings
 	server.on("/settings_fan", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path = "/json/settings_fan.json";
 		String settings_fan_str;
 		
 		if (settings_fan_mutex != NULL) {
-			if(xSemaphoreTake(settings_fan_mutex, ( TickType_t ) 10 ) == pdTRUE) {
+			if(xSemaphoreTake(settings_fan_mutex, ( TickType_t ) 100 ) == pdTRUE) {
 				for(int i=0;i<params;i++){
 					const AsyncWebParameter* p = request->getParam(i);
 					if(p->isPost()){
@@ -561,45 +553,17 @@ void Taskwebcode(void *pvParameters)
 							settings_fan_data["fan_control_url_low_speed"] = p->value().c_str();
 					}
 				}
-				serializeJson(settings_fan_data, settings_fan_str);    
+				serializeJson(settings_fan_data, settings_fan_str);
 				xSemaphoreGive(settings_fan_mutex);
 			}
 		}
-		write_config_file(path, settings_fan_str);
+		write_config_file(SETTINGS_FAN_PATH, settings_fan_str);
 		request->send(200, "text/html", settings_html); });
-
-	// Save settings from statemachine settings
-	/*server.on("/settings_statemachine", HTTP_POST, [](AsyncWebServerRequest *request) {
-		if (settings_statemachine_mutex != NULL) {
-			if(xSemaphoreTake(settings_statemachine_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-				int params = request->params();
-				for(int i=0;i<params;i++){
-					const AsyncWebParameter* p = request->getParam(i);
-					if(p->isPost()){
-						if (p->name() == STATUS_STATEMACHINE_CONFIG)
-							settings_statemachine_data["status_statemachine_config"] = p->value().c_str();
-						if (p->name() == STATEMACHINE_RH_SENSOR)
-							settings_statemachine_data["statemachine_rh_sensor"] = p->value().c_str();
-						if (p->name() == STATEMACHINE_CO2_SENSOR)
-							settings_statemachine_data["statemachine_co2_sensor"] = p->value().c_str();
-					}
-				}
-				const char* path = "/json/settings_statemachine.json";
-				String settings_statemachine_str;
-				serializeJson(settings_statemachine_data, settings_statemachine_str);
-				write_config_file(path, settings_statemachine_str);
-				xSemaphoreGive(settings_statemachine_mutex);
-			}
-		}
-		request->send(LittleFS, "/html/settings.html", String(), false, settings_processor);
-	});*/
 
 	// Save settings from InfluxDB settings
 	server.on("/settings_influxdb", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path = "/json/settings_influxdb.json";
 		String settings_influxdb_str;
 		JsonDocument settings_influxdb_data;
 				
@@ -621,15 +585,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_influxdb_data, settings_influxdb_str);
-		write_config_file(path, settings_influxdb_str);
+		write_config_file(SETTINGS_INFLUDB_PATH, settings_influxdb_str);
 		request->send(200, "text/html", settings_html); });
 
 	// Save settings from RTC settings
 	server.on("/settings_rtc", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-	
 		int params = request->params();
-		const char* path = "/json/settings_rtc.json";
 		String settings_rtc_str;
 		JsonDocument settings_rtc_data;
 
@@ -646,7 +608,7 @@ void Taskwebcode(void *pvParameters)
 		}
 
 		serializeJson(settings_rtc_data, settings_rtc_str);
-		write_config_file(path, settings_rtc_str);	
+		write_config_file(SETTINGS_RTC_PATH, settings_rtc_str);	
 		request->send(200, "text/html", settings_html); });
 
 	// Valve control web pages processing
@@ -871,8 +833,7 @@ void Taskwebcode(void *pvParameters)
 	// POST on button delete config file - name must match with action of the form submit
 	server.on("/delete_config_file", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		const char* path = "/json/valvepositions.json";
-		delete_file(path);
+		delete_file(VALVE_POSITIONS_PATH);
 		request->send(200, "text/html", valvecontrol_html); });
 
 	// Stop statemachine
@@ -904,23 +865,19 @@ void Taskwebcode(void *pvParameters)
 	// Delete sensor config file 1
 	server.on("/delete_sensor_config_file1", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		const char* path = "/json/sensor_config1.json";
-		delete_file(path);
+		delete_file(SENSOR_CONFIG1_PATH);
 		request->send(200, "text/html", sensor_config_html); });
 
 	// Delete sensor config file 2
 	server.on("/delete_sensor_config_file2", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		const char* path = "/json/sensor_config2.json";
-		delete_file(path);
+		delete_file(SENSOR_CONFIG2_PATH);
 		request->send(200, "text/html", sensor_config_html); });
 
 	// Write sensor config input to file
 	server.on("/sensorconfig1", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path1 = "/json/sensor_config1.json";
 		String sensor_config1;
 
 		for(int i=0;i<params;i++){
@@ -1009,13 +966,12 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(wire_sensor_data, sensor_config1);
-		write_config_file(path1, sensor_config1);
+		write_config_file(SENSOR_CONFIG1_PATH, sensor_config1);
 		request->send(200, "text/html", sensor_config_html); });
 
 	server.on("/sensorconfig2", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
 		int params = request->params();
-		const char* path2 = "/json/sensor_config2.json";
 		String sensor_config2;
 		
 		for(int i=0;i<params;i++){
@@ -1104,7 +1060,7 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(wire1_sensor_data, sensor_config2);
-		write_config_file(path2, sensor_config2);
+		write_config_file(SENSOR_CONFIG2_PATH, sensor_config2);
 		request->send(200, "text/html", sensor_config_html); });
 
 	// Statemachine web pages processing
@@ -1146,10 +1102,9 @@ void Taskwebcode(void *pvParameters)
 							settings_statemachine_data["minimum_state_time"] = p->value().c_str();
 					}
 				}
-				const char* path = "/json/settings_statemachine.json";
 				String settings_statemachine_str;
 				serializeJson(settings_statemachine_data, settings_statemachine_str);
-				write_config_file(path, settings_statemachine_str);
+				write_config_file(SETTINGS_STATEMACHINE_PATH, settings_statemachine_str);
 				xSemaphoreGive(settings_statemachine_mutex);
 			}
 		}
@@ -1158,9 +1113,7 @@ void Taskwebcode(void *pvParameters)
 	// Settings statemachine day
 	server.on("/settings_valve_day", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path_day = "/json/settings_state_day.json";
 		String settings_state_day_str;
 
 		for(int i=0;i<params;i++) {
@@ -1199,15 +1152,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_day, settings_state_day_str);
-		write_config_file(path_day, settings_state_day_str);
+		write_config_file(SETTINGS_STATE_DAY_PATH, settings_state_day_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine night
 	server.on("/settings_valve_night", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path_night = "/json/settings_state_night.json";
 		String settings_state_night_str;
 		
 		for(int i=0;i<params;i++){
@@ -1246,15 +1197,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_night, settings_state_night_str);
-		write_config_file(path_night, settings_state_night_str);
+		write_config_file(SETTINGS_STATE_NIGHT_PATH, settings_state_night_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine highco2day
 	server.on("/settings_valve_highco2day", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path_highco2day = "/json/settings_state_highco2day.json";
 		String settings_state_highco2day_str;
 
 		for(int i=0;i<params;i++){
@@ -1297,7 +1246,7 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_highco2day, settings_state_highco2day_str);
-		write_config_file(path_highco2day, settings_state_highco2day_str);
+		write_config_file(SETTINGS_STATE_HIGHCO2DAY_PATH, settings_state_highco2day_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine highco2night
@@ -1305,7 +1254,6 @@ void Taskwebcode(void *pvParameters)
 			  {
 		
 		int params = request->params();
-		const char* path_highco2night = "/json/settings_state_highco2night.json";
 		String settings_state_highco2night_str;
 		
 		for(int i=0;i<params;i++){
@@ -1348,15 +1296,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_highco2night, settings_state_highco2night_str);
-		write_config_file(path_highco2night, settings_state_highco2night_str);
+		write_config_file(SETTINGS_STATE_HIGHCO2NIGHT_PATH, settings_state_highco2night_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine highrhday
 	server.on("/settings_valve_highrhday", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-    	
 		int params = request->params();
-		const char* path_highrhday = "/json/settings_state_highrhday.json";
 		String settings_state_highrhday_str;
 		
     	for(int i=0;i<params;i++){
@@ -1399,15 +1345,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_highrhday, settings_state_highrhday_str);
-		write_config_file(path_highrhday, settings_state_highrhday_str);
+		write_config_file(SETTINGS_STATE_HIGHRHDAY_PATH, settings_state_highrhday_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine highrhnight
 	server.on("/settings_valve_highrhnight", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path_highrhnight = "/json/settings_state_highrhnight.json";
 		String settings_state_highrhnight_str;
 
 		for(int i=0;i<params;i++){
@@ -1450,15 +1394,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_highrhnight, settings_state_highrhnight_str);
-		write_config_file(path_highrhnight, settings_state_highrhnight_str);
+		write_config_file(SETTINGS_STATE_HIGHRHNIGHT_PATH, settings_state_highrhnight_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine cooking
 	server.on("/settings_valve_cooking", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path_cooking = "/json/settings_state_cooking.json";
 		String settings_state_cooking_str;
 
 		for(int i=0;i<params;i++){
@@ -1505,15 +1447,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_cooking, settings_state_cooking_str);
-		write_config_file(path_cooking, settings_state_cooking_str);
+		write_config_file(SETTINGS_STATE_COOKING_PATH, settings_state_cooking_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine valvecyclingday
 	server.on("/settings_valve_cyclingday", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path_cyclingday = "/json/settings_state_cyclingday.json";
 		String settings_state_cyclingday_str;
 
 		for(int i=0;i<params;i++){
@@ -1552,15 +1492,13 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_cyclingday, settings_state_cyclingday_str);
-		write_config_file(path_cyclingday, settings_state_cyclingday_str);
+		write_config_file(SETTINGS_STATE_CYCLINGDAY_PATH, settings_state_cyclingday_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine valvecyclingnight
 	server.on("/settings_valve_cyclingnight", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		
 		int params = request->params();
-		const char* path_cyclingnight = "/json/settings_state_cyclingnight.json";
 		String settings_state_cyclingnight_str;
 
 		for(int i=0;i<params;i++){
@@ -1599,7 +1537,7 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_state_cyclingnight, settings_state_cyclingnight_str);
-		write_config_file(path_cyclingnight, settings_state_cyclingnight_str);
+		write_config_file(SETTINGS_STATE_CYCLINGNIGHT_PATH, settings_state_cyclingnight_str);
 		request->send(200, "text/html", statemachine_html); });
 
 	// Start server

@@ -4,7 +4,6 @@
 String read_network_config(void)
 {
     bool settings_network_file_present = 0;
-
     String settings_network_string = "";
 
     if (settings_network_mutex != NULL)
@@ -26,7 +25,6 @@ String read_network_config(void)
 String read_rtc_config(void)
 {
     bool settings_rtc_file_present = 0;
-
     String settings_rtc_string = "";
 
     if (settings_rtc_mutex != NULL)
@@ -87,7 +85,6 @@ void process_rtc_config(void)
 String read_influxdb_config(void)
 {
     bool settings_influxdb_file_present = 0;
-
     String settings_influxdb_string = "";
 
     if (settings_influxdb_mutex != NULL)
@@ -289,11 +286,9 @@ String read_fan_config(void)
     bool settings_fan_file_present = 0;
     String settings_fan_string = "";
 
-    settings_fan_string = read_fan_config();
-
     if (settings_fan_mutex != NULL)
     {
-        if (xSemaphoreTake(settings_fan_mutex, (TickType_t)100) == pdTRUE)
+        if (xSemaphoreTake(settings_fan_mutex, (TickType_t)10) == pdTRUE)
         {
             settings_fan_file_present = check_file_exists(SETTINGS_FAN_PATH);
             if (settings_fan_file_present == 1)
@@ -311,8 +306,10 @@ void process_fan_config(void)
     String settings_fan_string = "";
     String message = "";
 
-    JsonDocument settings_fan_doc;
+    JsonDocument doc;
 
+    settings_fan_string = read_fan_config();
+    
     if (settings_fan_string == "")
     {
         message = "[ERROR] String is empty or failed to read file";
@@ -321,12 +318,33 @@ void process_fan_config(void)
     }
     else
     {
-        DeserializationError err = deserializeJson(settings_fan_doc, settings_fan_string);
+        DeserializationError err = deserializeJson(doc, settings_fan_string);
         if (err)
         {
             message = message = "[ERROR] Failed to parse: " + String(SETTINGS_FAN_PATH) + " with error: " + String(err.c_str());
             print_message(message);
             return;
+        }
+    }
+    
+    String fan_control_mode_temp = doc[String("fan_control_mode")];
+    String fan_control_mqtt_server_temp = doc[String("fan_control_mqtt_server")];
+    String fan_control_mqtt_port_temp = doc[String("fan_control_mqtt_port")];
+    String fan_control_mqtt_topic_temp = doc[String("fan_control_mqtt_topic")];
+    String fan_control_url_high_speed_temp = doc[String("fan_control_url_high_speed")];
+    String fan_control_url_medium_speed = doc[String("fan_control_url_medium_speed")];
+    String fan_control_url_low_speed = doc[String("fan_control_url_low_speed")];
+
+    if (settings_fan_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_fan_mutex, (TickType_t)10) == pdTRUE)
+        {
+            fan_control_mode = fan_control_mode_temp;
+            fan_control_mqtt_topic = fan_control_mqtt_topic_temp;
+            fan_control_url_high_speed = fan_control_url_high_speed_temp;
+            fan_control_url_medium_speed = fan_control_url_high_speed_temp;
+            fan_control_url_low_speed = fan_control_url_high_speed_temp;
+            xSemaphoreGive(settings_fan_mutex);
         }
     }
 }

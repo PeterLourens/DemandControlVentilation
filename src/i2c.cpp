@@ -79,7 +79,6 @@ void read_sensors(void)
                 }
                 if (sensor_type == "DHT20" || sensor_type == "AHT20")
                 {
-
                     if (bus == 0)
                     {
                         DHT20 DHT1(&Wire);
