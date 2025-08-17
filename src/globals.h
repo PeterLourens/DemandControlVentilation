@@ -5,10 +5,10 @@
 #include <ArduinoJson.h>
 #include <RTClib.h>
 
-#define I2C_SCL1 38 // Wire I/O settings (SDA1/SCL1) and
-#define I2C_SDA1 39
-#define I2C_SCL2 40 // Wire1 I/O settings (SDA2/SCL2)
-#define I2C_SDA2 41
+#define I2C_SCL1 22 // Wire I/O settings (SDA1/SCL1) and
+#define I2C_SDA1 21
+#define I2C_SCL2 18 // Wire1 I/O settings (SDA2/SCL2)
+#define I2C_SDA2 19
 
 #define LCD_ROWS 4     // LCD display rows
 #define LCD_COLUMNS 20 // LCD display columns

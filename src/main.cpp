@@ -85,14 +85,14 @@ void setup()
 	start_task_valvecontrol();
 	start_task_i2c();
 	start_task_statemachine();
-	start_task_mqtt();
-	start_task_neopixel();
-	start_task_system();
+	//start_task_mqtt();
+	//start_task_neopixel();
+	//start_task_system();
 	start_task_websocket();
 
 	vTaskDelay(60000); // Only write to influxDB when all tasks are running
 	// start_task_espnow();
-	start_task_influxdb();
+	//start_task_influxdb();
 }
 
 void loop() {}

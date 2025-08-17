@@ -720,8 +720,8 @@ void sync_rtc_ntp(void)
     }
 
     // Sync the RTC with the NTP time
-    rtc.adjust(DateTime(timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec));
-    Wire.endTransmission();
+    //rtc.adjust(DateTime(timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec));
+    //Wire.endTransmission();
 }
 
 void IRAM_ATTR lcd_baclight_pb_isr()

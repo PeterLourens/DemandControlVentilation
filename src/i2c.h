@@ -16,7 +16,7 @@
 #include "LiquidCrystal_I2C.h"          //Not library version but adjusted for using Wire1
 #include "general.h"
 
-#define pushButton_pin 7
+#define pushButton_pin 5
 
 //Function definitions
 void read_sensors(void);
