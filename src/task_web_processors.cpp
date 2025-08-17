@@ -1,6 +1,6 @@
 #include "task_web_processors.h"
 
-String sensor_config_processor(const String &var)
+/*String sensor_config_processor(const String &var)
 {
 
     const char *path1 = "/json/sensor_config1.json";
@@ -200,9 +200,9 @@ String sensor_config_processor(const String &var)
     }
 
     return String();
-}
+}*/
 
-String status_processor(const String &var)
+/*String status_processor(const String &var)
 {
 
     const char *path1 = "/json/valvepositions.json";
@@ -591,9 +591,9 @@ String status_processor(const String &var)
         return (wire1_sensor_data["wire1_sensor7"]["co2"]);
 
     return String();
-}
+}*/
 
-String valvecontrol_processor(const String &var)
+/*String valvecontrol_processor(const String &var)
 {
 
     const char *path = "/json/valvepositions.json";
@@ -638,9 +638,9 @@ String valvecontrol_processor(const String &var)
     }
 
     return String();
-}
+}*/
 
-String settings_processor(const String &var)
+/*String settings_processor(const String &var)
 {
 
     const char *settings_network_path = "/json/settings_network.json";
@@ -677,7 +677,7 @@ String settings_processor(const String &var)
     JsonDocument settings_influxdb_doc;
     JsonDocument settings_rtc_doc;
 
-    /*Network settings processor*/
+    //Network settings processor
     if (settings_network_mutex != NULL)
     {
         if (xSemaphoreTake(settings_network_mutex, (TickType_t)10) == pdTRUE)
@@ -730,7 +730,7 @@ String settings_processor(const String &var)
         }
     }
 
-    /*MQTT Settings processor*/
+    //MQTT Settings processor
     if (settings_mqtt_mutex != NULL)
     {
         if (xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
@@ -776,7 +776,7 @@ String settings_processor(const String &var)
         }
     }
 
-    /*I2C Settings processor*/
+    //I2C Settings processor
     if (settings_i2c_mutex != NULL)
     {
         if (xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
@@ -821,7 +821,7 @@ String settings_processor(const String &var)
         }
     }
 
-    /*Fan settings processor*/
+    //Fan settings processor
     if (settings_fan_mutex != NULL)
     {
         if (xSemaphoreTake(settings_fan_mutex, (TickType_t)10) == pdTRUE)
@@ -872,7 +872,7 @@ String settings_processor(const String &var)
         }
     }
 
-    /*Statemachine settings processor*/
+    //Statemachine settings processor
     if (settings_statemachine_mutex != NULL)
     {
         if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10) == pdTRUE)
@@ -913,7 +913,7 @@ String settings_processor(const String &var)
         }
     }
 
-    /*InfluxDB Settings processor*/
+    //InfluxDB Settings processor
     if (settings_influxdb_mutex != NULL)
     {
         if (xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
@@ -960,7 +960,7 @@ String settings_processor(const String &var)
         }
     }
 
-    /*RTC Settings processor*/
+    //RTC Settings processor
     if (settings_rtc_mutex != NULL)
     {
         if (xSemaphoreTake(settings_rtc_mutex, (TickType_t)10) == pdTRUE)
@@ -1002,9 +1002,9 @@ String settings_processor(const String &var)
     }
 
     return String();
-}
+}*/
 
-String settings_valve_state(const String &var)
+/*String settings_valve_state(const String &var)
 {
 
     const char *settings_state_day_path = "/json/settings_state_day.json";
@@ -1028,7 +1028,7 @@ String settings_valve_state(const String &var)
     bool settings_state_cyclingday_present;
     bool settings_state_cyclingnight_present;
 
-    /*Day state*/
+    //Day state
     settings_state_day_present = check_file_exists(settings_state_day_path);
     if (settings_state_day_present == 1)
     {
@@ -1075,7 +1075,7 @@ String settings_valve_state(const String &var)
         }
     }
 
-    /*Night state*/
+    //Night state
     settings_state_night_present = check_file_exists(settings_state_night_path);
     if (settings_state_night_present == 1)
     {
@@ -1122,7 +1122,7 @@ String settings_valve_state(const String &var)
         }
     }
 
-    /*High CO2 day state*/
+    //High CO2 day state
     settings_state_highco2day_present = check_file_exists(settings_state_highco2day_path);
     if (settings_state_highco2day_present == 1)
     {
@@ -1173,7 +1173,7 @@ String settings_valve_state(const String &var)
         }
     }
 
-    /*High CO2 night state*/
+    //High CO2 night state
     settings_state_highco2night_present = check_file_exists(settings_state_highco2night_path);
     if (settings_state_highco2night_present == 1)
     {
@@ -1224,7 +1224,7 @@ String settings_valve_state(const String &var)
         }
     }
 
-    /*High RH day state*/
+    //High RH day state
     settings_state_highrhday_present = check_file_exists(settings_state_highrhday_path);
     if (settings_state_highrhday_present == 1)
     {
@@ -1275,7 +1275,7 @@ String settings_valve_state(const String &var)
         }
     }
 
-    /*High RH night state*/
+    //High RH night state
     settings_state_highrhnight_present = check_file_exists(settings_state_highrhnight_path);
     if (settings_state_highrhnight_present == 1)
     {
@@ -1326,7 +1326,7 @@ String settings_valve_state(const String &var)
         }
     }
 
-    /*Cooking state*/
+    //Cooking state
     settings_state_cooking_present = check_file_exists(settings_state_cooking_path);
     if (settings_state_cooking_present == 1)
     {
@@ -1381,7 +1381,7 @@ String settings_valve_state(const String &var)
         }
     }
 
-    /*Valve cycling day state*/
+    //Valve cycling day state
     settings_state_cyclingday_present = check_file_exists(settings_state_cyclingday_path);
     if (settings_state_cyclingday_present == 1)
     {
@@ -1428,7 +1428,7 @@ String settings_valve_state(const String &var)
         }
     }
 
-    /*Valve cycling night state*/
+    //Valve cycling night state
     settings_state_cyclingnight_present = check_file_exists(settings_state_cyclingnight_path);
     if (settings_state_cyclingnight_present == 1)
     {
@@ -1476,7 +1476,7 @@ String settings_valve_state(const String &var)
     }
 
     return String();
-}
+}*/
 
 String webserial_processor(const String &var)
 {
