@@ -38,6 +38,11 @@
 
 #define VALVE_POSITIONS_PATH "/json/valvepositions.json"
 
+#define SMALL_CONFIG_ITEM 8
+#define MEDIUM_CONFIG_ITEM 16
+#define LARGE_CONFIG_ITEM 36
+#define XLARGE_CONFIG_ITEM 64
+
 extern const char *settings_state_day_path;
 extern const char *settings_state_night_path;
 extern const char *settings_state_highco2day_path;
@@ -65,6 +70,8 @@ extern TaskHandle_t task_websocket;
 
 extern SemaphoreHandle_t sensor_config_file_mutex;
 extern SemaphoreHandle_t valve_position_file_mutex;
+extern SemaphoreHandle_t settings_files_mutex;
+
 extern SemaphoreHandle_t valve_control_data_mutex;
 extern SemaphoreHandle_t date_time_mutex;
 extern SemaphoreHandle_t settings_network_mutex;
@@ -94,6 +101,21 @@ extern QueueHandle_t sensor_queue;
 extern QueueHandle_t sensor_avg_queue;
 extern QueueHandle_t webserial_queue;
 
+typedef struct
+{
+    char enable_dhcp[SMALL_CONFIG_ITEM];
+    char ssid[SMALL_CONFIG_ITEM];
+    char wifi_password[XLARGE_CONFIG_ITEM]; // WPA3 has max 63 characters
+    char ip_address[LARGE_CONFIG_ITEM];
+    char subnet_mask[LARGE_CONFIG_ITEM];
+    char gateway[LARGE_CONFIG_ITEM];
+    char primary_dns[LARGE_CONFIG_ITEM];
+    char secondary_dns[LARGE_CONFIG_ITEM];
+} Network_settings;
+
+extern Network_settings networksettings;
+
+// Old style
 extern JsonDocument valve_control_data;
 extern JsonDocument wire_sensor_data;
 extern JsonDocument wire1_sensor_data;

@@ -1,5 +1,89 @@
 #include "config_files.h"
 
+bool read_networksettings(const char *path, char *buffer, size_t bufferSize, SemaphoreHandle_t mutex)
+{
+    if (mutex != NULL)
+    {
+        if (xSemaphoreTake(mutex, (TickType_t)50))
+        {
+            File file = LittleFS.open(path, "r");
+            if (!file)
+            {
+                Serial.println("Failed to open network settings file");
+                xSemaphoreGive(mutex);
+                return false;
+            }
+
+            size_t len = file.readBytes(buffer, bufferSize - 1);
+            buffer[len] = '\0'; // Null-terminate
+            file.close();
+            xSemaphoreGive(mutex);
+            return true;
+        }
+
+        Serial.println("Failed to acquire file mutex");
+    }
+    return false;
+}
+
+bool parse_network_config(void)
+{
+    char buffer[512];
+    String message;
+    JsonDocument doc;
+
+    if (read_networksettings(SETTINGS_NETWORK_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_NETWORK_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+
+        const char *enable_dhcp = doc["enable_dhcp"];
+        const char *ssid = doc["ssid"];
+        const char *wifi_password = doc["wifi_password"];
+        const char *ip_address = doc["ip_address"];
+        const char *subnet_mask = doc["subnet_mask"];
+        const char *gateway = doc["gateway"];
+        const char *primary_dns = doc["primary_dns"];
+        const char *secondary_dns = doc["secondary_dns"];
+
+        //Serial.print("\nEnable dhcp: ");
+        //Serial.print(enable_dhcp);
+        //Serial.print("\nSSID: ");
+        //Serial.print(ssid);
+
+        if (settings_network_mutex != NULL)
+        {
+            if (xSemaphoreTake(settings_network_mutex, (TickType_t)10))
+            {
+                if (enable_dhcp)
+                {
+                    strncpy(networksettings.enable_dhcp, enable_dhcp, sizeof(networksettings.enable_dhcp) - 1);
+                    networksettings.enable_dhcp[sizeof(networksettings.enable_dhcp) - 1] = '\0';
+                }
+                if (ssid)
+                {
+                    strncpy(networksettings.ssid, ssid, sizeof(networksettings.ssid) - 1);
+                    networksettings.ssid[sizeof(networksettings.ssid) - 1] = '\0';
+                }
+
+                if (wifi_password)
+                {
+                    strncpy(networksettings.wifi_password, wifi_password, sizeof(networksettings.wifi_password) - 1);
+                    networksettings.wifi_password[sizeof(networksettings.wifi_password) - 1] = '\0';
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 // Read network settings
 String read_network_config(void)
 {
@@ -309,7 +393,7 @@ void process_fan_config(void)
     JsonDocument doc;
 
     settings_fan_string = read_fan_config();
-    
+
     if (settings_fan_string == "")
     {
         message = "[ERROR] String is empty or failed to read file";
@@ -326,7 +410,7 @@ void process_fan_config(void)
             return;
         }
     }
-    
+
     String fan_control_mode_temp = doc[String("fan_control_mode")];
     String fan_control_mqtt_server_temp = doc[String("fan_control_mqtt_server")];
     String fan_control_mqtt_port_temp = doc[String("fan_control_mqtt_port")];

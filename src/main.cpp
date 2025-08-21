@@ -19,6 +19,8 @@ void setup()
 
 	sensor_config_file_mutex = xSemaphoreCreateMutex();
 	valve_position_file_mutex = xSemaphoreCreateMutex();
+	settings_files_mutex = xSemaphoreCreateMutex();
+
 	date_time_mutex = xSemaphoreCreateMutex();
 	settings_network_mutex = xSemaphoreCreateMutex();
 	settings_mqtt_mutex = xSemaphoreCreateMutex();
@@ -67,6 +69,8 @@ void setup()
 	}
 
 	// setup_wifi();
+	parse_network_config();
+	vTaskDelay(5000);
 	start_task_wifi();
 	process_mqtt_config();
 	process_influxdb_config();

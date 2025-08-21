@@ -10,6 +10,7 @@
 
 // Function definitions
 String read_network_config(void);
+bool parse_network_config(void);
 String read_rtc_config(void);
 void process_rtc_config(void);
 String read_influxdb_config(void);

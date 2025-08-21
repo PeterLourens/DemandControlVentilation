@@ -12,8 +12,12 @@ TaskHandle_t task_wifi;
 TaskHandle_t task_espnow;
 TaskHandle_t task_websocket;
 
-SemaphoreHandle_t sensor_config_file_mutex = NULL;    // Sensor configuration files
-SemaphoreHandle_t valve_position_file_mutex = NULL;   // Valve position file
+//Files mutexes
+SemaphoreHandle_t sensor_config_file_mutex = NULL;  // Sensor configuration files
+SemaphoreHandle_t valve_position_file_mutex = NULL; // Valve position file
+SemaphoreHandle_t settings_files_mutex = NULL;      // settings files mutex
+
+//Data mutexes
 SemaphoreHandle_t valve_control_data_mutex = NULL;    // Valve control data variable
 SemaphoreHandle_t date_time_mutex = NULL;             // Time variables
 SemaphoreHandle_t settings_network_mutex = NULL;      // Network settings
@@ -43,11 +47,13 @@ QueueHandle_t sensor_queue;     // Handle for sensor queue data
 QueueHandle_t sensor_avg_queue; // Handle for sensor queue data
 QueueHandle_t webserial_queue;  // Handle for webserial queue data
 
-JsonDocument valve_control_data; // Global for valve control data
-JsonDocument wire_sensor_data;   // Global for bus0 sensor configuration
-JsonDocument wire1_sensor_data;  // Global for bus1 sensor configuration
-JsonDocument settings_fan_data;                                 // Define global fanspeed settings
-JsonDocument settings_statemachine_data;                        // Define global statemachine settings
+Network_settings networksettings;
+
+JsonDocument valve_control_data;         // Global for valve control data
+JsonDocument wire_sensor_data;           // Global for bus0 sensor configuration
+JsonDocument wire1_sensor_data;          // Global for bus1 sensor configuration
+JsonDocument settings_fan_data;          // Define global fanspeed settings
+JsonDocument settings_statemachine_data; // Define global statemachine settings
 
 JsonDocument settings_state_day;          // Settings for state day
 JsonDocument settings_state_night;        // Settings for state night
