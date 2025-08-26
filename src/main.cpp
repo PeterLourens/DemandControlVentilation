@@ -80,6 +80,7 @@ void setup()
 	parse_network_settings();
 	parse_sensor1_settings();
 	parse_sensor2_settings();
+	parse_statemachine_settings();
 	vTaskDelay(100);
 	start_task_wifi();
 
@@ -88,7 +89,7 @@ void setup()
 	process_influxdb_config();
 	process_i2c_config();
 	process_rtc_config();
-	process_statemachine_config();
+	//process_statemachine_config();
 	process_fan_config();
 	//sensor_config_data_read();
 	valve_settings_config_read();

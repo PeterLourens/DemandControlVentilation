@@ -44,9 +44,11 @@
 #define XLARGE_CONFIG_ITEM 64
 #define XXLARGE_CONFIG_ITEM 128
 
-#define SENSOR_I2C_BUSSES 2
-#define SENSOR_COUNT 8
-#define SENSOR_DATA_FIELDS 3
+#define SENSOR_I2C_BUSSES 2  // Number of I2C busses
+#define SENSOR_COUNT 8       // Number of sensors per I2C bus
+#define SENSOR_DATA_FIELDS 3 // 0=Temp, 1=RH, 2=CO2
+
+#define MAX_SENSORS 16 // Maximum number of sensors supported
 
 extern const char *settings_state_day_path;
 extern const char *settings_state_night_path;
@@ -165,14 +167,17 @@ typedef struct
 
 typedef struct
 {
-    char weekday_day_hour_start[SMALL_CONFIG_ITEM];
-    char weekday_day_minute_start[SMALL_CONFIG_ITEM];
-    char weekday_night_hour_start[SMALL_CONFIG_ITEM];
-    char weekday_night_minute_start[SMALL_CONFIG_ITEM];
-    char weekend_day_hour_start[SMALL_CONFIG_ITEM];
-    char weekend_day_minute_start[SMALL_CONFIG_ITEM];
-    char weekend_night_hour_start[SMALL_CONFIG_ITEM];
-    char weekend_night_minute_start[SMALL_CONFIG_ITEM];
+    int weekday_day_hour_start;
+    int weekday_day_minute_start;
+    int weekday_night_hour_start;
+    int weekday_night_minute_start;
+    int weekend_day_hour_start;
+    int weekend_day_minute_start;
+    int weekend_night_hour_start;
+    int weekend_night_minute_start;
+    char weekend_day_1[SMALL_CONFIG_ITEM];
+    char weekend_day_2[SMALL_CONFIG_ITEM];
+    int minimum_state_time;
 } Statemachine_settings;
 
 typedef struct
@@ -200,8 +205,8 @@ extern I2C_settings i2csettings;
 extern MQTT_settings mqttsettings;
 extern Fan_settings fansettings;
 extern Statemachine_settings statemachinesettings;
-extern Sensor1_settings sensor1settings[8];
-extern Sensor2_settings sensor2settings[8];
+extern Sensor1_settings sensor1settings[SENSOR_COUNT];
+extern Sensor2_settings sensor2settings[SENSOR_COUNT];
 
 //
 //
@@ -215,10 +220,10 @@ extern Sensor2_settings sensor2settings[8];
 //
 // Old style
 extern JsonDocument valve_control_data;
-//extern JsonDocument wire_sensor_data;
-//extern JsonDocument wire1_sensor_data;
+// extern JsonDocument wire_sensor_data;
+// extern JsonDocument wire1_sensor_data;
 extern JsonDocument settings_fan_data;
-extern JsonDocument settings_statemachine_data;
+//extern JsonDocument settings_statemachine_data;
 
 extern JsonDocument settings_state_day;
 extern JsonDocument settings_state_night;
@@ -235,7 +240,7 @@ extern String wire_sensor_config_string;
 extern String wire1_sensor_config_string;
 
 // Statemachine variables
-extern int weekday_day_hour_start;
+/*extern int weekday_day_hour_start;
 extern int weekday_day_minute_start;
 extern int weekday_night_hour_start;
 extern int weekday_night_minute_start;
@@ -245,7 +250,7 @@ extern int weekend_night_hour_start;
 extern int weekend_night_minute_start;
 extern String weekend_day_1;
 extern String weekend_day_2;
-extern int minimum_state_time;
+extern int minimum_state_time;*/
 
 // MQTT settings
 extern String enable_mqtt;

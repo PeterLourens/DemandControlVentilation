@@ -1082,44 +1082,42 @@ void Taskwebcode(void *pvParameters)
 	// Save settings from statemachine settings
 	server.on("/settings_statemachine", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		if (settings_statemachine_mutex != NULL) {
-			if(xSemaphoreTake(settings_statemachine_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-				int params = request->params();
-				for(int i=0;i<params;i++){
-					const AsyncWebParameter* p = request->getParam(i);
-					if(p->isPost()){
-						if (p->name() == STATUS_STATEMACHINE_CONFIG)
-							settings_statemachine_data["status_statemachine_config"] = p->value().c_str();
-						if (p->name() == WEEKDAY_DAY_HOUR_START)
-							settings_statemachine_data["weekday_day_hour_start"] = p->value().c_str();
-						if (p->name() == WEEKDAY_DAY_MINUTE_START)
-							settings_statemachine_data["weekday_day_minute_start"] = p->value().c_str();
-						if (p->name() == WEEKDAY_NIGHT_HOUR_START)
-							settings_statemachine_data["weekday_night_hour_start"] = p->value().c_str();
-						if (p->name() == WEEKDAY_NIGHT_MINUTE_START)
-							settings_statemachine_data["weekday_night_minute_start"] = p->value().c_str();
-						if (p->name() == WEEKEND_DAY_HOUR_START)
-							settings_statemachine_data["weekend_day_hour_start"] = p->value().c_str();
-						if (p->name() == WEEKEND_DAY_MINUTE_START)
-							settings_statemachine_data["weekend_day_minute_start"] = p->value().c_str();
-						if (p->name() == WEEKEND_NIGHT_HOUR_START)
-							settings_statemachine_data["weekend_night_hour_start"] = p->value().c_str();
-						if (p->name() == WEEKEND_NIGHT_MINUTE_START)
-							settings_statemachine_data["weekend_night_minute_start"] = p->value().c_str();
-						if (p->name() == WEEKEND_DAY_1)
-							settings_statemachine_data["weekend_day_1"] = p->value().c_str();
-						if (p->name() == WEEKEND_DAY_2)
-							settings_statemachine_data["weekend_day_2"] = p->value().c_str();
-						if (p->name() == MINIMUM_STATE_TIME)
-							settings_statemachine_data["minimum_state_time"] = p->value().c_str();
-					}
-				}
-				String settings_statemachine_str;
-				serializeJson(settings_statemachine_data, settings_statemachine_str);
-				write_config_file(SETTINGS_STATEMACHINE_PATH, settings_statemachine_str);
-				xSemaphoreGive(settings_statemachine_mutex);
+		int params = request->params();
+		char settings_statemachine_char[800] = {};
+		JsonDocument settings_statemachine_doc;
+
+		for(int i=0;i<params;i++){
+			const AsyncWebParameter* p = request->getParam(i);
+			if(p->isPost()){
+				if (p->name() == STATUS_STATEMACHINE_CONFIG)
+					settings_statemachine_doc["status_statemachine_config"] = p->value().c_str();
+				if (p->name() == WEEKDAY_DAY_HOUR_START)
+					settings_statemachine_doc["weekday_day_hour_start"] = p->value().c_str();
+				if (p->name() == WEEKDAY_DAY_MINUTE_START)
+					settings_statemachine_doc["weekday_day_minute_start"] = p->value().c_str();
+				if (p->name() == WEEKDAY_NIGHT_HOUR_START)
+					settings_statemachine_doc["weekday_night_hour_start"] = p->value().c_str();
+				if (p->name() == WEEKDAY_NIGHT_MINUTE_START)
+					settings_statemachine_doc["weekday_night_minute_start"] = p->value().c_str();
+				if (p->name() == WEEKEND_DAY_HOUR_START)
+					settings_statemachine_doc["weekend_day_hour_start"] = p->value().c_str();
+				if (p->name() == WEEKEND_DAY_MINUTE_START)
+					settings_statemachine_doc["weekend_day_minute_start"] = p->value().c_str();
+				if (p->name() == WEEKEND_NIGHT_HOUR_START)
+					settings_statemachine_doc["weekend_night_hour_start"] = p->value().c_str();
+				if (p->name() == WEEKEND_NIGHT_MINUTE_START)
+					settings_statemachine_doc["weekend_night_minute_start"] = p->value().c_str();
+				if (p->name() == WEEKEND_DAY_1)
+					settings_statemachine_doc["weekend_day_1"] = p->value().c_str();
+				if (p->name() == WEEKEND_DAY_2)
+					settings_statemachine_doc["weekend_day_2"] = p->value().c_str();
+				if (p->name() == MINIMUM_STATE_TIME)
+					settings_statemachine_doc["minimum_state_time"] = p->value().c_str();
 			}
 		}
+		serializeJson(settings_statemachine_doc, settings_statemachine_char, sizeof(settings_statemachine_char));
+		write_settings(SETTINGS_STATEMACHINE_PATH, settings_statemachine_char, settings_statemachine_mutex);
+		parse_statemachine_settings(); // Apply new statemachine settings
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine day

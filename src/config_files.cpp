@@ -454,58 +454,41 @@ bool parse_statemachine_settings(void)
         }
     }
 
-    const char *weekday_day_hour_start = doc["weekday_day_hour_start"];
-    const char *weekday_day_minute_start = doc["weekday_day_minute_start"];
-    const char *weekday_night_hour_start = doc["weekday_night_hour_start"];
-    const char *weekday_night_minute_start = doc["weekday_night_minute_start"];
-    const char *weekend_day_hour_start = doc["weekend_day_hour_start"];
-    const char *weekend_day_minute_start = doc["weekend_day_minute_start"];
-    const char *weekend_night_hour_start = doc["weekend_night_hour_start"];
-    const char *weekend_night_minute_start = doc["weekend_night_minute_start"];
+    int weekday_day_hour_start = doc["weekday_day_hour_start"];
+    int weekday_day_minute_start = doc["weekday_day_minute_start"];
+    int weekday_night_hour_start = doc["weekday_night_hour_start"];
+    int weekday_night_minute_start = doc["weekday_night_minute_start"];
+    int weekend_day_hour_start = doc["weekend_day_hour_start"];
+    int weekend_day_minute_start = doc["weekend_day_minute_start"];
+    int weekend_night_hour_start = doc["weekend_night_hour_start"];
+    int weekend_night_minute_start = doc["weekend_night_minute_start"];
+    const char *weekend_day_1 = doc["weekend_day_1"];
+    const char *weekend_day_2 = doc["weekend_day_2"];
+    int minimum_state_time = doc["minimum_state_time"];
 
     if (settings_statemachine_mutex != NULL)
     {
         if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
         {
-            if (weekday_day_hour_start)
+            statemachinesettings.weekday_day_hour_start = doc["weekday_day_hour_start"];
+            statemachinesettings.weekday_day_minute_start = doc["weekday_day_minute_start"];
+            statemachinesettings.weekday_night_hour_start = doc["weekday_night_hour_start"];
+            statemachinesettings.weekday_night_minute_start = doc["weekday_night_minute_start"];
+            statemachinesettings.weekend_day_hour_start = doc["weekend_day_hour_start"];
+            statemachinesettings.weekend_day_minute_start = doc["weekend_day_minute_start"];
+            statemachinesettings.weekend_night_hour_start = doc["weekend_night_hour_start"];
+            statemachinesettings.weekend_night_minute_start = doc["weekend_night_minute_start"];
+            statemachinesettings.minimum_state_time = doc["minimum_state_time"];
+
+            if (weekend_day_1)
             {
-                strncpy(statemachinesettings.weekday_day_hour_start, weekday_day_hour_start, sizeof(statemachinesettings.weekday_day_hour_start) - 1);
-                statemachinesettings.weekday_day_hour_start[sizeof(statemachinesettings.weekday_day_hour_start) - 1] = '\0';
+                strncpy(statemachinesettings.weekend_day_1, weekend_day_1, sizeof(statemachinesettings.weekend_day_1) - 1);
+                statemachinesettings.weekend_day_1[sizeof(statemachinesettings.weekend_day_1) - 1] = '\0';
             }
-            if (weekday_day_minute_start)
+            if (weekend_day_2)
             {
-                strncpy(statemachinesettings.weekday_day_minute_start, weekday_day_minute_start, sizeof(statemachinesettings.weekday_day_minute_start) - 1);
-                statemachinesettings.weekday_day_minute_start[sizeof(statemachinesettings.weekday_day_minute_start) - 1] = '\0';
-            }
-            if (weekday_night_hour_start)
-            {
-                strncpy(statemachinesettings.weekday_night_hour_start, weekday_night_hour_start, sizeof(statemachinesettings.weekday_night_hour_start) - 1);
-                statemachinesettings.weekday_night_hour_start[sizeof(statemachinesettings.weekday_night_hour_start) - 1] = '\0';
-            }
-            if (weekday_night_minute_start)
-            {
-                strncpy(statemachinesettings.weekday_night_minute_start, weekday_night_minute_start, sizeof(statemachinesettings.weekday_night_minute_start) - 1);
-                statemachinesettings.weekday_night_minute_start[sizeof(statemachinesettings.weekday_night_minute_start) - 1] = '\0';
-            }
-            if (weekend_day_hour_start)
-            {
-                strncpy(statemachinesettings.weekend_day_hour_start, weekend_day_hour_start, sizeof(statemachinesettings.weekend_day_hour_start) - 1);
-                statemachinesettings.weekend_day_hour_start[sizeof(statemachinesettings.weekend_day_hour_start) - 1] = '\0';
-            }
-            if (weekend_day_minute_start)
-            {
-                strncpy(statemachinesettings.weekend_day_minute_start, weekend_day_minute_start, sizeof(statemachinesettings.weekend_day_minute_start) - 1);
-                statemachinesettings.weekend_day_minute_start[sizeof(statemachinesettings.weekend_day_minute_start) - 1] = '\0';
-            }
-            if (weekend_night_hour_start)
-            {
-                strncpy(statemachinesettings.weekend_night_hour_start, weekend_night_hour_start, sizeof(statemachinesettings.weekend_night_hour_start) - 1);
-                statemachinesettings.weekend_night_hour_start[sizeof(statemachinesettings.weekend_night_hour_start) - 1] = '\0';
-            }
-            if (weekend_night_minute_start)
-            {
-                strncpy(statemachinesettings.weekend_night_minute_start, weekend_night_minute_start, sizeof(statemachinesettings.weekend_night_minute_start) - 1);
-                statemachinesettings.weekend_night_minute_start[sizeof(statemachinesettings.weekend_night_minute_start) - 1] = '\0';
+                strncpy(statemachinesettings.weekend_day_2, weekend_day_2, sizeof(statemachinesettings.weekend_day_2) - 1);
+                statemachinesettings.weekend_day_2[sizeof(statemachinesettings.weekend_day_2) - 1] = '\0';
             }
             xSemaphoreGive(settings_statemachine_mutex);
             return true;
@@ -1009,7 +992,7 @@ String read_statemachine_config(void)
     return settings_statemachine_string;
 }
 
-void process_statemachine_config(void)
+/*void process_statemachine_config(void)
 {
     String settings_statemachine_string = "";
     String message = "";
@@ -1056,7 +1039,7 @@ void process_statemachine_config(void)
             xSemaphoreGive(settings_statemachine_mutex);
         }
     }
-}
+}*/
 
 // Read both sensor config files an place contents in global variable
 /*void sensor_config_data_read()

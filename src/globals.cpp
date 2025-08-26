@@ -57,14 +57,14 @@ I2C_settings i2csettings;
 MQTT_settings mqttsettings;
 Fan_settings fansettings;
 Statemachine_settings statemachinesettings;
-Sensor1_settings sensor1settings[8];
-Sensor2_settings sensor2settings[8];
+Sensor1_settings sensor1settings[SENSOR_COUNT];
+Sensor2_settings sensor2settings[SENSOR_COUNT];
 
 JsonDocument valve_control_data;         // Global for valve control data
 //JsonDocument wire_sensor_data;           // Global for bus0 sensor configuration
 //JsonDocument wire1_sensor_data;          // Global for bus1 sensor configuration
 JsonDocument settings_fan_data;          // Define global fanspeed settings
-JsonDocument settings_statemachine_data; // Define global statemachine settings
+//JsonDocument settings_statemachine_data; // Define global statemachine settings
 
 JsonDocument settings_state_day;          // Settings for state day
 JsonDocument settings_state_night;        // Settings for state night
@@ -81,7 +81,7 @@ String wire_sensor_config_string = {};
 String wire1_sensor_config_string = {};
 
 // Statemachine variables
-int weekday_day_hour_start = 0;
+/*int weekday_day_hour_start = 0;
 int weekday_day_minute_start = 0;
 int weekday_night_hour_start = 0;
 int weekday_night_minute_start = 0;
@@ -91,7 +91,7 @@ int weekend_night_hour_start = 0;
 int weekend_night_minute_start = 0;
 String weekend_day_1 = "";
 String weekend_day_2 = "";
-int minimum_state_time = 0;
+int minimum_state_time = 0;*/
 
 // Settings for MQTT
 String enable_mqtt = "";

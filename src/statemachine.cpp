@@ -2,8 +2,8 @@
 
 #include "statemachine.h"
 
-float statemachine_sensor_data[2][8][3];
-float statemachine_avg_sensor_data[2][8][3];
+float statemachine_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+float statemachine_avg_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
 
 int co2_sensor_counter = 0;
 int rh_sensor_counter = 0;
@@ -25,12 +25,11 @@ struct RH_Sensors
     float rh_reading;
 };
 
-CO2_Sensors co2_sensors[16];
-RH_Sensors rh_sensors[16];
+CO2_Sensors co2_sensors[MAX_SENSORS];
+RH_Sensors rh_sensors[MAX_SENSORS];
 
 void init_statemachine(void)
 {
-
     String temp_fanspeed = "";
 
     if (statemachine_state_mutex != NULL)
@@ -69,14 +68,22 @@ void run_statemachine(void)
 
     message = "Read sensor data from queue for statemachine.";
     print_message(message);
-    if (xQueuePeek(sensor_queue, &statemachine_sensor_data, 0) == pdTRUE)
+
+    if (xQueuePeek(sensor_queue, &statemachine_sensor_data, 0) != pdTRUE)
     {
+        message = "Faild to read from sensor_queue in function: " + String(__FUNCTION__);
+        print_message(message);
+        return;
     }
 
     message = "Read average sensor data from queue for statemachine.";
     print_message(message);
-    if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) == pdTRUE)
+
+    if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) != pdTRUE)
     {
+        message = "Faild to read from sensor_avg_queue in function: " + String(__FUNCTION__);
+        print_message(message);
+        return;
     }
 
     // Refresh config for statemachine
@@ -160,7 +167,6 @@ void stopped_transitions(void)
 
 void init_transitions(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
 
@@ -169,17 +175,17 @@ void init_transitions(void)
     String temp_day_of_week = "";
     String message = "";
 
-    /*int weekday_day_hour_start_temp;
-    int weekday_day_minute_start_temp;
-    int weekday_night_hour_start_temp;
-    int weekday_night_minute_start_temp;
-    int weekend_day_hour_start_temp;
-    int weekend_day_minute_start_temp;
-    int weekend_night_hour_start_temp;
-    int weekend_night_minute_start_temp;
-    String weekend_day_1_temp;
-    String weekend_day_2_temp;
-    int minimum_state_time_temp;*/
+    int weekday_day_hour_start = 0;
+    int weekday_day_minute_start = 0;
+    int weekday_night_hour_start = 0;
+    int weekday_night_minute_start = 0;
+    int weekend_day_hour_start = 0;
+    int weekend_day_minute_start = 0;
+    int weekend_night_hour_start = 0;
+    int weekend_night_minute_start = 0;
+    char *weekend_day_1 = NULL;
+    char *weekend_day_2 = NULL;
+    int minimum_state_time = 0;
 
     // Actions for this state
     if (statemachine_state_mutex != NULL)
@@ -211,42 +217,44 @@ void init_transitions(void)
         }
     }
 
-    /*if (settings_statemachine_mutex != NULL)
+    if (settings_statemachine_mutex != NULL)
     {
-        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)20) == pdTRUE)
+        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
         {
-            weekday_day_hour_start_temp = weekday_day_hour_start;
-            weekday_day_minute_start_temp = weekday_day_minute_start;
-            weekday_night_hour_start_temp = weekday_night_hour_start;
-            weekday_night_minute_start_temp = weekday_night_minute_start;
-            weekend_day_hour_start_temp = weekend_day_hour_start;
-            weekend_day_minute_start_temp = weekend_day_minute_start;
-            weekend_night_hour_start_temp = weekend_night_hour_start;
-            weekend_night_minute_start_temp = weekday_night_minute_start;
-            weekend_day_1_temp = weekend_day_1;
-            weekend_day_2_temp = weekend_day_2;
-            minimum_state_time_temp = minimum_state_time;
+            weekday_day_hour_start = statemachinesettings.weekday_day_hour_start;
+            weekday_day_minute_start = statemachinesettings.weekday_day_minute_start;
+            weekday_night_hour_start = statemachinesettings.weekday_night_hour_start;
+            weekday_night_minute_start = statemachinesettings.weekday_night_minute_start;
+            weekend_day_hour_start = statemachinesettings.weekend_day_hour_start;
+            weekend_day_minute_start = statemachinesettings.weekend_day_minute_start;
+            weekend_night_hour_start = statemachinesettings.weekend_night_hour_start;
+            weekend_night_minute_start = statemachinesettings.weekend_night_minute_start;
+            weekend_day_1 = statemachinesettings.weekend_day_1;
+            weekend_day_2 = statemachinesettings.weekend_day_2;
+            minimum_state_time = statemachinesettings.minimum_state_time;
             xSemaphoreGive(settings_statemachine_mutex);
         }
-    }*/
+    }
 
     message = "Statemachine in state " + statemachine_state + ". It is " + temp_hour + ":" + temp_minute + " and day of week is " + temp_day_of_week + ", fanspeed is " + temp_fanspeed;
     print_message(message);
     set_fanspeed(temp_fanspeed);
 
     // Conditions to transit to other state, only evalaution based on time and day of week
-    /*if (temp_hour >= weekday_day_hour_start_temp &&
-        temp_hour < weekday_night_hour_start_temp &&
-        temp_day_of_week != weekend_day_1_temp &&
-        temp_day_of_week != weekend_day_2_temp)*/
-    if (temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")
+    if (temp_hour >= weekday_day_hour_start &&
+        temp_hour < weekday_night_hour_start &&
+        temp_day_of_week != weekend_day_1 &&
+        temp_day_of_week != weekend_day_2)
+    // if (temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")
     { // Weekday
         message = "It is after 8, before 21 and a weekday. Transit to day.";
         print_message(message);
         new_state = "day";
     }
-    // else if (temp_hour >= weekend_day_hour_start_temp && temp_hour < weekend_night_hour_start_temp && (temp_day_of_week == weekend_day_1_temp || temp_day_of_week == weekend_day_2_temp))
-    else if (temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday"))
+    else if (temp_hour >= weekend_day_hour_start &&
+             temp_hour < weekend_night_hour_start &&
+             (temp_day_of_week == weekend_day_1 || temp_day_of_week == weekend_day_2))
+    // else if (temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday"))
     { // Weekend
         message = "It is after 9 and before 21 and weekend. Transit to day.";
         print_message(message);
@@ -271,7 +279,6 @@ void init_transitions(void)
 
 void day_transitions(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
     int co2_sensors_high = 0;
@@ -457,7 +464,6 @@ void day_transitions(void)
 
 void night_transitions(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
     int co2_sensors_high = 0;
@@ -652,7 +658,6 @@ void night_transitions(void)
 
 void high_co2_day_transitions(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
     int co2_sensors_high = 0;
@@ -878,7 +883,6 @@ void high_co2_day_transitions(void)
 
 void high_co2_night_transitions(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
     int co2_sensors_high = 0;
@@ -1106,7 +1110,6 @@ void high_co2_night_transitions(void)
 
 void high_rh_day_transitions(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
     int rh_sensors_high = 0;
@@ -1255,7 +1258,6 @@ void high_rh_day_transitions(void)
 
 void high_rh_night_transitions(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
     int rh_sensors_high = 0;
@@ -1415,7 +1417,6 @@ void high_rh_night_transitions(void)
 
 void cooking_transitions(void)
 {
-
     int temp_hour;
     int temp_minute;
     bool valve_move_locked = 0;
@@ -1693,7 +1694,6 @@ void valve_cycle_day_transitions(void)
 
 void valve_cycle_night_transitions(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
     int co2_sensors_high = 0;
@@ -1871,17 +1871,16 @@ void valve_cycle_night_transitions(void)
 // This state is for later
 void manual_high_speed_transitions(void)
 {
-
     String statemachine_state = "manual_high_speed";
     String fanspeed = "high";
     String message = "";
 
     bool valve_move_locked = 0;
 
-    //Example: 
-    //char msg[128];
-    //snprintf(msg, sizeof(msg), "valve: %s, CO2 reading: %.2f", valve_1, co2_sensors[co2_index].co2_reading);
-    //print_message(msg);
+    // Example:
+    // char msg[128];
+    // snprintf(msg, sizeof(msg), "valve: %s, CO2 reading: %.2f", valve_1, co2_sensors[co2_index].co2_reading);
+    // print_message(msg);
 
     // Actions for this state
     if (statemachine_state_mutex != NULL)
@@ -1924,7 +1923,7 @@ void select_sensors(void)
     char *rh_sensor_wire1 = NULL;
     char *valve_wire = NULL;
     char *valve_wire1 = NULL;
-    
+
     String message = "";
 
     co2_sensor_counter = 0;
@@ -1936,7 +1935,8 @@ void select_sensors(void)
     float sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
 
     // Copy sensor readings from global
-    if (xQueuePeek(sensor_avg_queue, &sensor_data, 0) !=pdTRUE) {
+    if (xQueuePeek(sensor_avg_queue, &sensor_data, 0) != pdTRUE)
+    {
         message = "Faild to read from sensor_avg_queue in function: " + String(__FUNCTION__);
         return;
     }
@@ -1961,7 +1961,7 @@ void select_sensors(void)
         }
 
         if (co2_sensor_wire && strcmp(co2_sensor_wire, "On") == 0)
-        {            
+        {
             co2_sensors[j].valve = valve_wire;
             co2_sensors[j].co2_reading = sensor_data[0][i][2];
 
