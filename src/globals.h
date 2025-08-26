@@ -44,6 +44,10 @@
 #define XLARGE_CONFIG_ITEM 64
 #define XXLARGE_CONFIG_ITEM 128
 
+#define SENSOR_I2C_BUSSES 2
+#define SENSOR_COUNT 8
+#define SENSOR_DATA_FIELDS 3
+
 extern const char *settings_state_day_path;
 extern const char *settings_state_night_path;
 extern const char *settings_state_highco2day_path;

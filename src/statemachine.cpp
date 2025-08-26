@@ -1878,6 +1878,11 @@ void manual_high_speed_transitions(void)
 
     bool valve_move_locked = 0;
 
+    //Example: 
+    //char msg[128];
+    //snprintf(msg, sizeof(msg), "valve: %s, CO2 reading: %.2f", valve_1, co2_sensors[co2_index].co2_reading);
+    //print_message(msg);
+
     // Actions for this state
     if (statemachine_state_mutex != NULL)
     {
@@ -1913,11 +1918,13 @@ void manual_high_speed_transitions(void)
 
 void select_sensors(void)
 {
-    char *co2_sensor_wire;
-    char *co2_sensor_wire1;
-    char *rh_sensor_wire;
-    char *rh_sensor_wire1;
-    char *valve;
+    char *co2_sensor_wire = NULL;
+    char *co2_sensor_wire1 = NULL;
+    char *rh_sensor_wire = NULL;
+    char *rh_sensor_wire1 = NULL;
+    char *valve_wire = NULL;
+    char *valve_wire1 = NULL;
+    
     String message = "";
 
     co2_sensor_counter = 0;
@@ -1926,45 +1933,36 @@ void select_sensors(void)
     int j = 0; // counter for struct
     int k = 0; // counter for struct
 
-    float sensor_data[2][8][3];
+    float sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
 
     // Copy sensor readings from global
-    xQueuePeek(sensor_avg_queue, &sensor_data, 0);
+    if (xQueuePeek(sensor_avg_queue, &sensor_data, 0) !=pdTRUE) {
+        message = "Faild to read from sensor_avg_queue in function: " + String(__FUNCTION__);
+        return;
+    }
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < SENSOR_COUNT; i++)
     {
-        if (settings_sensor1_mutex != NULL)
+
+        if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
         {
-            if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
-            {
-                co2_sensor_wire = sensor1settings[i].wire_sensor_co2;
-                rh_sensor_wire = sensor1settings[i].wire_sensor_rh;
-                xSemaphoreGive(settings_sensor1_mutex);
-            }
+            co2_sensor_wire = sensor1settings[i].wire_sensor_co2;
+            rh_sensor_wire = sensor1settings[i].wire_sensor_rh;
+            valve_wire = sensor1settings[i].wire_sensor_valve;
+            xSemaphoreGive(settings_sensor1_mutex);
         }
 
-        if (settings_sensor2_mutex != NULL)
+        if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
         {
-            if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
-            {
-                co2_sensor_wire1 = sensor2settings[i].wire1_sensor_co2;
-                rh_sensor_wire1 = sensor2settings[i].wire1_sensor_rh;
-                xSemaphoreGive(settings_sensor2_mutex);
-            }
+            co2_sensor_wire1 = sensor2settings[i].wire1_sensor_co2;
+            rh_sensor_wire1 = sensor2settings[i].wire1_sensor_rh;
+            valve_wire1 = sensor2settings[i].wire1_sensor_valve;
+            xSemaphoreGive(settings_sensor2_mutex);
         }
 
-        if (strcmp(co2_sensor_wire, "On") == 0)
-        {
-            if (settings_sensor1_mutex != NULL)
-            {
-                if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
-                {
-                    valve = sensor1settings[i].wire_sensor_valve;
-                    xSemaphoreGive(settings_sensor1_mutex);
-                }
-            }
-
-            co2_sensors[j].valve = valve;
+        if (co2_sensor_wire && strcmp(co2_sensor_wire, "On") == 0)
+        {            
+            co2_sensors[j].valve = valve_wire;
             co2_sensors[j].co2_reading = sensor_data[0][i][2];
 
             message = "valve: " + String(co2_sensors[j].valve) + ", CO2 reading: " + String(co2_sensors[j].co2_reading);
@@ -1972,17 +1970,9 @@ void select_sensors(void)
             j++;
         }
 
-        if (strcmp(co2_sensor_wire1, "On") == 0)
+        if (co2_sensor_wire1 && strcmp(co2_sensor_wire1, "On") == 0)
         {
-            if (settings_sensor2_mutex != NULL)
-            {
-                if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
-                {
-                    valve = sensor2settings[i].wire1_sensor_valve;
-                    xSemaphoreGive(settings_sensor2_mutex);
-                }
-            }
-            co2_sensors[j].valve = valve;
+            co2_sensors[j].valve = valve_wire1;
             co2_sensors[j].co2_reading = sensor_data[1][i][2];
 
             message = "valve: " + String(co2_sensors[j].valve) + ", CO2 reading: " + String(co2_sensors[j].co2_reading);
@@ -1990,19 +1980,9 @@ void select_sensors(void)
             j++;
         }
 
-        if (strcmp(rh_sensor_wire, "On") == 0)
+        if (rh_sensor_wire && strcmp(rh_sensor_wire, "On") == 0)
         {
-            if (settings_sensor1_mutex != NULL)
-            {
-                if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
-                {
-                    // String valve_temp = wire_sensor_data["wire_sensor" + String(i) + "_valve"];
-                    // valve = valve_temp;
-                    valve = sensor1settings[i].wire_sensor_valve;
-                    xSemaphoreGive(settings_sensor1_mutex);
-                }
-            }
-            rh_sensors[k].valve = valve;
+            rh_sensors[k].valve = valve_wire;
             rh_sensors[k].rh_reading = sensor_data[0][i][1];
 
             message = "valve: " + String(rh_sensors[k].valve) + ", RH reading: " + String(rh_sensors[k].rh_reading);
@@ -2010,19 +1990,9 @@ void select_sensors(void)
             k++;
         }
 
-        if (strcmp(rh_sensor_wire1, "On") == 0)
+        if (rh_sensor_wire1 && strcmp(rh_sensor_wire1, "On") == 0)
         {
-            if (settings_sensor2_mutex != NULL)
-            {
-                if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
-                {
-                    // String valve_temp = wire1_sensor_data["wire1_sensor" + String(i) + "_valve"];
-                    // valve = valve_temp;
-                    valve = sensor2settings[i].wire1_sensor_valve;
-                    xSemaphoreGive(settings_sensor2_mutex);
-                }
-            }
-            rh_sensors[k].valve = valve;
+            rh_sensors[k].valve = valve_wire1;
             rh_sensors[k].rh_reading = sensor_data[1][i][1];
 
             message = "valve: " + String(rh_sensors[k].valve) + ", RH reading: " + String(rh_sensors[k].rh_reading);
