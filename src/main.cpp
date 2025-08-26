@@ -90,7 +90,7 @@ void setup()
 	process_rtc_config();
 	process_statemachine_config();
 	process_fan_config();
-	sensor_config_data_read();
+	//sensor_config_data_read();
 	valve_settings_config_read();
 
 	// Wait a little after reading config

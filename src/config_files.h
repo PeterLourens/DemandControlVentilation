@@ -50,7 +50,7 @@ void delete_file(const char *);
 bool check_file_exists(const char *);
 String read_config_file(const char *);
 bool write_config_file(const char *, String);
-void sensor_config_data_read(void);
+//void sensor_config_data_read(void);
 void valve_settings_config_read(void);
 
 #endif

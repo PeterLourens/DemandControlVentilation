@@ -23,8 +23,8 @@ String create_index_json()
     String date_time = "";
 
     JsonDocument doc;
-    JsonDocument wire_sensor_data_temp;
-    JsonDocument wire1_sensor_data_temp;
+    //JsonDocument wire_sensor_data_temp;
+    //JsonDocument wire1_sensor_data_temp;
 
     // Read from sensor queue
     if (sensor_queue != 0)
@@ -34,8 +34,8 @@ String create_index_json()
         }
     }
 
-    /// Read setting for valve and valve name
-    if (sensor_config_file_mutex != NULL)
+    // Read setting for valve and valve name
+    /*if (sensor_config_file_mutex != NULL)
     {
         if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
         {
@@ -43,7 +43,22 @@ String create_index_json()
             wire1_sensor_data_temp = wire1_sensor_data;
             xSemaphoreGive(sensor_config_file_mutex);
         }
-    }
+    }*/
+
+    /*for (int i = 0; i < 8; i++)
+    {
+        wire_sensor_data_temp["wire_sensor" + String(i) + "_type"] = sensor1settings[i].wire_sensor_type;
+        wire_sensor_data_temp["wire_sensor" + String(i) + "_valve"] = sensor1settings[i].wire_sensor_valve;
+        wire_sensor_data_temp["wire_sensor" + String(i) + "_location"] = sensor1settings[i].wire_sensor_location;
+        wire_sensor_data_temp["wire_sensor" + String(i) + "_rh"] = sensor1settings[i].wire_sensor_rh;
+        wire_sensor_data_temp["wire_sensor" + String(i) + "_co2"] = sensor1settings[i].wire_sensor_co2;
+
+        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
+        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_valve"] = sensor2settings[i].wire1_sensor_valve;
+        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_location"] = sensor2settings[i].wire1_sensor_location;
+        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_rh"] = sensor2settings[i].wire1_sensor_rh;
+        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_co2"] = sensor2settings[i].wire1_sensor_co2;
+    }*/
 
     // Valve positions
     if (valve_position_file_mutex != NULL)
@@ -93,10 +108,10 @@ String create_index_json()
     doc["uptime"] = formatted_uptime();
     doc["date_time"] = date_time;
 
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 8; i++)
     {
         // Bus0 sensor data
-        doc["bus0_sensor" + String(i) + "_type"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_type"];
+        /*doc["bus0_sensor" + String(i) + "_type"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_type"];
         doc["bus0_sensor" + String(i) + "_valve"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_valve"];
         doc["bus0_sensor" + String(i) + "_location"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_location"];
         doc["bus0_sensor" + String(i) + "_rhs"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_rh"];
@@ -111,6 +126,41 @@ String create_index_json()
         doc["bus1_sensor" + String(i) + "_location"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_location"];
         doc["bus1_sensor" + String(i) + "_rhs"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_rh"];
         doc["bus1_sensor" + String(i) + "_co2s"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_co2"];
+        doc["bus1_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[1][i][0]);
+        doc["bus1_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[1][i][1]);
+        doc["bus1_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[1][i][2]);*/
+
+        // Bus 0 sensor data
+        if (settings_sensor1_mutex != NULL)
+        {
+            if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
+            {
+            doc["bus0_sensor" + String(i) + "_type"] = sensor1settings[i].wire_sensor_type;
+            doc["bus0_sensor" + String(i) + "_valve"] = sensor1settings[i].wire_sensor_valve;
+            doc["bus0_sensor" + String(i) + "_location"] = sensor1settings[i].wire_sensor_location;
+            doc["bus0_sensor" + String(i) + "_rhs"] = sensor1settings[i].wire_sensor_rh;
+            doc["bus0_sensor" + String(i) + "_co2s"] = sensor1settings[i].wire_sensor_co2;
+            xSemaphoreGive(settings_sensor1_mutex);
+            }
+        }
+        doc["bus0_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[0][i][0]);
+        doc["bus0_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[0][i][1]);
+        doc["bus0_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[0][i][2]);
+
+        
+        // Bus1 sensor data
+        if (settings_sensor2_mutex != NULL)
+        {
+            if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
+            {
+            doc["bus1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
+            doc["bus1_sensor" + String(i) + "_valve"] = sensor2settings[i].wire1_sensor_valve;
+            doc["bus1_sensor" + String(i) + "_location"] = sensor2settings[i].wire1_sensor_location;
+            doc["bus1_sensor" + String(i) + "_rhs"] = sensor2settings[i].wire1_sensor_rh;
+            doc["bus1_sensor" + String(i) + "_co2s"] = sensor2settings[i].wire1_sensor_co2;
+            xSemaphoreGive(settings_sensor2_mutex);
+            }
+        }
         doc["bus1_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[1][i][0]);
         doc["bus1_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[1][i][1]);
         doc["bus1_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[1][i][2]);

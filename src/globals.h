@@ -211,8 +211,8 @@ extern Sensor2_settings sensor2settings[8];
 //
 // Old style
 extern JsonDocument valve_control_data;
-extern JsonDocument wire_sensor_data;
-extern JsonDocument wire1_sensor_data;
+//extern JsonDocument wire_sensor_data;
+//extern JsonDocument wire1_sensor_data;
 extern JsonDocument settings_fan_data;
 extern JsonDocument settings_statemachine_data;
 

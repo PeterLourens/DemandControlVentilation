@@ -1059,7 +1059,7 @@ void process_statemachine_config(void)
 }
 
 // Read both sensor config files an place contents in global variable
-void sensor_config_data_read()
+/*void sensor_config_data_read()
 {
     bool sensor_config1_file_present = 0;
     bool sensor_config2_file_present = 0;
@@ -1125,7 +1125,7 @@ void sensor_config_data_read()
             return;
         }
     }
-}
+}*/
 
 // Function to read settings (e.g. valve positions) for each state and put these in the global variable
 void valve_settings_config_read()
