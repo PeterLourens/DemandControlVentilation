@@ -116,14 +116,14 @@ const char statemachine_html[] = R"rawliteral(
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_day">
                     <fieldset>
                         <div class="pure-g">
-                            <div class="pure-u-1 pure-u-md-1-3">
+                            <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="enable_state_day">State:</label>
                                 <select id="enable_state_day" name="enable_state_day" class="pure-input-1-1">
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-3">
+                            <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="state_day_fanspeed">Fan speed:</label>
                                 <select id="state_day_fanspeed" name="state_day_fanspeed" class="pure-input-1-1">
                                     <option>Low</option>
@@ -131,9 +131,18 @@ const char statemachine_html[] = R"rawliteral(
                                     <option>High</option>
                                 </select>
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-3">
+                            <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="name_state_day">Name:</label>
                                 <input type="text" name="name_state_day" id="name_state_day" class="pure-input-1-1" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6"></div>
+                            <div class="pure-u-1 pure-u-md-1-6">
+                                <label for="day_state_highco2">CO2 High level:</label>
+                                <input type="number" value="1000" min="500" name="day_state_highco2" id="day_state_highco2" class="pure-input-1-2" />
+                            </div>
+                            <div class="pure-u-1 pure-u-md-1-6">
+                                <label for="day_state_highrh">RH High level:</label>
+                                <input type="number" value="85" min="0" name="day_state_highrh" id="day_state_highrh" class="pure-input-1-2" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_day">Valve0:</label>

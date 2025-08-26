@@ -57,6 +57,8 @@ I2C_settings i2csettings;
 MQTT_settings mqttsettings;
 Fan_settings fansettings;
 Statemachine_settings statemachinesettings;
+State_day_settings state_day_settings;
+State_night_settings state_night_settings;
 Sensor1_settings sensor1settings[SENSOR_COUNT];
 Sensor2_settings sensor2settings[SENSOR_COUNT];
 

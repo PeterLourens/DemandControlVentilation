@@ -176,6 +176,8 @@ const char *STATUS_STATE_DAY_CONFIG = "status_state_day_config";
 const char *STATE_DAY_FANSPEED = "state_day_fanspeed";
 const char *ENABLE_STATE_DAY = "enable_state_day";
 const char *NAME_STATE_DAY = "name_state_day";
+const char *STATE_DAY_HIGHCO2 = "state_day_highco2";
+const char *STATE_DAY_HIGHRH = "state_day_highrh";
 const char *VALVE0_POSITION_DAY = "valve0_position_day";
 const char *VALVE1_POSITION_DAY = "valve1_position_day";
 const char *VALVE2_POSITION_DAY = "valve2_position_day";
@@ -193,6 +195,7 @@ const char *STATUS_STATE_NIGHT_CONFIG = "statemachine_valve_night_config";
 const char *STATE_NIGHT_FANSPEED = "state_night_fanspeed";
 const char *ENABLE_STATE_NIGHT = "enable_state_night";
 const char *NAME_STATE_NIGHT = "name_state_night";
+const char *STATE_NIGHT_HIGHCO2 = "state_night_highco2";
 const char *VALVE0_POSITION_NIGHT = "valve0_position_night";
 const char *VALVE1_POSITION_NIGHT = "valve1_position_night";
 const char *VALVE2_POSITION_NIGHT = "valve2_position_night";
@@ -1124,45 +1127,51 @@ void Taskwebcode(void *pvParameters)
 	server.on("/settings_valve_day", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
 		int params = request->params();
-		String settings_state_day_str;
+		char settings_state_day_char[1500] = {};
+		JsonDocument settings_state_day_doc;
 
 		for(int i=0;i<params;i++) {
 			const AsyncWebParameter* p = request->getParam(i);
 			if(p->isPost()) {
 				if (p->name() == ENABLE_STATE_DAY)
-					settings_state_day["enable_state_day"] = p->value().c_str();
+					settings_state_day_doc["enable_state_day"] = p->value().c_str();
 				if (p->name() == STATE_DAY_FANSPEED)
-					settings_state_day["state_day_fanspeed"] = p->value().c_str();
+					settings_state_day_doc["state_day_fanspeed"] = p->value().c_str();
 				if (p->name() == NAME_STATE_DAY)
-					settings_state_day["name_state_day"] = p->value().c_str();
+					settings_state_day_doc["name_state_day"] = p->value().c_str();
+				if (p->name() == STATE_DAY_HIGHCO2)
+					settings_state_day_doc["state_day_highco2"] = p->value().c_str();
+				if (p->name() == STATE_DAY_HIGHRH)
+					settings_state_day_doc["state_day_highrh"] = p->value().c_str();
 				if (p->name() == VALVE0_POSITION_DAY) 
-					settings_state_day["valve0_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve0_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE1_POSITION_DAY) 
-					settings_state_day["valve1_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve1_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE2_POSITION_DAY) 
-					settings_state_day["valve2_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve2_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE3_POSITION_DAY) 
-					settings_state_day["valve3_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve3_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE4_POSITION_DAY) 
-					settings_state_day["valve4_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve4_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE5_POSITION_DAY) 
-					settings_state_day["valve5_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve5_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE6_POSITION_DAY) 
-					settings_state_day["valve6_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve6_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE7_POSITION_DAY) 
-					settings_state_day["valve7_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve7_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE8_POSITION_DAY) 
-					settings_state_day["valve8_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve8_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE9_POSITION_DAY) 
-					settings_state_day["valve9_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve9_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE10_POSITION_DAY) 
-					settings_state_day["valve10_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve10_position_day"] = p->value().c_str();
 				if (p->name() ==  VALVE11_POSITION_DAY) 
-					settings_state_day["valve11_position_day"] = p->value().c_str();
+					settings_state_day_doc["valve11_position_day"] = p->value().c_str();
 			}
 		}
-		serializeJson(settings_state_day, settings_state_day_str);
-		write_config_file(SETTINGS_STATE_DAY_PATH, settings_state_day_str);
+		serializeJson(settings_state_day, settings_state_day_char, sizeof(settings_state_day_char));
+		write_settings(SETTINGS_STATE_DAY_PATH, settings_state_day_char, settings_statemachine_mutex);
+		parse_state_day_settings(); // Apply new state day settings
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine night
@@ -1180,6 +1189,8 @@ void Taskwebcode(void *pvParameters)
 					settings_state_day["state_night_fanspeed"] = p->value().c_str();
 				if (p->name() == NAME_STATE_NIGHT) 
 					settings_state_night["name_state_night"] = p->value().c_str();
+				if (p->name() == STATE_NIGHT_HIGHCO2)
+					settings_state_night["state_night_highco2"] = p->value().c_str();
 				if (p->name() == VALVE0_POSITION_NIGHT)
 					settings_state_night["valve0_position_night"] = p->value().c_str();
 				if (p->name() ==  VALVE1_POSITION_NIGHT) 

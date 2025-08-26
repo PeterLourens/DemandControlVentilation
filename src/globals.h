@@ -198,6 +198,46 @@ typedef struct
     char wire1_sensor_co2[SMALL_CONFIG_ITEM];
 } Sensor2_settings;
 
+typedef struct
+{
+    char enable_state_day[SMALL_CONFIG_ITEM];
+    char state_day_fanspeed[SMALL_CONFIG_ITEM];
+    char name_state_day[LARGE_CONFIG_ITEM];
+    int state_day_highco2;
+    int state_day_highrh;
+    int valve0_position_day;
+    int valve1_position_day;
+    int valve2_position_day;
+    int valve3_position_day;
+    int valve4_position_day;
+    int valve5_position_day;
+    int valve6_position_day;
+    int valve7_position_day;
+    int valve8_position_day;
+    int valve9_position_day;
+    int valve10_position_day;
+    int valve11_position_day;
+} State_day_settings;
+
+typedef struct
+{
+    char enable_state_night[SMALL_CONFIG_ITEM];
+    char state_night_fanspeed[SMALL_CONFIG_ITEM];
+    char name_state_night[LARGE_CONFIG_ITEM];
+    int valve0_position_night;
+    int valve1_position_night;
+    int valve2_position_night;
+    int valve3_position_night;
+    int valve4_position_night;
+    int valve5_position_night;
+    int valve6_position_night;
+    int valve7_position_night;
+    int valve8_position_night;
+    int valve9_position_night;
+    int valve10_position_night;
+    int valve11_position_night;
+} State_night_settings;
+
 extern Network_settings networksettings;
 extern RTC_settings rtcsettings;
 extern Influxdb_settings influxdbsettings;
@@ -207,6 +247,8 @@ extern Fan_settings fansettings;
 extern Statemachine_settings statemachinesettings;
 extern Sensor1_settings sensor1settings[SENSOR_COUNT];
 extern Sensor2_settings sensor2settings[SENSOR_COUNT];
+extern State_day_settings statedaysettings;
+extern State_night_settings statenightsettings;
 
 //
 //
@@ -223,7 +265,7 @@ extern JsonDocument valve_control_data;
 // extern JsonDocument wire_sensor_data;
 // extern JsonDocument wire1_sensor_data;
 extern JsonDocument settings_fan_data;
-//extern JsonDocument settings_statemachine_data;
+// extern JsonDocument settings_statemachine_data;
 
 extern JsonDocument settings_state_day;
 extern JsonDocument settings_state_night;

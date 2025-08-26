@@ -20,6 +20,8 @@ bool parse_fan_settings(void);
 bool parse_statemachine_settings(void);
 bool parse_sensor1_settings(void);
 bool parse_sensor2_settings(void);
+bool parse_state_day_settings(void);
+bool parse_state_night_settings(void);
 
 //bool parse_valve_settings(void);
 

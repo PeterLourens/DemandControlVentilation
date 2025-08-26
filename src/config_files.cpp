@@ -616,6 +616,33 @@ bool parse_sensor2_settings(void)
     return false;
 }
 
+bool parse_state_day_settings(void) {
+
+    char buffer[512];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATE_DAY_PATH, buffer, sizeof(buffer), settings_state_day_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_DAY_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    if (settings_state_day_mutex && (xSemaphoreTake(settings_state_day_mutex, (TickType_t)10)) == pdTRUE)
+    {
+        //statemachinesettings.day_state = doc["day_state"];
+        xSemaphoreGive(settings_state_day_mutex);
+        return true;
+    }
+    return false;
+}
+
 // Old config
 //
 //
