@@ -1,7 +1,7 @@
 {
     "enable_dhcp": "Off",
-    "ssid": "DIRK2",
-    "wifi_password": "09567970646048246574",
+    "ssid": "",
+    "wifi_password": "",
     "ip_address": "",
     "subnet_mask": "",
     "gateway": "",
