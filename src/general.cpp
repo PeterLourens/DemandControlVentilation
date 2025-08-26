@@ -180,3 +180,4 @@ float roundToTwoDecimals(float value)
 {
     return roundf(value * 100) / 100;
 }
+

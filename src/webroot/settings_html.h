@@ -59,11 +59,11 @@ const char settings_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="ssid">SSID:</label>
-                                <input type="text" id="ssid" class="pure-input-3-4" />
+                                <input type="text" id="ssid" name="ssid" class="pure-input-3-4" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="wifi_password">WIFI Password:</label>
-                                <input type="text" id="wifi_password" class="pure-input-3-4" />
+                                <input type="text" id="wifi_password" name="wifi_password" class="pure-input-3-4" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="ip_address">IP Address:</label>

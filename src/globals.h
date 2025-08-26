@@ -42,6 +42,7 @@
 #define MEDIUM_CONFIG_ITEM 16
 #define LARGE_CONFIG_ITEM 36
 #define XLARGE_CONFIG_ITEM 64
+#define XXLARGE_CONFIG_ITEM 128
 
 extern const char *settings_state_day_path;
 extern const char *settings_state_night_path;
@@ -72,8 +73,9 @@ extern SemaphoreHandle_t sensor_config_file_mutex;
 extern SemaphoreHandle_t valve_position_file_mutex;
 extern SemaphoreHandle_t settings_files_mutex;
 
+extern SemaphoreHandle_t settings_sensor1_mutex;
+extern SemaphoreHandle_t settings_sensor2_mutex;
 extern SemaphoreHandle_t valve_control_data_mutex;
-extern SemaphoreHandle_t date_time_mutex;
 extern SemaphoreHandle_t settings_network_mutex;
 extern SemaphoreHandle_t settings_mqtt_mutex;
 extern SemaphoreHandle_t settings_i2c_mutex;
@@ -81,10 +83,6 @@ extern SemaphoreHandle_t settings_fan_mutex;
 extern SemaphoreHandle_t settings_statemachine_mutex;
 extern SemaphoreHandle_t settings_influxdb_mutex;
 extern SemaphoreHandle_t settings_rtc_mutex;
-extern SemaphoreHandle_t statemachine_state_mutex;
-extern SemaphoreHandle_t fanspeed_mutex;
-extern SemaphoreHandle_t lock_valve_move_mutex;
-extern SemaphoreHandle_t ap_active_mutex;
 
 extern SemaphoreHandle_t settings_state_day_mutex;
 extern SemaphoreHandle_t settings_state_night_mutex;
@@ -96,6 +94,12 @@ extern SemaphoreHandle_t settings_state_cooking_mutex;
 extern SemaphoreHandle_t settings_state_cyclingday_mutex;
 extern SemaphoreHandle_t settings_state_cyclingnight_mutex;
 extern SemaphoreHandle_t settings_state_temp_mutex;
+
+extern SemaphoreHandle_t date_time_mutex;
+extern SemaphoreHandle_t statemachine_state_mutex;
+extern SemaphoreHandle_t fanspeed_mutex;
+extern SemaphoreHandle_t lock_valve_move_mutex;
+extern SemaphoreHandle_t ap_active_mutex;
 
 extern QueueHandle_t sensor_queue;
 extern QueueHandle_t sensor_avg_queue;
@@ -113,8 +117,98 @@ typedef struct
     char secondary_dns[LARGE_CONFIG_ITEM];
 } Network_settings;
 
-extern Network_settings networksettings;
+typedef struct
+{
+    char ntp_server[LARGE_CONFIG_ITEM];
+    char timezone[LARGE_CONFIG_ITEM];
+} RTC_settings;
 
+typedef struct
+{
+    char enable_influxdb[SMALL_CONFIG_ITEM];
+    char influxdb_url[XXLARGE_CONFIG_ITEM];
+    char influxdb_org[LARGE_CONFIG_ITEM];
+    char influxdb_bucket[LARGE_CONFIG_ITEM];
+    char influxdb_token[XXLARGE_CONFIG_ITEM];
+} Influxdb_settings;
+
+typedef struct
+{
+    char bus0_multiplexer_address[SMALL_CONFIG_ITEM];
+    char bus1_multiplexer_address[SMALL_CONFIG_ITEM];
+    char enable_lcd[SMALL_CONFIG_ITEM];
+    char display_i2c_address[SMALL_CONFIG_ITEM];
+} I2C_settings;
+
+typedef struct
+{
+    char enable_mqtt[SMALL_CONFIG_ITEM];
+    char mqtt_server[XLARGE_CONFIG_ITEM];
+    char mqtt_port[SMALL_CONFIG_ITEM];
+    char mqtt_base_topic[LARGE_CONFIG_ITEM];
+} MQTT_settings;
+
+typedef struct
+{
+    char fan_control_mode[LARGE_CONFIG_ITEM];
+    char fan_control_mqtt_server[LARGE_CONFIG_ITEM];
+    char fan_control_mqtt_port[SMALL_CONFIG_ITEM];
+    char fan_control_mqtt_topic[XLARGE_CONFIG_ITEM];
+    char fan_control_url_high_speed[XXLARGE_CONFIG_ITEM];
+    char fan_control_url_medium_speed[XXLARGE_CONFIG_ITEM];
+    char fan_control_url_low_speed[XXLARGE_CONFIG_ITEM];
+} Fan_settings;
+
+typedef struct
+{
+    char weekday_day_hour_start[SMALL_CONFIG_ITEM];
+    char weekday_day_minute_start[SMALL_CONFIG_ITEM];
+    char weekday_night_hour_start[SMALL_CONFIG_ITEM];
+    char weekday_night_minute_start[SMALL_CONFIG_ITEM];
+    char weekend_day_hour_start[SMALL_CONFIG_ITEM];
+    char weekend_day_minute_start[SMALL_CONFIG_ITEM];
+    char weekend_night_hour_start[SMALL_CONFIG_ITEM];
+    char weekend_night_minute_start[SMALL_CONFIG_ITEM];
+} Statemachine_settings;
+
+typedef struct
+{
+    char wire_sensor_type[SMALL_CONFIG_ITEM];
+    char wire_sensor_valve[MEDIUM_CONFIG_ITEM];
+    char wire_sensor_location[LARGE_CONFIG_ITEM];
+    char wire_sensor_rh[SMALL_CONFIG_ITEM];
+    char wire_sensor_co2[SMALL_CONFIG_ITEM];
+} Sensor1_settings;
+
+typedef struct
+{
+    char wire1_sensor_type[SMALL_CONFIG_ITEM];
+    char wire1_sensor_valve[MEDIUM_CONFIG_ITEM];
+    char wire1_sensor_location[LARGE_CONFIG_ITEM];
+    char wire1_sensor_rh[SMALL_CONFIG_ITEM];
+    char wire1_sensor_co2[SMALL_CONFIG_ITEM];
+} Sensor2_settings;
+
+extern Network_settings networksettings;
+extern RTC_settings rtcsettings;
+extern Influxdb_settings influxdbsettings;
+extern I2C_settings i2csettings;
+extern MQTT_settings mqttsettings;
+extern Fan_settings fansettings;
+extern Statemachine_settings statemachinesettings;
+extern Sensor1_settings sensor1settings[8];
+extern Sensor2_settings sensor2settings[8];
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 // Old style
 extern JsonDocument valve_control_data;
 extern JsonDocument wire_sensor_data;

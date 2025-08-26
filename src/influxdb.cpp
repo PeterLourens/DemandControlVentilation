@@ -11,10 +11,10 @@ void write_sensor_data(void) {
     String state_tmp = "";
     String message = "";
 
-    float queue_sensor_data[2][8][3];
+    String sensor_valve = "";
+    String sensor_location = "";
 
-    JsonDocument wire_sensor_data_temp;
-    JsonDocument wire1_sensor_data_temp;
+    float queue_sensor_data[2][8][3];
     
     if (settings_influxdb_mutex != NULL) {
         if(xSemaphoreTake(settings_influxdb_mutex, ( TickType_t ) 10 ) == pdTRUE) {
@@ -34,15 +34,6 @@ void write_sensor_data(void) {
         }
     }
     
-    //Read setting for valve and valve name
-    if (sensor_config_file_mutex != NULL) {
-        if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            wire_sensor_data_temp = wire_sensor_data;
-            wire1_sensor_data_temp = wire1_sensor_data;
-            xSemaphoreGive(sensor_config_file_mutex);
-        }
-    }
-
     InfluxDBClient client(influxdb_url_tmp, influxdb_org_tmp, influxdb_bucket_tmp, influxdb_token_tmp);
     Point sensor("Sensors");
 
@@ -58,8 +49,17 @@ void write_sensor_data(void) {
                         sensor.clearFields();
                         sensor.clearTags();      
                         if (i == 0) {
-                            String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j) + "_valve"];
-                            String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j) + "_location"];
+                            if (settings_sensor1_mutex != NULL)
+                            {
+                                if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
+                                {
+                                    sensor_valve = sensor1settings[j].wire_sensor_valve;
+                                    sensor_location = sensor1settings[j].wire_sensor_location;
+                                    xSemaphoreGive(settings_sensor1_mutex);
+                                }
+                            }
+                            //String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j) + "_valve"];
+                            //String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty()) {
                                 sensor.addTag("valve", sensor_valve);
                             }
@@ -68,8 +68,17 @@ void write_sensor_data(void) {
                             }
                         }
                         else {
-                            String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_valve"];
-                            String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_location"];
+                            if (settings_sensor2_mutex != NULL)
+                            {
+                                if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
+                                {
+                                    sensor_valve = sensor2settings[j].wire1_sensor_valve;
+                                    sensor_location = sensor2settings[j].wire1_sensor_location;
+                                    xSemaphoreGive(settings_sensor2_mutex);
+                                }
+                            }
+                            //String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_valve"];
+                            //String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty()) {
                                 sensor.addTag("valve", sensor_valve);
                             }
@@ -119,8 +128,8 @@ void write_avg_sensor_data(void) {
     String influxdb_token_tmp = "";
     String message = "";
 
-    JsonDocument wire_sensor_data_temp;
-    JsonDocument wire1_sensor_data_temp;
+    String sensor_valve = "";
+    String sensor_location = "";
     
     if (settings_influxdb_mutex != NULL) {
         if(xSemaphoreTake(settings_influxdb_mutex, ( TickType_t ) 10 ) == pdTRUE) {
@@ -130,15 +139,6 @@ void write_avg_sensor_data(void) {
             influxdb_bucket_tmp = influxdb_bucket;
             influxdb_token_tmp = influxdb_token;
             xSemaphoreGive(settings_influxdb_mutex);
-        }
-    }
-
-    //Read setting for valve and valve name
-    if (sensor_config_file_mutex != NULL) {
-        if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            wire_sensor_data_temp = wire_sensor_data;
-            wire1_sensor_data_temp = wire1_sensor_data;
-            xSemaphoreGive(sensor_config_file_mutex);
         }
     }
     
@@ -155,8 +155,17 @@ void write_avg_sensor_data(void) {
                         sensor.clearFields();
                         sensor.clearTags();      
                         if (i == 0) {
-                            String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j) + "_valve"];
-                            String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j) + "_location"];
+                            if (settings_sensor1_mutex != NULL)
+                            {
+                                if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
+                                {
+                                    sensor_valve = sensor1settings[j].wire_sensor_valve;
+                                    sensor_location = sensor1settings[j].wire_sensor_location;
+                                    xSemaphoreGive(settings_sensor1_mutex);
+                                }
+                            }
+                            //String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j) + "_valve"];
+                            //String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty()) {
                                 sensor.addTag("valve", sensor_valve);
                             }
@@ -165,8 +174,17 @@ void write_avg_sensor_data(void) {
                             }
                         }
                         else {
-                            String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_valve"];
-                            String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_location"];
+                            if (settings_sensor2_mutex != NULL)
+                            {
+                                if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
+                                {
+                                    sensor_valve = sensor2settings[j].wire1_sensor_valve;
+                                    sensor_location = sensor2settings[j].wire1_sensor_location;
+                                    xSemaphoreGive(settings_sensor2_mutex);
+                                }
+                            }
+                            //String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_valve"];
+                            //String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty()) {
                                 sensor.addTag("valve", sensor_valve);
                             }

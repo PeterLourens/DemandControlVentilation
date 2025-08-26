@@ -137,7 +137,7 @@ String create_settings_json()
 
     if (settings_rtc_string == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] RTC Config string is empty or failed to read file";
         print_message(message);
         return "";
     }
@@ -151,7 +151,7 @@ String create_settings_json()
 
     if (settings_influxdb_string == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] Influxdb config string is empty or failed to read file";
         print_message(message);
         return "";
     }
@@ -164,7 +164,7 @@ String create_settings_json()
     settings_i2c_string = read_i2c_config();
     if (settings_i2c_string == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] I2C config string is empty or failed to read file";
         print_message(message);
         return "";
     }
@@ -177,7 +177,7 @@ String create_settings_json()
     settings_mqtt_string = read_mqtt_config();
     if (settings_mqtt_string == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] MQTT config string is empty or failed to read file";
         print_message(message);
         return "";
     }
@@ -190,7 +190,7 @@ String create_settings_json()
     settings_fan_string = read_fan_config();
     if (settings_fan_string == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] Fan config string is empty or failed to read file";
         print_message(message);
         return "";
     }
@@ -201,9 +201,10 @@ String create_settings_json()
 
     // Network config
     settings_network_string = read_network_config();
+    // Serial.print("Settings in websocket: " + settings_network_string);
     if (settings_network_string == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] Network config string is empty or failed to read file";
         print_message(message);
         return "";
     }
@@ -217,50 +218,52 @@ String create_settings_json()
 
 String create_sensors_json()
 {
-    bool sensor_config1_file_present = 0;
-    bool sensor_config2_file_present = 0;
-
-    String sensor_config1_string = "";
-    String sensor_config2_string = "";
+    JsonDocument doc1;
+    JsonDocument doc2;
+    String sensor_config1_str = "";
+    String sensor_config2_str = "";
     String message = "";
     String sensors_json = "";
 
-    if (sensor_config_file_mutex != NULL)
+    if (settings_sensor1_mutex != NULL)
     {
-        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
+        if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
         {
-            sensor_config1_file_present = check_file_exists(SENSOR_CONFIG1_PATH);
-            if (sensor_config1_file_present == 1)
+            for (int i = 0; i < 8; i++)
             {
-                sensor_config1_string = read_config_file(SENSOR_CONFIG1_PATH);
+                doc1["wire_sensor" + String(i) + "_type"] = sensor1settings[i].wire_sensor_type;
+                doc1["wire_sensor" + String(i) + "_valve"] = sensor1settings[i].wire_sensor_valve;
+                doc1["wire_sensor" + String(i) + "_location"] = sensor1settings[i].wire_sensor_location;
+                doc1["wire_sensor" + String(i) + "_rh"] = sensor1settings[i].wire_sensor_rh;
+                doc1["wire_sensor" + String(i) + "_co2"] = sensor1settings[i].wire_sensor_co2;
             }
-            xSemaphoreGive(sensor_config_file_mutex);
+            xSemaphoreGive(settings_sensor1_mutex);
         }
-    }
-    if (sensor_config1_string == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        sensors_json = sensor_config1_string;
     }
 
-    if (sensor_config_file_mutex != NULL)
+    doc1.shrinkToFit(); // optional
+    serializeJson(doc1, sensor_config1_str);
+
+    if (settings_sensor2_mutex != NULL)
     {
-        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
+        if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
         {
-            sensor_config2_file_present = check_file_exists(SENSOR_CONFIG2_PATH);
-            if (sensor_config2_file_present == 1)
+            for (int i = 0; i < 8; i++)
             {
-                sensor_config2_string = read_config_file(SENSOR_CONFIG2_PATH);
+                doc2["wire1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
+                doc2["wire1_sensor" + String(i) + "_valve"] = sensor2settings[i].wire1_sensor_valve;
+                doc2["wire1_sensor" + String(i) + "_location"] = sensor2settings[i].wire1_sensor_location;
+                doc2["wire1_sensor" + String(i) + "_rh"] = sensor2settings[i].wire1_sensor_rh;
+                doc2["wire1_sensor" + String(i) + "_co2"] = sensor2settings[i].wire1_sensor_co2;
             }
-            xSemaphoreGive(sensor_config_file_mutex);
+            xSemaphoreGive(settings_sensor2_mutex);
         }
     }
-    if (sensor_config2_string == "")
+
+    doc2.shrinkToFit(); // optional
+    serializeJson(doc2, sensor_config2_str);
+
+    if (sensor_config1_str == "" || sensor_config2_str == "")
     {
         message = "[ERROR] String is empty or failed to read file";
         print_message(message);
@@ -268,7 +271,8 @@ String create_sensors_json()
     }
     else
     {
-        sensors_json = concatJson(sensors_json, sensor_config2_string);
+        sensors_json = concatJson(sensor_config1_str, sensor_config2_str);
+        //Serial.print("Sensors json: " + sensors_json + "\n");
     }
 
     return sensors_json;

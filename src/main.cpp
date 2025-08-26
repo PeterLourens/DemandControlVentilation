@@ -17,23 +17,20 @@ void setup()
 	pinMode(clockPin2, OUTPUT);
 	pinMode(dataPin2, OUTPUT);
 
+	// File mutexes
 	sensor_config_file_mutex = xSemaphoreCreateMutex();
 	valve_position_file_mutex = xSemaphoreCreateMutex();
 	settings_files_mutex = xSemaphoreCreateMutex();
 
-	date_time_mutex = xSemaphoreCreateMutex();
+	// Settings mutexes
+	settings_sensor1_mutex = xSemaphoreCreateMutex();
+	settings_sensor2_mutex = xSemaphoreCreateMutex();
 	settings_network_mutex = xSemaphoreCreateMutex();
 	settings_mqtt_mutex = xSemaphoreCreateMutex();
 	settings_i2c_mutex = xSemaphoreCreateMutex();
 	settings_fan_mutex = xSemaphoreCreateMutex();
 	settings_influxdb_mutex = xSemaphoreCreateMutex();
 	settings_rtc_mutex = xSemaphoreCreateMutex();
-
-	statemachine_state_mutex = xSemaphoreCreateMutex();
-	valve_control_data_mutex = xSemaphoreCreateMutex();
-	fanspeed_mutex = xSemaphoreCreateMutex();
-	lock_valve_move_mutex = xSemaphoreCreateMutex();
-	ap_active_mutex = xSemaphoreCreateMutex();
 
 	settings_statemachine_mutex = xSemaphoreCreateMutex();
 	settings_state_day_mutex = xSemaphoreCreateMutex();
@@ -45,6 +42,14 @@ void setup()
 	settings_state_cooking_mutex = xSemaphoreCreateMutex();
 	settings_state_cyclingday_mutex = xSemaphoreCreateMutex();
 	settings_state_cyclingnight_mutex = xSemaphoreCreateMutex();
+
+	// Global data mutexes
+	date_time_mutex = xSemaphoreCreateMutex();
+	statemachine_state_mutex = xSemaphoreCreateMutex();
+	valve_control_data_mutex = xSemaphoreCreateMutex();
+	fanspeed_mutex = xSemaphoreCreateMutex();
+	lock_valve_move_mutex = xSemaphoreCreateMutex();
+	ap_active_mutex = xSemaphoreCreateMutex();
 
 	// Init queues for sensors
 	float temp[2][8][3];
@@ -69,9 +74,16 @@ void setup()
 	}
 
 	// setup_wifi();
-	parse_network_config();
-	vTaskDelay(5000);
+
+	// New config
+	//vTaskDelay(10000); // Wait a little before reading config
+	parse_network_settings();
+	parse_sensor1_settings();
+	parse_sensor2_settings();
+	vTaskDelay(100);
 	start_task_wifi();
+
+	// Old config
 	process_mqtt_config();
 	process_influxdb_config();
 	process_i2c_config();
@@ -89,14 +101,14 @@ void setup()
 	start_task_valvecontrol();
 	start_task_i2c();
 	start_task_statemachine();
-	start_task_mqtt();
+	//start_task_mqtt();
 	start_task_neopixel();
 	start_task_system();
 	start_task_websocket();
 
 	vTaskDelay(60000); // Only write to influxDB when all tasks are running
 	// start_task_espnow();
-	start_task_influxdb();
+	//start_task_influxdb();
 }
 
 void loop() {}

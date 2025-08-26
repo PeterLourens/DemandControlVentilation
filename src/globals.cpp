@@ -12,14 +12,15 @@ TaskHandle_t task_wifi;
 TaskHandle_t task_espnow;
 TaskHandle_t task_websocket;
 
-//Files mutexes
+// Files mutexes
 SemaphoreHandle_t sensor_config_file_mutex = NULL;  // Sensor configuration files
 SemaphoreHandle_t valve_position_file_mutex = NULL; // Valve position file
 SemaphoreHandle_t settings_files_mutex = NULL;      // settings files mutex
 
-//Data mutexes
+// Settings mutexes
+SemaphoreHandle_t settings_sensor1_mutex = NULL;      // Sensor 1 settings
+SemaphoreHandle_t settings_sensor2_mutex = NULL;      // Sensor 2 settings
 SemaphoreHandle_t valve_control_data_mutex = NULL;    // Valve control data variable
-SemaphoreHandle_t date_time_mutex = NULL;             // Time variables
 SemaphoreHandle_t settings_network_mutex = NULL;      // Network settings
 SemaphoreHandle_t settings_mqtt_mutex = NULL;         // MQTT settings
 SemaphoreHandle_t settings_i2c_mutex = NULL;          // I2C settings
@@ -27,10 +28,6 @@ SemaphoreHandle_t settings_fan_mutex = NULL;          // Fan control settings
 SemaphoreHandle_t settings_statemachine_mutex = NULL; // Statemachine settings
 SemaphoreHandle_t settings_influxdb_mutex = NULL;     // InfluxDB settings
 SemaphoreHandle_t settings_rtc_mutex = NULL;          // RTC settings
-SemaphoreHandle_t statemachine_state_mutex = NULL;    // for state of statemechine
-SemaphoreHandle_t fanspeed_mutex = NULL;              // for state of fan
-SemaphoreHandle_t lock_valve_move_mutex = NULL;       // for valve lock
-SemaphoreHandle_t ap_active_mutex = NULL;             // for accesspoint active
 
 SemaphoreHandle_t settings_state_day_mutex = NULL;          // Day state settings
 SemaphoreHandle_t settings_state_night_mutex = NULL;        // Night state settings
@@ -43,11 +40,25 @@ SemaphoreHandle_t settings_state_cyclingday_mutex = NULL;   // Valve cycle day s
 SemaphoreHandle_t settings_state_cyclingnight_mutex = NULL; // Valve cycle night state settings
 SemaphoreHandle_t settings_state_temp_mutex = NULL;         // Temp state settings
 
+SemaphoreHandle_t date_time_mutex = NULL;          // Time variables
+SemaphoreHandle_t statemachine_state_mutex = NULL; // for state of statemechine
+SemaphoreHandle_t fanspeed_mutex = NULL;           // for state of fan
+SemaphoreHandle_t lock_valve_move_mutex = NULL;    // for valve lock
+SemaphoreHandle_t ap_active_mutex = NULL;          // for accesspoint active
+
 QueueHandle_t sensor_queue;     // Handle for sensor queue data
 QueueHandle_t sensor_avg_queue; // Handle for sensor queue data
 QueueHandle_t webserial_queue;  // Handle for webserial queue data
 
 Network_settings networksettings;
+RTC_settings rtcsettings;
+Influxdb_settings influxdbsettings;
+I2C_settings i2csettings;
+MQTT_settings mqttsettings;
+Fan_settings fansettings;
+Statemachine_settings statemachinesettings;
+Sensor1_settings sensor1settings[8];
+Sensor2_settings sensor2settings[8];
 
 JsonDocument valve_control_data;         // Global for valve control data
 JsonDocument wire_sensor_data;           // Global for bus0 sensor configuration

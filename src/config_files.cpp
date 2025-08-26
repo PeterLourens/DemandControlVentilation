@@ -1,6 +1,60 @@
 #include "config_files.h"
 
-bool read_networksettings(const char *path, char *buffer, size_t bufferSize, SemaphoreHandle_t mutex)
+// Write string to file, path and contents as string as parameters
+bool write_settings(const char *path, char *file_contents, SemaphoreHandle_t mutex)
+{
+    String message = "";
+    bool ok = false;
+
+    if (path == NULL)
+    {
+        message = "[ERROR] Path is NULL, cannot write file";
+        print_message(message);
+        return false;
+    }
+
+    if (mutex != NULL)
+    {
+        if (xSemaphoreTake(mutex, (TickType_t)50))
+        {
+            File file = LittleFS.open(path, "w");
+
+            if (!file)
+            {
+                message = "[ERROR] Failed to open file for writing: " + String(path);
+                print_message(message);
+                xSemaphoreGive(mutex);
+                return false;
+            }
+
+            ok = file.print(file_contents) != 0;
+            file.close();
+            xSemaphoreGive(mutex);
+        }
+    }
+    else
+    {
+        message = "[ERROR] Mutex is NULL, cannot write file: " + String(path);
+        print_message(message);
+        return false;
+    }
+
+    if (!ok)
+    {
+        message = "[ERROR] Failed to write to file: " + String(path);
+        print_message(message);
+        return false;
+    }
+    else
+    {
+        message = "Config file written: " + String(path);
+        print_message(message);
+        return true;
+    }
+    return false;
+}
+
+bool read_settings(const char *path, char *buffer, size_t bufferSize, SemaphoreHandle_t mutex)
 {
     if (mutex != NULL)
     {
@@ -26,13 +80,13 @@ bool read_networksettings(const char *path, char *buffer, size_t bufferSize, Sem
     return false;
 }
 
-bool parse_network_config(void)
+bool parse_network_settings(void)
 {
     char buffer[512];
     String message;
     JsonDocument doc;
 
-    if (read_networksettings(SETTINGS_NETWORK_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    if (read_settings(SETTINGS_NETWORK_PATH, buffer, sizeof(buffer), settings_files_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
 
@@ -52,11 +106,6 @@ bool parse_network_config(void)
         const char *primary_dns = doc["primary_dns"];
         const char *secondary_dns = doc["secondary_dns"];
 
-        //Serial.print("\nEnable dhcp: ");
-        //Serial.print(enable_dhcp);
-        //Serial.print("\nSSID: ");
-        //Serial.print(ssid);
-
         if (settings_network_mutex != NULL)
         {
             if (xSemaphoreTake(settings_network_mutex, (TickType_t)10))
@@ -71,12 +120,32 @@ bool parse_network_config(void)
                     strncpy(networksettings.ssid, ssid, sizeof(networksettings.ssid) - 1);
                     networksettings.ssid[sizeof(networksettings.ssid) - 1] = '\0';
                 }
-
                 if (wifi_password)
                 {
                     strncpy(networksettings.wifi_password, wifi_password, sizeof(networksettings.wifi_password) - 1);
                     networksettings.wifi_password[sizeof(networksettings.wifi_password) - 1] = '\0';
                 }
+                if (subnet_mask)
+                {
+                    strncpy(networksettings.subnet_mask, subnet_mask, sizeof(networksettings.subnet_mask) - 1);
+                    networksettings.subnet_mask[sizeof(networksettings.subnet_mask) - 1] = '\0';
+                }
+                if (gateway)
+                {
+                    strncpy(networksettings.gateway, gateway, sizeof(networksettings.gateway) - 1);
+                    networksettings.gateway[sizeof(networksettings.gateway) - 1] = '\0';
+                }
+                if (primary_dns)
+                {
+                    strncpy(networksettings.primary_dns, primary_dns, sizeof(networksettings.primary_dns) - 1);
+                    networksettings.primary_dns[sizeof(networksettings.primary_dns) - 1] = '\0';
+                }
+                if (secondary_dns)
+                {
+                    strncpy(networksettings.secondary_dns, secondary_dns, sizeof(networksettings.secondary_dns) - 1);
+                    networksettings.secondary_dns[sizeof(networksettings.secondary_dns) - 1] = '\0';
+                }
+                xSemaphoreGive(settings_network_mutex);
                 return true;
             }
         }
@@ -84,24 +153,509 @@ bool parse_network_config(void)
     return false;
 }
 
+bool parse_rtc_settings(void)
+{
+
+    char buffer[128];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_RTC_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_RTC_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *ntp_server = doc["ntp_server"];
+    const char *timezone = doc["timezone"];
+
+    if (settings_rtc_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_rtc_mutex, (TickType_t)10))
+        {
+            if (ntp_server)
+            {
+                strncpy(rtcsettings.ntp_server, ntp_server, sizeof(rtcsettings.ntp_server) - 1);
+                rtcsettings.ntp_server[sizeof(rtcsettings.ntp_server) - 1] = '\0';
+            }
+            if (timezone)
+            {
+                strncpy(rtcsettings.timezone, timezone, sizeof(rtcsettings.timezone) - 1);
+                rtcsettings.timezone[sizeof(rtcsettings.timezone) - 1] = '\0';
+            }
+            xSemaphoreGive(settings_rtc_mutex);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool parse_influxdb_settings(void)
+{
+    char buffer[512];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_INFLUDB_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_INFLUDB_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_influxdb = doc["enable_influxdb"];
+    const char *influxdb_url = doc["influxdb_url"];
+    const char *influxdb_org = doc["influxdb_org"];
+    const char *influxdb_bucket = doc["influxdb_bucket"];
+    const char *influxdb_token = doc["influxdb_token"];
+
+    if (settings_influxdb_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10))
+        {
+            if (enable_influxdb)
+            {
+                strncpy(influxdbsettings.enable_influxdb, enable_influxdb, sizeof(influxdbsettings.enable_influxdb) - 1);
+                influxdbsettings.enable_influxdb[sizeof(influxdbsettings.enable_influxdb) - 1] = '\0';
+            }
+            if (influxdb_url)
+            {
+                strncpy(influxdbsettings.influxdb_url, influxdb_url, sizeof(influxdbsettings.influxdb_url) - 1);
+                influxdbsettings.influxdb_url[sizeof(influxdbsettings.influxdb_url) - 1] = '\0';
+            }
+            if (influxdb_org)
+            {
+                strncpy(influxdbsettings.influxdb_org, influxdb_org, sizeof(influxdbsettings.influxdb_org) - 1);
+                influxdbsettings.influxdb_org[sizeof(influxdbsettings.influxdb_org) - 1] = '\0';
+            }
+            if (influxdb_bucket)
+            {
+                strncpy(influxdbsettings.influxdb_bucket, influxdb_bucket, sizeof(influxdbsettings.influxdb_bucket) - 1);
+                influxdbsettings.influxdb_bucket[sizeof(influxdbsettings.influxdb_bucket) - 1] = '\0';
+            }
+            if (influxdb_token)
+            {
+                strncpy(influxdbsettings.influxdb_token, influxdb_token, sizeof(influxdbsettings.influxdb_token) - 1);
+                influxdbsettings.influxdb_token[sizeof(influxdbsettings.influxdb_token) - 1] = '\0';
+            }
+            xSemaphoreGive(settings_influxdb_mutex);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool parse_i2c_settings(void)
+{
+    char buffer[512];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_I2C_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_I2C_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *bus0_multiplexer_address = doc["bus0_multiplexer_address"];
+    const char *bus1_multiplexer_address = doc["bus1_multiplexer_address"];
+    const char *enable_lcd = doc["enable_lcd"];
+    const char *display_i2c_address = doc["display_i2c_address"];
+
+    if (settings_i2c_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_i2c_mutex, (TickType_t)10))
+        {
+            if (bus0_multiplexer_address)
+            {
+                strncpy(i2csettings.bus0_multiplexer_address, bus0_multiplexer_address, sizeof(i2csettings.bus0_multiplexer_address) - 1);
+                i2csettings.bus0_multiplexer_address[sizeof(i2csettings.bus0_multiplexer_address) - 1] = '\0';
+            }
+            if (bus1_multiplexer_address)
+            {
+                strncpy(i2csettings.bus1_multiplexer_address, bus1_multiplexer_address, sizeof(i2csettings.bus1_multiplexer_address) - 1);
+                i2csettings.bus1_multiplexer_address[sizeof(i2csettings.bus1_multiplexer_address) - 1] = '\0';
+            }
+            if (enable_lcd)
+            {
+                strncpy(i2csettings.enable_lcd, enable_lcd, sizeof(i2csettings.enable_lcd) - 1);
+                i2csettings.enable_lcd[sizeof(i2csettings.enable_lcd) - 1] = '\0';
+            }
+            if (display_i2c_address)
+            {
+                strncpy(i2csettings.display_i2c_address, display_i2c_address, sizeof(i2csettings.display_i2c_address) - 1);
+                i2csettings.display_i2c_address[sizeof(i2csettings.display_i2c_address) - 1] = '\0';
+            }
+            xSemaphoreGive(settings_i2c_mutex);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool parse_mqtt_settings(void)
+{
+    char buffer[512];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_MQTT_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_MQTT_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_mqtt = doc["enable_mqtt"];
+    const char *mqtt_server = doc["mqtt_server"];
+    const char *mqtt_port = doc["mqtt_port"];
+    const char *mqtt_base_topic = doc["mqtt_base_topic"];
+
+    if (settings_mqtt_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10))
+        {
+            if (enable_mqtt)
+            {
+                strncpy(mqttsettings.enable_mqtt, enable_mqtt, sizeof(mqttsettings.enable_mqtt) - 1);
+                mqttsettings.enable_mqtt[sizeof(mqttsettings.enable_mqtt) - 1] = '\0';
+            }
+            if (mqtt_server)
+            {
+                strncpy(mqttsettings.mqtt_server, mqtt_server, sizeof(mqttsettings.mqtt_server) - 1);
+                mqttsettings.mqtt_server[sizeof(mqttsettings.mqtt_server) - 1] = '\0';
+            }
+            if (mqtt_port)
+            {
+                strncpy(mqttsettings.mqtt_server, mqtt_port, sizeof(mqttsettings.mqtt_port) - 1);
+                mqttsettings.mqtt_port[sizeof(mqttsettings.mqtt_port) - 1] = '\0';
+            }
+            if (mqtt_base_topic)
+            {
+                strncpy(mqttsettings.mqtt_base_topic, mqtt_base_topic, sizeof(mqttsettings.mqtt_base_topic) - 1);
+                mqttsettings.mqtt_base_topic[sizeof(mqttsettings.mqtt_base_topic) - 1] = '\0';
+            }
+            xSemaphoreGive(settings_mqtt_mutex);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool parse_fan_settings(void)
+{
+    char buffer[512];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_FAN_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_FAN_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *fan_control_mode = doc["fan_control_mode"];
+    const char *fan_control_mqtt_server = doc["fan_control_mqtt_server"];
+    const char *fan_control_mqtt_port = doc["fan_control_mqtt_port"];
+    const char *fan_control_mqtt_topic = doc["fan_control_mqtt_topic"];
+    const char *fan_control_url_high_speed = doc["fan_control_url_high_speed"];
+    const char *fan_control_url_medium_speed = doc["fan_control_url_medium_speed"];
+    const char *fan_control_url_low_speed = doc["fan_control_url_high_speed"];
+
+    if (settings_fan_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_fan_mutex, (TickType_t)10))
+        {
+            if (fan_control_mode)
+            {
+                strncpy(fansettings.fan_control_mode, fan_control_mode, sizeof(fansettings.fan_control_mode) - 1);
+                fansettings.fan_control_mode[sizeof(fansettings.fan_control_mode) - 1] = '\0';
+            }
+            if (fan_control_mqtt_server)
+            {
+                strncpy(fansettings.fan_control_mqtt_server, fan_control_mqtt_server, sizeof(fansettings.fan_control_mqtt_server) - 1);
+                fansettings.fan_control_mqtt_server[sizeof(fansettings.fan_control_mqtt_server) - 1] = '\0';
+            }
+            if (fan_control_mqtt_port)
+            {
+                strncpy(fansettings.fan_control_mqtt_port, fan_control_mqtt_port, sizeof(fansettings.fan_control_mqtt_port) - 1);
+                fansettings.fan_control_mqtt_port[sizeof(fansettings.fan_control_mqtt_port) - 1] = '\0';
+            }
+            if (fan_control_mqtt_topic)
+            {
+                strncpy(fansettings.fan_control_mqtt_topic, fan_control_mqtt_topic, sizeof(fansettings.fan_control_mqtt_topic) - 1);
+                fansettings.fan_control_mqtt_topic[sizeof(fansettings.fan_control_mqtt_topic) - 1] = '\0';
+            }
+            if (fan_control_url_high_speed)
+            {
+                strncpy(fansettings.fan_control_url_high_speed, fan_control_url_high_speed, sizeof(fansettings.fan_control_url_high_speed) - 1);
+                fansettings.fan_control_url_high_speed[sizeof(fansettings.fan_control_url_high_speed) - 1] = '\0';
+            }
+            if (fan_control_url_medium_speed)
+            {
+                strncpy(fansettings.fan_control_url_medium_speed, fan_control_url_medium_speed, sizeof(fansettings.fan_control_url_medium_speed) - 1);
+                fansettings.fan_control_url_medium_speed[sizeof(fansettings.fan_control_url_medium_speed) - 1] = '\0';
+            }
+            if (fan_control_url_low_speed)
+            {
+                strncpy(fansettings.fan_control_url_low_speed, fan_control_url_low_speed, sizeof(fansettings.fan_control_url_low_speed) - 1);
+                fansettings.fan_control_url_low_speed[sizeof(fansettings.fan_control_url_low_speed) - 1] = '\0';
+            }
+            xSemaphoreGive(settings_fan_mutex);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool parse_statemachine_settings(void)
+{
+    char buffer[512];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATEMACHINE_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATEMACHINE_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *weekday_day_hour_start = doc["weekday_day_hour_start"];
+    const char *weekday_day_minute_start = doc["weekday_day_minute_start"];
+    const char *weekday_night_hour_start = doc["weekday_night_hour_start"];
+    const char *weekday_night_minute_start = doc["weekday_night_minute_start"];
+    const char *weekend_day_hour_start = doc["weekend_day_hour_start"];
+    const char *weekend_day_minute_start = doc["weekend_day_minute_start"];
+    const char *weekend_night_hour_start = doc["weekend_night_hour_start"];
+    const char *weekend_night_minute_start = doc["weekend_night_minute_start"];
+
+    if (settings_statemachine_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
+        {
+            if (weekday_day_hour_start)
+            {
+                strncpy(statemachinesettings.weekday_day_hour_start, weekday_day_hour_start, sizeof(statemachinesettings.weekday_day_hour_start) - 1);
+                statemachinesettings.weekday_day_hour_start[sizeof(statemachinesettings.weekday_day_hour_start) - 1] = '\0';
+            }
+            if (weekday_day_minute_start)
+            {
+                strncpy(statemachinesettings.weekday_day_minute_start, weekday_day_minute_start, sizeof(statemachinesettings.weekday_day_minute_start) - 1);
+                statemachinesettings.weekday_day_minute_start[sizeof(statemachinesettings.weekday_day_minute_start) - 1] = '\0';
+            }
+            if (weekday_night_hour_start)
+            {
+                strncpy(statemachinesettings.weekday_night_hour_start, weekday_night_hour_start, sizeof(statemachinesettings.weekday_night_hour_start) - 1);
+                statemachinesettings.weekday_night_hour_start[sizeof(statemachinesettings.weekday_night_hour_start) - 1] = '\0';
+            }
+            if (weekday_night_minute_start)
+            {
+                strncpy(statemachinesettings.weekday_night_minute_start, weekday_night_minute_start, sizeof(statemachinesettings.weekday_night_minute_start) - 1);
+                statemachinesettings.weekday_night_minute_start[sizeof(statemachinesettings.weekday_night_minute_start) - 1] = '\0';
+            }
+            if (weekend_day_hour_start)
+            {
+                strncpy(statemachinesettings.weekend_day_hour_start, weekend_day_hour_start, sizeof(statemachinesettings.weekend_day_hour_start) - 1);
+                statemachinesettings.weekend_day_hour_start[sizeof(statemachinesettings.weekend_day_hour_start) - 1] = '\0';
+            }
+            if (weekend_day_minute_start)
+            {
+                strncpy(statemachinesettings.weekend_day_minute_start, weekend_day_minute_start, sizeof(statemachinesettings.weekend_day_minute_start) - 1);
+                statemachinesettings.weekend_day_minute_start[sizeof(statemachinesettings.weekend_day_minute_start) - 1] = '\0';
+            }
+            if (weekend_night_hour_start)
+            {
+                strncpy(statemachinesettings.weekend_night_hour_start, weekend_night_hour_start, sizeof(statemachinesettings.weekend_night_hour_start) - 1);
+                statemachinesettings.weekend_night_hour_start[sizeof(statemachinesettings.weekend_night_hour_start) - 1] = '\0';
+            }
+            if (weekend_night_minute_start)
+            {
+                strncpy(statemachinesettings.weekend_night_minute_start, weekend_night_minute_start, sizeof(statemachinesettings.weekend_night_minute_start) - 1);
+                statemachinesettings.weekend_night_minute_start[sizeof(statemachinesettings.weekend_night_minute_start) - 1] = '\0';
+            }
+            xSemaphoreGive(settings_statemachine_mutex);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool parse_sensor1_settings(void)
+{
+    char buffer[1500];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SENSOR_CONFIG1_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG1_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    // Read all 7 sensors settings
+    if (settings_sensor1_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                if (doc["wire_sensor" + String(i) + "_type"])
+                {
+                    strncpy(sensor1settings[i].wire_sensor_type, doc["wire_sensor" + String(i) + "_type"], sizeof(sensor1settings[i].wire_sensor_type) - 1);
+                    sensor1settings[i].wire_sensor_type[sizeof(sensor1settings[i].wire_sensor_type) - 1] = '\0';
+                    // Serial.print("Sensor " + String(i) + " type: " + String(sensor1settings[i].wire_sensor_type) + "\n");
+                }
+                if (doc["wire_sensor" + String(i) + "_valve"])
+                {
+                    strncpy(sensor1settings[i].wire_sensor_valve, doc["wire_sensor" + String(i) + "_valve"], sizeof(sensor1settings[i].wire_sensor_valve) - 1);
+                    sensor1settings[i].wire_sensor_valve[sizeof(sensor1settings[i].wire_sensor_valve) - 1] = '\0';
+                    // Serial.print("Sensor " + String(i) + " valve: " + String(sensor1settings[i].wire_sensor_valve) + "\n");
+                }
+                if (doc["wire_sensor" + String(i) + "_location"])
+                {
+                    strncpy(sensor1settings[i].wire_sensor_location, doc["wire_sensor" + String(i) + "_location"], sizeof(sensor1settings[i].wire_sensor_location) - 1);
+                    sensor1settings[i].wire_sensor_location[sizeof(sensor1settings[i].wire_sensor_location) - 1] = '\0';
+                    // Serial.print("Sensor " + String(i) + " location: " + String(sensor1settings[i].wire_sensor_location) + "\n");
+                }
+                if (doc["wire_sensor" + String(i) + "_rh"])
+                {
+                    strncpy(sensor1settings[i].wire_sensor_rh, doc["wire_sensor" + String(i) + "_rh"], sizeof(sensor1settings[i].wire_sensor_rh) - 1);
+                    sensor1settings[i].wire_sensor_rh[sizeof(sensor1settings[i].wire_sensor_rh) - 1] = '\0';
+                }
+                if (doc["wire_sensor" + String(i) + "_co2"])
+                {
+                    strncpy(sensor1settings[i].wire_sensor_co2, doc["wire_sensor" + String(i) + "_co2"], sizeof(sensor1settings[i].wire_sensor_co2) - 1);
+                    sensor1settings[i].wire_sensor_co2[sizeof(sensor1settings[i].wire_sensor_co2) - 1] = '\0';
+                }
+            }
+            xSemaphoreGive(settings_sensor1_mutex);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool parse_sensor2_settings(void)
+{
+    char buffer[1500];
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SENSOR_CONFIG2_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG2_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    // Read all 7 sensors settings
+    if (settings_sensor2_mutex != NULL)
+    {
+        if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                if (doc["wire1_sensor" + String(i) + "_type"])
+                {
+                    strncpy(sensor2settings[i].wire1_sensor_type, doc["wire1_sensor" + String(i) + "_type"], sizeof(sensor2settings[i].wire1_sensor_type) - 1);
+                    sensor2settings[i].wire1_sensor_type[sizeof(sensor2settings[i].wire1_sensor_type) - 1] = '\0';
+                }
+                if (doc["wire1_sensor" + String(i) + "_valve"])
+                {
+                    strncpy(sensor2settings[i].wire1_sensor_valve, doc["wire1_sensor" + String(i) + "_valve"], sizeof(sensor2settings[i].wire1_sensor_valve) - 1);
+                    sensor2settings[i].wire1_sensor_valve[sizeof(sensor2settings[i].wire1_sensor_valve) - 1] = '\0';
+                }
+                if (doc["wire1_sensor" + String(i) + "_location"])
+                {
+                    strncpy(sensor2settings[i].wire1_sensor_location, doc["wire1_sensor" + String(i) + "_location"], sizeof(sensor2settings[i].wire1_sensor_location) - 1);
+                    sensor2settings[i].wire1_sensor_location[sizeof(sensor2settings[i].wire1_sensor_location) - 1] = '\0';
+                }
+                if (doc["wire1_sensor" + String(i) + "_rh"])
+                {
+                    strncpy(sensor2settings[i].wire1_sensor_rh, doc["wire1_sensor" + String(i) + "_rh"], sizeof(sensor2settings[i].wire1_sensor_rh) - 1);
+                    sensor2settings[i].wire1_sensor_rh[sizeof(sensor2settings[i].wire1_sensor_rh) - 1] = '\0';
+                }
+                if (doc["wire1_sensor" + String(i) + "_co2"])
+                {
+                    strncpy(sensor2settings[i].wire1_sensor_co2, doc["wire1_sensor" + String(i) + "_co2"], sizeof(sensor2settings[i].wire1_sensor_co2) - 1);
+                    sensor2settings[i].wire1_sensor_co2[sizeof(sensor2settings[i].wire1_sensor_co2) - 1] = '\0';
+                }
+            }
+            xSemaphoreGive(settings_sensor2_mutex);
+            return true;
+        }
+    }
+    return false;
+}
+
+// Old config
+//
+//
+//
+//
+//
+//
+//
+//
+//
 // Read network settings
 String read_network_config(void)
 {
     bool settings_network_file_present = 0;
     String settings_network_string = "";
 
-    if (settings_network_mutex != NULL)
+    settings_network_file_present = check_file_exists(SETTINGS_NETWORK_PATH);
+    if (settings_network_file_present == 1)
     {
-        if (xSemaphoreTake(settings_network_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_network_file_present = check_file_exists(SETTINGS_NETWORK_PATH);
-            if (settings_network_file_present == 1)
-            {
-                settings_network_string = read_config_file(SETTINGS_NETWORK_PATH);
-            }
-            xSemaphoreGive(settings_network_mutex);
-        }
+        settings_network_string = read_config_file(SETTINGS_NETWORK_PATH);
     }
+
+    // Serial.print("Settings string from file returned: " + settings_network_string);
     return settings_network_string;
 }
 
@@ -938,7 +1492,6 @@ bool check_file_exists(const char *path)
 // Assumes presents of file was checked before calling this function.
 String read_config_file(const char *path)
 {
-
     String string_from_file;
     String message = "";
 

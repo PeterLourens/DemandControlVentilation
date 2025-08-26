@@ -135,7 +135,7 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-8-24">
                                 <label for="wire_sensor1_location">Room name:</label>
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor1_location" id="wire_sensor1_location" class="pure-input-3-4" />
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor1_location" id="wire_sensor1_location" class="pure-input-3-4"/>
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor1_rh">RH:</label>
