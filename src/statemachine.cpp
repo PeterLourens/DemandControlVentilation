@@ -285,9 +285,21 @@ void day_transitions(void)
     int rh_sensors_high = 0;
     int rhhighlevel = 0;
     int co2highlevel = 0;
-    int min_state_time = 600; // minimum time in seconds the statemachine should stay in this state
     long new_time = 0;
     bool valve_move_locked = 0;
+
+    // Statemachine settings
+    int weekday_day_hour_start = 0;
+    int weekday_day_minute_start = 0;
+    int weekday_night_hour_start = 0;
+    int weekday_night_minute_start = 0;
+    int weekend_day_hour_start = 0;
+    int weekend_day_minute_start = 0;
+    int weekend_night_hour_start = 0;
+    int weekend_night_minute_start = 0;
+    int minimum_state_time = 0;
+    char *weekend_day_1 = NULL;
+    char *weekend_day_2 = NULL;
 
     String temp_fanspeed = "";
     String statemachine_state = "day";
@@ -295,72 +307,68 @@ void day_transitions(void)
     String message = "";
 
     // Actions for this state
-    if (statemachine_state_mutex != NULL)
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-        {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL)
+    if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
-        {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+        temp_hour = hourStr.toInt();
+        temp_minute = minuteStr.toInt();
+        temp_day_of_week = dayOfWeek;
+        xSemaphoreGive(date_time_mutex);
     }
 
-    if (settings_state_day_mutex != NULL)
+    if (settings_state_day_mutex && xSemaphoreTake(settings_state_day_mutex, (TickType_t)100) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_state_day_mutex, (TickType_t)100) == pdTRUE)
-        {
-            String state_fanspeed = settings_state_day[String("state_day_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_day_mutex);
-        }
+        String state_fanspeed = settings_state_day[String("state_day_fanspeed")];
+        temp_fanspeed = state_fanspeed;
+        xSemaphoreGive(settings_state_day_mutex);
     }
 
-    if (fanspeed_mutex != NULL)
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
-        {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+        fanspeed = temp_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
-    if (lock_valve_move_mutex != NULL)
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
-        {
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
     // Read CO2 levels for transition to highCO2day state from global jsonDocument
-    if (settings_state_highco2day_mutex != NULL)
+    if (settings_state_highco2day_mutex && xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)100) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)100) == pdTRUE)
-        {
-            co2highlevel = settings_state_highco2day["co2_high_state_highco2day"];
-            xSemaphoreGive(settings_state_highco2day_mutex);
-        }
+        co2highlevel = settings_state_highco2day["co2_high_state_highco2day"];
+        xSemaphoreGive(settings_state_highco2day_mutex);
     }
 
     // Read RH levels for transition to highrhday state from global jsonDocument
-    if (settings_state_highrhday_mutex != NULL)
+    if (settings_state_highrhday_mutex && xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)100) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)100) == pdTRUE)
-        {
-            rhhighlevel = settings_state_highrhday["rh_high_state_highrhday"];
-            xSemaphoreGive(settings_state_highrhday_mutex);
-        }
+        rhhighlevel = settings_state_highrhday["rh_high_state_highrhday"];
+        xSemaphoreGive(settings_state_highrhday_mutex);
+    }
+
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
+    {
+        weekday_day_hour_start = statemachinesettings.weekday_day_hour_start;
+        weekday_day_minute_start = statemachinesettings.weekday_day_minute_start;
+        weekday_night_hour_start = statemachinesettings.weekday_night_hour_start;
+        weekday_night_minute_start = statemachinesettings.weekday_night_minute_start;
+        weekend_day_hour_start = statemachinesettings.weekend_day_hour_start;
+        weekend_day_minute_start = statemachinesettings.weekend_day_minute_start;
+        weekend_night_hour_start = statemachinesettings.weekend_night_hour_start;
+        weekend_night_minute_start = statemachinesettings.weekend_night_minute_start;
+        weekend_day_1 = statemachinesettings.weekend_day_1;
+        weekend_day_2 = statemachinesettings.weekend_day_2;
+        minimum_state_time = statemachinesettings.minimum_state_time;
+        xSemaphoreGive(settings_statemachine_mutex);
     }
 
     message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
@@ -412,21 +420,32 @@ void day_transitions(void)
     message = "Number of sensors measure high CO2: " + String(co2_sensors_high) + ". Number of sensors measure high RH: " + String(rh_sensors_high);
     print_message(message);
 
-    if (co2_sensors_high > 0 && elapsed_time >= min_state_time)
+    if (co2_sensors_high > 0 && elapsed_time >= minimum_state_time)
     {
         new_state = "highco2day";
         elapsed_time = 0;
         old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (rh_sensors_high > 0 && elapsed_time >= min_state_time)
+    else if (rh_sensors_high > 0 && elapsed_time >= minimum_state_time)
     {
         new_state = "highrhday";
         elapsed_time = 0;
         old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (temp_hour >= 21)
+    // else if (temp_hour >= 21)
+    // Weekday transit to night
+    else if (temp_hour >= weekday_night_hour_start && temp_minute >= weekday_night_minute_start && temp_day_of_week != weekend_day_1 && temp_day_of_week != weekend_day_2)
     {
-        message = "It's night. Transit to night.";
+        message = "It is a weekday and night time. Transit to night.";
+        print_message(message);
+        new_state = "night";
+        elapsed_time = 0;
+        old_time = (esp_timer_get_time()) / 1000000;
+    }
+    // Weekend transit to night
+    else if (temp_hour >= weekday_night_hour_start && temp_minute >= weekday_night_minute_start && (temp_day_of_week == weekend_day_1 || temp_day_of_week == weekend_day_2))
+    {
+        message = "It is weekend and night time. Transit to night.";
         print_message(message);
         new_state = "night";
         elapsed_time = 0;
@@ -452,13 +471,10 @@ void day_transitions(void)
         new_state = "day";
     }
 
-    if (statemachine_state_mutex != NULL)
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-        {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 }
 
