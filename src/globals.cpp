@@ -56,21 +56,31 @@ Influxdb_settings influxdbsettings;
 I2C_settings i2csettings;
 MQTT_settings mqttsettings;
 Fan_settings fansettings;
+
 Statemachine_settings statemachinesettings;
-State_day_settings state_day_settings;
-State_night_settings state_night_settings;
+State_day_settings statedaysettings;
+State_night_settings statenightsettings;
+State_highco2day_settings statehighco2daysettings;
+State_highco2night_settings statehighco2nightsettings;
+State_highrhday_settings statehighrhdaysettings;
+State_highrhnight_settings statehighrhnightsettings;
+State_cooking_settings statecookingsettings;
+State_cyclingday_settings statecyclingdaysettings;
+State_cyclingnight_settings statecyclingnightsettings;
+State_temp_settings statetempsettings;
+
 Sensor1_settings sensor1settings[SENSOR_COUNT];
 Sensor2_settings sensor2settings[SENSOR_COUNT];
 
-JsonDocument valve_control_data;         // Global for valve control data
-//JsonDocument wire_sensor_data;           // Global for bus0 sensor configuration
-//JsonDocument wire1_sensor_data;          // Global for bus1 sensor configuration
-JsonDocument settings_fan_data;          // Define global fanspeed settings
-//JsonDocument settings_statemachine_data; // Define global statemachine settings
+JsonDocument valve_control_data; // Global for valve control data
+// JsonDocument wire_sensor_data;           // Global for bus0 sensor configuration
+// JsonDocument wire1_sensor_data;          // Global for bus1 sensor configuration
+JsonDocument settings_fan_data; // Define global fanspeed settings
+// JsonDocument settings_statemachine_data; // Define global statemachine settings
 
-JsonDocument settings_state_day;          // Settings for state day
-JsonDocument settings_state_night;        // Settings for state night
-JsonDocument settings_state_highco2day;   // Settings for state highco2day
+// JsonDocument settings_state_day;          // Settings for state day
+// JsonDocument settings_state_night;        // Settings for state night
+// JsonDocument settings_state_highco2day;   // Settings for state highco2day
 JsonDocument settings_state_highco2night; // Settings for state highco2night
 JsonDocument settings_state_highrhday;    // Settings for state highrhday
 JsonDocument settings_state_highrhnight;  // Settings for state highrhnight

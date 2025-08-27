@@ -20,14 +20,15 @@ bool parse_fan_settings(void);
 bool parse_statemachine_settings(void);
 bool parse_sensor1_settings(void);
 bool parse_sensor2_settings(void);
+
 bool parse_state_day_settings(void);
 bool parse_state_night_settings(void);
+bool parse_state_highco2day_settings(void);
 
-//bool parse_valve_settings(void);
+// bool parse_valve_settings(void);
 
 // Old
 String read_network_config(void);
-
 
 String read_rtc_config(void);
 void process_rtc_config(void);

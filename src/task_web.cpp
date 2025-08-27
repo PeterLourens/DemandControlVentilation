@@ -196,6 +196,7 @@ const char *STATE_NIGHT_FANSPEED = "state_night_fanspeed";
 const char *ENABLE_STATE_NIGHT = "enable_state_night";
 const char *NAME_STATE_NIGHT = "name_state_night";
 const char *STATE_NIGHT_HIGHCO2 = "state_night_highco2";
+const char *STATE_NIGHT_HIGHRH = "state_night_highrh";
 const char *VALVE0_POSITION_NIGHT = "valve0_position_night";
 const char *VALVE1_POSITION_NIGHT = "valve1_position_night";
 const char *VALVE2_POSITION_NIGHT = "valve2_position_night";
@@ -1169,7 +1170,9 @@ void Taskwebcode(void *pvParameters)
 					settings_state_day_doc["valve11_position_day"] = p->value().c_str();
 			}
 		}
-		serializeJson(settings_state_day, settings_state_day_char, sizeof(settings_state_day_char));
+		Serial.print("\nSettings state day:\n");
+		serializeJsonPretty(settings_state_day_doc, Serial);
+		serializeJson(settings_state_day_doc, settings_state_day_char, sizeof(settings_state_day_char));
 		write_settings(SETTINGS_STATE_DAY_PATH, settings_state_day_char, settings_statemachine_mutex);
 		parse_state_day_settings(); // Apply new state day settings
 		request->send(200, "text/html", statemachine_html); });
@@ -1178,96 +1181,106 @@ void Taskwebcode(void *pvParameters)
 	server.on("/settings_valve_night", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
 		int params = request->params();
-		String settings_state_night_str;
-		
+		char settings_state_night_char[1500] = {};
+		JsonDocument settings_state_night_doc;
+
 		for(int i=0;i<params;i++){
 			const AsyncWebParameter* p = request->getParam(i);
 			if(p->isPost()){
 				if (p->name() == ENABLE_STATE_NIGHT) 
-					settings_state_night["enable_state_night"] = p->value().c_str();
+					settings_state_night_doc["enable_state_night"] = p->value().c_str();
 				if (p->name() == STATE_NIGHT_FANSPEED)
-					settings_state_day["state_night_fanspeed"] = p->value().c_str();
-				if (p->name() == NAME_STATE_NIGHT) 
-					settings_state_night["name_state_night"] = p->value().c_str();
+					settings_state_night_doc["state_night_fanspeed"] = p->value().c_str();
+				if (p->name() == NAME_STATE_NIGHT)
+					settings_state_night_doc["name_state_night"] = p->value().c_str();
 				if (p->name() == STATE_NIGHT_HIGHCO2)
-					settings_state_night["state_night_highco2"] = p->value().c_str();
+					settings_state_night_doc["state_night_highco2"] = p->value().c_str();
+				if (p->name() == STATE_NIGHT_HIGHRH)
+					settings_state_night_doc["state_night_highrh"] = p->value().c_str();
 				if (p->name() == VALVE0_POSITION_NIGHT)
-					settings_state_night["valve0_position_night"] = p->value().c_str();
-				if (p->name() ==  VALVE1_POSITION_NIGHT) 
-					settings_state_night["valve1_position_night"] = p->value().c_str();
-				if (p->name() ==  VALVE2_POSITION_NIGHT) 
-					settings_state_night["valve2_position_night"] = p->value().c_str();
+					settings_state_night_doc["valve0_position_night"] = p->value().c_str();
+				if (p->name() ==  VALVE1_POSITION_NIGHT)
+					settings_state_night_doc["valve1_position_night"] = p->value().c_str();
+				if (p->name() ==  VALVE2_POSITION_NIGHT)
+					settings_state_night_doc["valve2_position_night"] = p->value().c_str();
 				if (p->name() ==  VALVE3_POSITION_NIGHT) 
-					settings_state_night["valve3_position_night"] = p->value().c_str();
+					settings_state_night_doc["valve3_position_night"] = p->value().c_str();
 				if (p->name() ==  VALVE4_POSITION_NIGHT) 
-					settings_state_night["valve4_position_night"] = p->value().c_str();
+					settings_state_night_doc["valve4_position_night"] = p->value().c_str();
 				if (p->name() ==  VALVE5_POSITION_NIGHT) 
-					settings_state_night["valve5_position_night"] = p->value().c_str();
+					settings_state_night_doc["valve5_position_night"] = p->value().c_str();
 				if (p->name() ==  VALVE6_POSITION_NIGHT) 
-					settings_state_night["valve6_position_night"] = p->value().c_str();
-				if (p->name() ==  VALVE7_POSITION_NIGHT) 
-					settings_state_night["valve7_position_night"] = p->value().c_str();
-				if (p->name() ==  VALVE8_POSITION_NIGHT) 
-					settings_state_night["valve8_position_night"] = p->value().c_str();
-				if (p->name() ==  VALVE9_POSITION_NIGHT) 
-					settings_state_night["valve9_position_night"] = p->value().c_str();
+					settings_state_night_doc["valve6_position_night"] = p->value().c_str();
+				if (p->name() ==  VALVE7_POSITION_NIGHT)
+					settings_state_night_doc["valve7_position_night"] = p->value().c_str();
+				if (p->name() ==  VALVE8_POSITION_NIGHT)
+					settings_state_night_doc["valve8_position_night"] = p->value().c_str();
+				if (p->name() ==  VALVE9_POSITION_NIGHT)
+					settings_state_night_doc["valve9_position_night"] = p->value().c_str();
 				if (p->name() ==  VALVE10_POSITION_NIGHT) 
-					settings_state_night["valve10_position_night"] = p->value().c_str();
-				if (p->name() ==  VALVE11_POSITION_NIGHT) 
-					settings_state_night["valve11_position_night"] = p->value().c_str();
+					settings_state_night_doc["valve10_position_night"] = p->value().c_str();
+				if (p->name() ==  VALVE11_POSITION_NIGHT)
+					settings_state_night_doc["valve11_position_night"] = p->value().c_str();
 			}
 		}
-		serializeJson(settings_state_night, settings_state_night_str);
-		write_config_file(SETTINGS_STATE_NIGHT_PATH, settings_state_night_str);
+		//Serial.print("\nSettings state night:\n");
+		//serializeJsonPretty(settings_state_night_doc, Serial);
+		serializeJson(settings_state_night_doc, settings_state_night_char, sizeof(settings_state_night_char));
+		write_settings(SETTINGS_STATE_NIGHT_PATH, settings_state_night_char, settings_statemachine_mutex);
+		parse_state_night_settings(); // Apply new state night settings
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine highco2day
 	server.on("/settings_valve_highco2day", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
 		int params = request->params();
-		String settings_state_highco2day_str;
+		char settings_state_highco2day_char[1500] = {};
+		JsonDocument settings_state_highco2day_doc;
 
 		for(int i=0;i<params;i++){
 			const AsyncWebParameter* p = request->getParam(i);
 			if(p->isPost()){
 				if (p->name() == ENABLE_STATE_HIGHCO2DAY) 
-					settings_state_highco2day["enable_state_highco2day"] = p->value().c_str();
+					settings_state_highco2day_doc["enable_state_highco2day"] = p->value().c_str();
 				if (p->name() == STATE_HIGHCO2DAY_FANSPEED)
-					settings_state_highco2day["state_highco2day_fanspeed"] = p->value().c_str();
-				if (p->name() == NAME_STATE_HIGHCO2DAY) 
-					settings_state_highco2day["name_state_highco2day"] = p->value().c_str();
-				if (p->name() == CO2_LOW_STATE_HIGHCO2DAY) 
-					settings_state_highco2day["co2_low_state_highco2day"] = p->value().c_str();
-				if (p->name() == CO2_HIGH_STATE_HIGHCO2DAY) 
-					settings_state_highco2day["co2_high_state_highco2day"] = p->value().c_str();
+					settings_state_highco2day_doc["state_highco2day_fanspeed"] = p->value().c_str();
+				if (p->name() == NAME_STATE_HIGHCO2DAY)
+					settings_state_highco2day_doc["name_state_highco2day"] = p->value().c_str();
+				if (p->name() == CO2_LOW_STATE_HIGHCO2DAY)
+					settings_state_highco2day_doc["co2_low_state_highco2day"] = p->value().c_str();
+				if (p->name() == CO2_HIGH_STATE_HIGHCO2DAY)
+					settings_state_highco2day_doc["co2_high_state_highco2day"] = p->value().c_str();
 				if (p->name() == VALVE0_POSITION_HIGHCO2DAY)
-					settings_state_highco2day["valve0_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE1_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve1_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE2_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve2_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE3_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve3_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE4_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve4_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE5_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve5_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE6_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve6_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE7_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve7_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE8_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve8_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE9_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve9_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE10_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve10_position_highco2day"] = p->value().c_str();
-				if (p->name() ==  VALVE11_POSITION_HIGHCO2DAY) 
-					settings_state_highco2day["valve11_position_highco2day"] = p->value().c_str();
+					settings_state_highco2day_doc["valve0_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE1_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve1_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE2_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve2_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE3_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve3_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE4_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve4_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE5_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve5_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE6_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve6_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE7_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve7_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE8_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve8_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE9_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve9_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE10_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve10_position_highco2day"] = p->value().c_str();
+				if (p->name() ==  VALVE11_POSITION_HIGHCO2DAY)
+					settings_state_highco2day_doc["valve11_position_highco2day"] = p->value().c_str();
 			}
 		}
-		serializeJson(settings_state_highco2day, settings_state_highco2day_str);
-		write_config_file(SETTINGS_STATE_HIGHCO2DAY_PATH, settings_state_highco2day_str);
+		// Serial.print("\nSettings state night:\n");
+		// serializeJsonPretty(settings_state_night_doc, Serial);
+		serializeJson(settings_state_highco2day_doc, settings_state_highco2day_char, sizeof(settings_state_highco2day_char));
+		write_settings(SETTINGS_STATE_HIGHCO2DAY_PATH, settings_state_highco2day_char, settings_statemachine_mutex);
+		parse_state_highco2day_settings(); // Apply new state highco2day settings
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine highco2night

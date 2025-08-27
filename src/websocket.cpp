@@ -23,8 +23,8 @@ String create_index_json()
     String date_time = "";
 
     JsonDocument doc;
-    //JsonDocument wire_sensor_data_temp;
-    //JsonDocument wire1_sensor_data_temp;
+    // JsonDocument wire_sensor_data_temp;
+    // JsonDocument wire1_sensor_data_temp;
 
     // Read from sensor queue
     if (sensor_queue != 0)
@@ -135,30 +135,29 @@ String create_index_json()
         {
             if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
             {
-            doc["bus0_sensor" + String(i) + "_type"] = sensor1settings[i].wire_sensor_type;
-            doc["bus0_sensor" + String(i) + "_valve"] = sensor1settings[i].wire_sensor_valve;
-            doc["bus0_sensor" + String(i) + "_location"] = sensor1settings[i].wire_sensor_location;
-            doc["bus0_sensor" + String(i) + "_rhs"] = sensor1settings[i].wire_sensor_rh;
-            doc["bus0_sensor" + String(i) + "_co2s"] = sensor1settings[i].wire_sensor_co2;
-            xSemaphoreGive(settings_sensor1_mutex);
+                doc["bus0_sensor" + String(i) + "_type"] = sensor1settings[i].wire_sensor_type;
+                doc["bus0_sensor" + String(i) + "_valve"] = sensor1settings[i].wire_sensor_valve;
+                doc["bus0_sensor" + String(i) + "_location"] = sensor1settings[i].wire_sensor_location;
+                doc["bus0_sensor" + String(i) + "_rhs"] = sensor1settings[i].wire_sensor_rh;
+                doc["bus0_sensor" + String(i) + "_co2s"] = sensor1settings[i].wire_sensor_co2;
+                xSemaphoreGive(settings_sensor1_mutex);
             }
         }
         doc["bus0_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[0][i][0]);
         doc["bus0_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[0][i][1]);
         doc["bus0_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[0][i][2]);
 
-        
         // Bus1 sensor data
         if (settings_sensor2_mutex != NULL)
         {
             if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
             {
-            doc["bus1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
-            doc["bus1_sensor" + String(i) + "_valve"] = sensor2settings[i].wire1_sensor_valve;
-            doc["bus1_sensor" + String(i) + "_location"] = sensor2settings[i].wire1_sensor_location;
-            doc["bus1_sensor" + String(i) + "_rhs"] = sensor2settings[i].wire1_sensor_rh;
-            doc["bus1_sensor" + String(i) + "_co2s"] = sensor2settings[i].wire1_sensor_co2;
-            xSemaphoreGive(settings_sensor2_mutex);
+                doc["bus1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
+                doc["bus1_sensor" + String(i) + "_valve"] = sensor2settings[i].wire1_sensor_valve;
+                doc["bus1_sensor" + String(i) + "_location"] = sensor2settings[i].wire1_sensor_location;
+                doc["bus1_sensor" + String(i) + "_rhs"] = sensor2settings[i].wire1_sensor_rh;
+                doc["bus1_sensor" + String(i) + "_co2s"] = sensor2settings[i].wire1_sensor_co2;
+                xSemaphoreGive(settings_sensor2_mutex);
             }
         }
         doc["bus1_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[1][i][0]);
@@ -310,7 +309,7 @@ String create_sensors_json()
         }
     }
 
-    doc2.shrinkToFit(); // optional
+    doc2.shrinkToFit();
     serializeJson(doc2, sensor_config2_str);
 
     if (sensor_config1_str == "" || sensor_config2_str == "")
@@ -322,7 +321,7 @@ String create_sensors_json()
     else
     {
         sensors_json = concatJson(sensor_config1_str, sensor_config2_str);
-        //Serial.print("Sensors json: " + sensors_json + "\n");
+        // Serial.print("Sensors json: " + sensors_json + "\n");
     }
 
     return sensors_json;
@@ -330,10 +329,10 @@ String create_sensors_json()
 
 String create_statemachine_json()
 {
-    bool settings_statemachine_present = 0;
-    bool settings_state_day_present = 0;
-    bool settings_state_night_present = 0;
-    bool settings_state_highco2day_present = 0;
+    // bool settings_statemachine_present = 0;
+    //  bool settings_state_day_present = 0;
+    //  bool settings_state_night_present = 0;
+    // bool settings_state_highco2day_present = 0;
     bool settings_state_highco2night_present = 0;
     bool settings_state_highrhday_present = 0;
     bool settings_state_highrhnight_present = 0;
@@ -354,7 +353,158 @@ String create_statemachine_json()
     String statemachine_json = "";
     String message = "";
 
-    if (settings_statemachine_mutex != NULL)
+    JsonDocument doc_statemachine;
+    JsonDocument doc_day;
+    JsonDocument doc_night;
+    JsonDocument doc_highco2day;
+    JsonDocument doc_highco2night;
+    JsonDocument doc_highrhday;
+    JsonDocument doc_highrhnight;
+    JsonDocument doc_cooking;
+    JsonDocument doc_cyclingday;
+    JsonDocument doc_cyclingnight;
+
+    // Statemachine settings
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10) == pdTRUE)
+    {
+        doc_statemachine["weekday_day_hour_start"] = statemachinesettings.weekday_day_hour_start;
+        doc_statemachine["weekday_day_minute_start"] = statemachinesettings.weekday_day_minute_start;
+        doc_statemachine["weekday_night_hour_start"] = statemachinesettings.weekday_night_hour_start;
+        doc_statemachine["weekday_night_minute_start"] = statemachinesettings.weekday_night_minute_start;
+        doc_statemachine["weekend_day_hour_start"] = statemachinesettings.weekend_day_hour_start;
+        doc_statemachine["weekend_day_minute_start"] = statemachinesettings.weekend_day_minute_start;
+        doc_statemachine["weekend_night_hour_start"] = statemachinesettings.weekend_night_hour_start;
+        doc_statemachine["weekend_night_minute_start"] = statemachinesettings.weekend_night_minute_start;
+        doc_statemachine["weekend_day_1"] = statemachinesettings.weekend_day_1;
+        doc_statemachine["weekend_day_2"] = statemachinesettings.weekend_day_2;
+        doc_statemachine["minimum_state_time"] = statemachinesettings.minimum_state_time;
+        xSemaphoreGive(settings_statemachine_mutex);
+    }
+
+    doc_statemachine.shrinkToFit();
+    serializeJson(doc_statemachine, settings_statemachine_str);
+
+    if (settings_statemachine_str == "")
+    {
+        message = "[ERROR] String is empty. Failed to read statemachine settings.";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = settings_statemachine_str;
+    }
+
+    // State day settings
+    if (settings_state_day_mutex && xSemaphoreTake(settings_state_day_mutex, (TickType_t)10) == pdTRUE)
+    {
+        doc_day["enable_state_day"] = statedaysettings.enable_state_day;
+        doc_day["state_day_fanspeed"] = statedaysettings.state_day_fanspeed;
+        doc_day["name_state_day"] = statedaysettings.name_state_day;
+        doc_day["state_day_highco2"] = statedaysettings.state_day_highco2;
+        doc_day["state_day_highrh"] = statedaysettings.state_day_highrh;
+        doc_day["valve0_position_day"] = statedaysettings.valve0_position_day;
+        doc_day["valve1_position_day"] = statedaysettings.valve1_position_day;
+        doc_day["valve2_position_day"] = statedaysettings.valve2_position_day;
+        doc_day["valve3_position_day"] = statedaysettings.valve3_position_day;
+        doc_day["valve4_position_day"] = statedaysettings.valve4_position_day;
+        doc_day["valve5_position_day"] = statedaysettings.valve5_position_day;
+        doc_day["valve6_position_day"] = statedaysettings.valve6_position_day;
+        doc_day["valve7_position_day"] = statedaysettings.valve7_position_day;
+        doc_day["valve8_position_day"] = statedaysettings.valve8_position_day;
+        doc_day["valve9_position_day"] = statedaysettings.valve9_position_day;
+        doc_day["valve10_position_day"] = statedaysettings.valve10_position_day;
+        doc_day["valve11_position_day"] = statedaysettings.valve11_position_day;
+        xSemaphoreGive(settings_state_day_mutex);
+    }
+
+    doc_day.shrinkToFit();
+    serializeJson(doc_day, settings_state_day_str);
+
+    if (settings_state_day_str == "")
+    {
+        message = "[ERROR] String is empty. Failed to read day state settings.";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_day_str);
+    }
+
+    // State night settings
+    if (settings_state_night_mutex && xSemaphoreTake(settings_state_night_mutex, (TickType_t)10) == pdTRUE)
+    {
+        doc_night["enable_state_night"] = statenightsettings.enable_state_night;
+        doc_night["state_night_fanspeed"] = statenightsettings.state_night_fanspeed;
+        doc_night["name_state_night"] = statenightsettings.name_state_night;
+        doc_night["state_night_highco2"] = statenightsettings.state_night_highco2;
+        doc_night["state_night_highrh"] = statenightsettings.state_night_highrh;
+        doc_night["valve0_position_night"] = statenightsettings.valve0_position_night;
+        doc_night["valve1_position_night"] = statenightsettings.valve1_position_night;
+        doc_night["valve2_position_night"] = statenightsettings.valve2_position_night;
+        doc_night["valve3_position_night"] = statenightsettings.valve3_position_night;
+        doc_night["valve4_position_night"] = statenightsettings.valve4_position_night;
+        doc_night["valve5_position_night"] = statenightsettings.valve5_position_night;
+        doc_night["valve6_position_night"] = statenightsettings.valve6_position_night;
+        doc_night["valve7_position_night"] = statenightsettings.valve7_position_night;
+        doc_night["valve8_position_night"] = statenightsettings.valve8_position_night;
+        doc_night["valve9_position_night"] = statenightsettings.valve9_position_night;
+        doc_night["valve10_position_night"] = statenightsettings.valve10_position_night;
+        doc_night["valve11_position_night"] = statenightsettings.valve11_position_night;
+        xSemaphoreGive(settings_state_night_mutex);
+    }
+
+    doc_night.shrinkToFit();
+    serializeJson(doc_night, settings_state_night_str);
+
+    if (settings_state_night_str == "")
+    {
+        message = "[ERROR] String is empty. Failed to read night state settings.";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_night_str);
+    }
+
+    // State highco2day settings
+    if (settings_state_highco2day_mutex && xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)10) == pdTRUE)
+    {
+        doc_highco2day["enable_state_highco2day"] = statehighco2daysettings.enable_state_highco2day;
+        doc_highco2day["state_highco2day_fanspeed"] = statehighco2daysettings.state_highco2day_fanspeed;
+        doc_highco2day["name_state_highco2day"] = statehighco2daysettings.name_state_highco2day;
+        doc_highco2day["co2_high_state_highco2day"] = statehighco2daysettings.co2_high_state_highco2day;
+        doc_highco2day["co2_low_state_highco2day"] = statehighco2daysettings.co2_low_state_highco2day;
+        doc_highco2day["valve0_position_highco2day"] = statehighco2daysettings.valve0_position_highco2day;
+        doc_highco2day["valve1_position_highco2day"] = statehighco2daysettings.valve1_position_highco2day;
+        doc_highco2day["valve2_position_highco2day"] = statehighco2daysettings.valve2_position_highco2day;
+        doc_highco2day["valve3_position_highco2day"] = statehighco2daysettings.valve3_position_highco2day;
+        doc_highco2day["valve4_position_highco2day"] = statehighco2daysettings.valve4_position_highco2day;
+        doc_highco2day["valve5_position_highco2day"] = statehighco2daysettings.valve5_position_highco2day;
+        doc_highco2day["valve6_position_highco2day"] = statehighco2daysettings.valve6_position_highco2day;
+        doc_highco2day["valve7_position_highco2day"] = statehighco2daysettings.valve7_position_highco2day;
+        doc_highco2day["valve8_position_highco2day"] = statehighco2daysettings.valve8_position_highco2day;
+        doc_highco2day["valve9_position_highco2day"] = statehighco2daysettings.valve9_position_highco2day;
+        doc_highco2day["valve10_position_highco2day"] = statehighco2daysettings.valve10_position_highco2day;
+        doc_highco2day["valve11_position_highco2day"] = statehighco2daysettings.valve11_position_highco2day;
+        xSemaphoreGive(settings_state_highco2day_mutex);
+    }
+    doc_highco2day.shrinkToFit();
+    serializeJson(doc_highco2day, settings_state_highco2day_str);
+    if (settings_state_highco2day_str == "")
+    {
+        message = "[ERROR] String is empty. Failed to read high CO2 day state settings.";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_highco2day_str);
+    }
+
+    /*if (settings_statemachine_mutex != NULL)
     {
         if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)100) == pdTRUE)
         {
@@ -444,7 +594,7 @@ String create_statemachine_json()
     else
     {
         statemachine_json = concatJson(statemachine_json, settings_state_highco2day_str);
-    }
+    }*/
 
     if (settings_state_highco2night_mutex != NULL)
     {
@@ -584,6 +734,7 @@ String create_statemachine_json()
         statemachine_json = concatJson(statemachine_json, settings_state_cyclingnight_str);
     }
 
+    // Serial.print("Statemachine json: " + statemachine_json + "\n");
     return statemachine_json;
 }
 

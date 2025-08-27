@@ -439,6 +439,7 @@ bool parse_fan_settings(void)
 bool parse_statemachine_settings(void)
 {
     char buffer[512];
+
     String message;
     JsonDocument doc;
 
@@ -454,17 +455,8 @@ bool parse_statemachine_settings(void)
         }
     }
 
-    int weekday_day_hour_start = doc["weekday_day_hour_start"];
-    int weekday_day_minute_start = doc["weekday_day_minute_start"];
-    int weekday_night_hour_start = doc["weekday_night_hour_start"];
-    int weekday_night_minute_start = doc["weekday_night_minute_start"];
-    int weekend_day_hour_start = doc["weekend_day_hour_start"];
-    int weekend_day_minute_start = doc["weekend_day_minute_start"];
-    int weekend_night_hour_start = doc["weekend_night_hour_start"];
-    int weekend_night_minute_start = doc["weekend_night_minute_start"];
     const char *weekend_day_1 = doc["weekend_day_1"];
     const char *weekend_day_2 = doc["weekend_day_2"];
-    int minimum_state_time = doc["minimum_state_time"];
 
     if (settings_statemachine_mutex != NULL)
     {
@@ -616,9 +608,10 @@ bool parse_sensor2_settings(void)
     return false;
 }
 
-bool parse_state_day_settings(void) {
+bool parse_state_day_settings(void)
+{
+    char buffer[700];
 
-    char buffer[512];
     String message;
     JsonDocument doc;
 
@@ -634,14 +627,169 @@ bool parse_state_day_settings(void) {
         }
     }
 
+    const char *enable_state_day = doc["enable_state_day"];
+    const char *state_day_fanspeed = doc["state_day_fanspeed"];
+    const char *name_state_day = doc["name_state_day"];
+
     if (settings_state_day_mutex && (xSemaphoreTake(settings_state_day_mutex, (TickType_t)10)) == pdTRUE)
     {
-        //statemachinesettings.day_state = doc["day_state"];
+        statedaysettings.state_day_highco2 = doc["state_day_highco2"];
+        statedaysettings.state_day_highrh = doc["state_day_highrh"];
+        statedaysettings.valve0_position_day = doc["valve0_position_day"];
+        statedaysettings.valve1_position_day = doc["valve1_position_day"];
+        statedaysettings.valve2_position_day = doc["valve2_position_day"];
+        statedaysettings.valve3_position_day = doc["valve3_position_day"];
+        statedaysettings.valve4_position_day = doc["valve4_position_day"];
+        statedaysettings.valve5_position_day = doc["valve5_position_day"];
+        statedaysettings.valve6_position_day = doc["valve6_position_day"];
+        statedaysettings.valve7_position_day = doc["valve7_position_day"];
+        statedaysettings.valve8_position_day = doc["valve8_position_day"];
+        statedaysettings.valve9_position_day = doc["valve9_position_day"];
+        statedaysettings.valve10_position_day = doc["valve10_position_day"];
+        statedaysettings.valve11_position_day = doc["valve11_position_day"];
+
+        if (enable_state_day)
+        {
+            strncpy(statedaysettings.enable_state_day, enable_state_day, sizeof(statedaysettings.enable_state_day) - 1);
+            statedaysettings.enable_state_day[sizeof(statedaysettings.enable_state_day) - 1] = '\0';
+        }
+        if (state_day_fanspeed)
+        {
+            strncpy(statedaysettings.state_day_fanspeed, state_day_fanspeed, sizeof(statedaysettings.state_day_fanspeed) - 1);
+            statedaysettings.state_day_fanspeed[sizeof(statedaysettings.state_day_fanspeed) - 1] = '\0';
+        }
+        if (name_state_day)
+        {
+            strncpy(statedaysettings.name_state_day, name_state_day, sizeof(statedaysettings.name_state_day) - 1);
+            statedaysettings.name_state_day[sizeof(statedaysettings.name_state_day) - 1] = '\0';
+        }
         xSemaphoreGive(settings_state_day_mutex);
         return true;
     }
     return false;
 }
+
+bool parse_state_night_settings(void)
+{
+    char buffer[700];
+
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATE_NIGHT_PATH, buffer, sizeof(buffer), settings_state_night_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_NIGHT_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_state_night = doc["enable_state_night"];
+    const char *state_night_fanspeed = doc["state_night_fanspeed"];
+    const char *name_state_night = doc["name_state_night"];
+
+    if (settings_state_night_mutex && (xSemaphoreTake(settings_state_night_mutex, (TickType_t)10)) == pdTRUE)
+    {
+        statenightsettings.state_night_highco2 = doc["state_night_highco2"];
+        statenightsettings.state_night_highrh = doc["state_night_highrh"];
+        statenightsettings.valve0_position_night = doc["valve0_position_night"];
+        statenightsettings.valve1_position_night = doc["valve1_position_night"];
+        statenightsettings.valve2_position_night = doc["valve2_position_night"];
+        statenightsettings.valve3_position_night = doc["valve3_position_night"];
+        statenightsettings.valve4_position_night = doc["valve4_position_night"];
+        statenightsettings.valve5_position_night = doc["valve5_position_night"];
+        statenightsettings.valve6_position_night = doc["valve6_position_night"];
+        statenightsettings.valve7_position_night = doc["valve7_position_night"];
+        statenightsettings.valve8_position_night = doc["valve8_position_night"];
+        statenightsettings.valve9_position_night = doc["valve9_position_night"];
+        statenightsettings.valve10_position_night = doc["valve10_position_night"];
+        statenightsettings.valve11_position_night = doc["valve11_position_night"];
+
+        if (enable_state_night)
+        {
+            strncpy(statenightsettings.enable_state_night, enable_state_night, sizeof(statenightsettings.enable_state_night) - 1);
+            statenightsettings.enable_state_night[sizeof(statenightsettings.enable_state_night) - 1] = '\0';
+        }
+        if (state_night_fanspeed)
+        {
+            strncpy(statenightsettings.state_night_fanspeed, state_night_fanspeed, sizeof(statenightsettings.state_night_fanspeed) - 1);
+            statenightsettings.state_night_fanspeed[sizeof(statenightsettings.state_night_fanspeed) - 1] = '\0';
+        }
+        if (name_state_night)
+        {
+            strncpy(statenightsettings.name_state_night, name_state_night, sizeof(statenightsettings.name_state_night) - 1);
+            statenightsettings.name_state_night[sizeof(statenightsettings.name_state_night) - 1] = '\0';
+        }
+        xSemaphoreGive(settings_state_night_mutex);
+        return true;
+    }
+    return false;
+}
+
+bool parse_state_highco2day_settings(void)
+{
+    char buffer[700];
+
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATE_HIGHCO2DAY_PATH, buffer, sizeof(buffer), settings_state_highco2day_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHCO2DAY_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_state_highco2day = doc["enable_state_highco2day"];
+    const char *state_highco2day_fanspeed = doc["state_highco2day_fanspeed"];
+    const char *name_state_highco2day = doc["name_state_highco2day"];
+
+    if (settings_state_highco2day_mutex && (xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)10)) == pdTRUE)
+    {
+        statehighco2daysettings.co2_high_state_highco2day = doc["co2_high_state_highco2day"];
+        statehighco2daysettings.co2_low_state_highco2day = doc["co2_low_state_highco2day"];
+        statehighco2daysettings.valve0_position_highco2day = doc["valve0_position_highco2day"];
+        statehighco2daysettings.valve1_position_highco2day = doc["valve1_position_highco2day"];
+        statehighco2daysettings.valve2_position_highco2day = doc["valve2_position_highco2day"];
+        statehighco2daysettings.valve3_position_highco2day = doc["valve3_position_highco2day"];
+        statehighco2daysettings.valve4_position_highco2day = doc["valve4_position_highco2day"];
+        statehighco2daysettings.valve5_position_highco2day = doc["valve5_position_highco2day"];
+        statehighco2daysettings.valve6_position_highco2day = doc["valve6_position_highco2day"];
+        statehighco2daysettings.valve7_position_highco2day = doc["valve7_position_highco2day"];
+        statehighco2daysettings.valve8_position_highco2day = doc["valve8_position_highco2day"];
+        statehighco2daysettings.valve9_position_highco2day = doc["valve9_position_highco2day"];
+        statehighco2daysettings.valve10_position_highco2day = doc["valve10_position_highco2day"];
+        statehighco2daysettings.valve11_position_highco2day = doc["valve11_position_highco2day"];
+
+        if (enable_state_highco2day)
+        {
+            strncpy(statehighco2daysettings.enable_state_highco2day, enable_state_highco2day, sizeof(statehighco2daysettings.enable_state_highco2day) - 1);
+            statehighco2daysettings.enable_state_highco2day[sizeof(statehighco2daysettings.enable_state_highco2day) - 1] = '\0';
+        }
+        if (state_highco2day_fanspeed)
+        {
+            strncpy(statehighco2daysettings.state_highco2day_fanspeed, state_highco2day_fanspeed, sizeof(statehighco2daysettings.state_highco2day_fanspeed) - 1);
+            statehighco2daysettings.state_highco2day_fanspeed[sizeof(statehighco2daysettings.state_highco2day_fanspeed) - 1] = '\0';
+        }
+        if (name_state_highco2day)
+        {
+            strncpy(statehighco2daysettings.name_state_highco2day, name_state_highco2day, sizeof(statehighco2daysettings.name_state_highco2day) - 1);
+            statehighco2daysettings.name_state_highco2day[sizeof(statehighco2daysettings.name_state_highco2day) - 1] = '\0';
+        }
+        xSemaphoreGive(settings_state_highco2day_mutex);
+    }
+    return false;
+}
+
 
 // Old config
 //
@@ -1140,9 +1288,9 @@ String read_statemachine_config(void)
 // Function to read settings (e.g. valve positions) for each state and put these in the global variable
 void valve_settings_config_read()
 {
-    bool settings_state_day_present = 0;
-    bool settings_state_night_present = 0;
-    bool settings_state_highco2day_present = 0;
+    //bool settings_state_day_present = 0;
+    //bool settings_state_night_present = 0;
+    //bool settings_state_highco2day_present = 0;
     bool settings_state_highco2night_present = 0;
     bool settings_state_highrhday_present = 0;
     bool settings_state_highrhnight_present = 0;
@@ -1150,9 +1298,9 @@ void valve_settings_config_read()
     bool settings_state_cyclingday_present = 0;
     bool settings_state_cyclingnight_present = 0;
 
-    String settings_state_day_str = "";
-    String settings_state_night_str = "";
-    String settings_state_highco2day_str = "";
+    //String settings_state_day_str = "";
+    //String settings_state_night_str = "";
+    //String settings_state_highco2day_str = "";
     String settings_state_highco2night_str = "";
     String settings_state_highrhday_str = "";
     String settings_state_highrhnight_str = "";
@@ -1161,7 +1309,7 @@ void valve_settings_config_read()
     String settings_state_cyclingnight_str = "";
     String message = "";
 
-    if (settings_state_day_mutex != NULL)
+    /*if (settings_state_day_mutex != NULL)
     {
         if (xSemaphoreTake(settings_state_day_mutex, (TickType_t)100) == pdTRUE)
         {
@@ -1246,7 +1394,7 @@ void valve_settings_config_read()
             print_message(message);
             return;
         }
-    }
+    }*/
 
     if (settings_state_highco2night_mutex != NULL)
     {
