@@ -332,7 +332,7 @@ void day_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        fanspeed = temp_fanspeed;
+        fanspeed = state_fanspeed;
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -518,7 +518,7 @@ void night_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        fanspeed = temp_fanspeed;
+        fanspeed = state_fanspeed;
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -711,7 +711,7 @@ void high_co2_day_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        fanspeed = temp_fanspeed;
+        fanspeed = state_fanspeed;
         xSemaphoreGive(fanspeed_mutex);
     }
 
