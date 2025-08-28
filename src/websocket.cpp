@@ -504,6 +504,41 @@ String create_statemachine_json()
         statemachine_json = concatJson(statemachine_json, settings_state_highco2day_str);
     }
 
+    // State highco2night settings
+    if (settings_state_highco2night_mutex && xSemaphoreTake(settings_state_highco2night_mutex, (TickType_t)10) == pdTRUE)
+    {
+        doc_highco2night["enable_state_highco2night"] = statehighco2nightsettings.enable_state_highco2night;
+        doc_highco2night["state_highco2night_fanspeed"] = statehighco2nightsettings.state_highco2night_fanspeed;
+        doc_highco2night["name_state_highco2night"] = statehighco2nightsettings.name_state_highco2night;
+        doc_highco2night["co2_high_state_highco2night"] = statehighco2nightsettings.co2_high_state_highco2night;
+        doc_highco2night["co2_low_state_highco2night"] = statehighco2nightsettings.co2_low_state_highco2night;
+        doc_highco2night["valve0_position_highco2night"] = statehighco2nightsettings.valve0_position_highco2night;
+        doc_highco2night["valve1_position_highco2night"] = statehighco2nightsettings.valve1_position_highco2night;
+        doc_highco2night["valve2_position_highco2night"] = statehighco2nightsettings.valve2_position_highco2night;
+        doc_highco2night["valve3_position_highco2night"] = statehighco2nightsettings.valve3_position_highco2night;
+        doc_highco2night["valve4_position_highco2night"] = statehighco2nightsettings.valve4_position_highco2night;
+        doc_highco2night["valve5_position_highco2night"] = statehighco2nightsettings.valve5_position_highco2night;
+        doc_highco2night["valve6_position_highco2night"] = statehighco2nightsettings.valve6_position_highco2night;
+        doc_highco2night["valve7_position_highco2night"] = statehighco2nightsettings.valve7_position_highco2night;
+        doc_highco2night["valve8_position_highco2night"] = statehighco2nightsettings.valve8_position_highco2night;
+        doc_highco2night["valve9_position_highco2night"] = statehighco2nightsettings.valve9_position_highco2night;
+        doc_highco2night["valve10_position_highco2night"] = statehighco2nightsettings.valve10_position_highco2night;
+        doc_highco2night["valve11_position_highco2night"] = statehighco2nightsettings.valve11_position_highco2night;
+        xSemaphoreGive(settings_state_highco2night_mutex);
+    }
+    doc_highco2night.shrinkToFit();
+    serializeJson(doc_highco2night, settings_state_highco2night_str);
+    if (settings_state_highco2night_str == "")
+    {
+        message = "[ERROR] String is empty. Failed to read high CO2 night state settings.";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        statemachine_json = concatJson(statemachine_json, settings_state_highco2night_str);
+    }
+
     /*if (settings_statemachine_mutex != NULL)
     {
         if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)100) == pdTRUE)

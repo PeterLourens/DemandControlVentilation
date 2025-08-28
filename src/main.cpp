@@ -84,6 +84,7 @@ void setup()
 	parse_state_day_settings();
 	parse_state_night_settings();
 	parse_state_highco2day_settings();
+	parse_state_highco2night_settings();
 	vTaskDelay(100);
 	start_task_wifi();
 

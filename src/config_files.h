@@ -24,6 +24,7 @@ bool parse_sensor2_settings(void);
 bool parse_state_day_settings(void);
 bool parse_state_night_settings(void);
 bool parse_state_highco2day_settings(void);
+bool parse_state_highco2night_settings(void);
 
 // bool parse_valve_settings(void);
 

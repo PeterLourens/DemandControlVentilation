@@ -201,9 +201,9 @@ bool is_weekend(void)
     }
 }
 
-bool is_day_or_night(void)
+bool is_day(void)
 {
-    int weekday_day_hour_start;
+    int weekday_day_hour_start = 0;
     int weekday_day_minute_start = 0;
     int weekday_night_hour_start = 0;
     int weekday_night_minute_start = 0;
@@ -211,7 +211,6 @@ bool is_day_or_night(void)
     int weekend_day_minute_start = 0;
     int weekend_night_hour_start = 0;
     int weekend_night_minute_start = 0;
-
     int temp_hour = 0;
     int temp_minute = 0;
 
@@ -238,7 +237,8 @@ bool is_day_or_night(void)
     if (is_weekend() == true)
     {
         // Weekend
-        if ((temp_hour >= weekend_day_hour_start && temp_minute >= weekday_day_minute_start) && (temp_hour < weekend_night_hour_start && temp_minute < weekend_night_minute_start))
+        // if ((temp_hour >= weekend_day_hour_start && temp_minute >= weekday_day_minute_start) && (temp_hour < weekend_night_hour_start && temp_minute < weekend_night_minute_start))
+        if (temp_hour >= weekend_day_hour_start && temp_hour < weekend_night_hour_start)
         {
             return true; // Day
         }
@@ -250,7 +250,8 @@ bool is_day_or_night(void)
     else
     {
         // Weekday
-        if ((temp_hour >= weekday_day_hour_start && temp_minute >= weekday_day_minute_start) && (temp_hour < weekday_night_hour_start && temp_minute < weekday_night_minute_start))
+        //if ((temp_hour >= weekday_day_hour_start && temp_minute >= weekday_day_minute_start) && (temp_hour < weekday_night_hour_start && temp_minute < weekday_night_minute_start))
+        if (temp_hour >= weekday_day_hour_start  && temp_hour < weekday_night_hour_start)
         {
             return true; // Day
         }
