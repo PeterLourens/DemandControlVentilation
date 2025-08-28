@@ -358,10 +358,10 @@ void day_transitions(void)
         xSemaphoreGive(settings_statemachine_mutex);
     }
 
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
-    set_fanspeed(temp_fanspeed);
+    set_fanspeed(state_fanspeed);
     select_sensors();
 
     new_time = (esp_timer_get_time()) / 1000000;
@@ -547,10 +547,10 @@ void night_transitions(void)
     message = "High CO2 detection level: " + String(co2highlevel) + ". High RH detection level: " + String(rhhighlevel);
     print_message(message);
 
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
-    set_fanspeed(temp_fanspeed);
+    set_fanspeed(state_fanspeed);
     select_sensors();
 
     new_time = (esp_timer_get_time()) / 1000000;
@@ -740,10 +740,10 @@ void high_co2_day_transitions(void)
     message = "High CO2 detection level: " + String(co2highlevel) + ". Low CO2 detection level: " + String(co2lowlevel);
     print_message(message);
 
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
-    set_fanspeed(temp_fanspeed);
+    set_fanspeed(state_fanspeed);
     select_sensors();
 
     new_time = (esp_timer_get_time()) / 1000000;
