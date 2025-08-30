@@ -78,50 +78,198 @@ void setup()
 	// setup_wifi();
 
 	// New config
-	parse_fan_settings();
-	parse_i2c_settings();
-	parse_influxdb_settings();
-	parse_mqtt_settings();
-	parse_rtc_settings();
+	vTaskDelay(10000); // So can lauch serial monitor
+	if (!parse_fan_settings())
+	{
+		message = "Failed to parse fan settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed fan settings";
+		print_message(message);
+	}
+
+	if (!parse_i2c_settings())
+	{
+		message = "Failed to parse I2C settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed I2C settings";
+		print_message(message);
+	}
+
+	if (!parse_influxdb_settings())
+	{
+		message = "Failed to parse influxdb settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed influxdb settings";
+		print_message(message);
+	}
+
+	if (!parse_mqtt_settings())
+	{
+		message = "Failed to parse MQTT settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed MQTT settings";
+		print_message(message);
+	}
+
+	if (!parse_rtc_settings())
+	{
+		message = "Failed to parse RTC settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed RTC settings";
+		print_message(message);
+	}
+
 	if (!parse_network_settings())
 	{
 		message = "Failed to parse network settings";
 		print_message(message);
 	}
+	else
+	{
+		message = "Successfully parsed network settings";
+		print_message(message);
+	}
+
 	if (!parse_sensor1_settings())
 	{
 		message = "Failed to parse sensor1 settings";
 		print_message(message);
 	}
+	else
+	{
+		message = "Successfully parsed sensor1 settings";
+		print_message(message);
+	}
+
 	if (!parse_sensor2_settings())
 	{
 		message = "Failed to parse sensor2 settings";
 		print_message(message);
 	}
+	else
+	{
+		message = "Successfully parsed sensor2 settings";
+		print_message(message);
+	}
 
-	parse_statemachine_settings();
-	parse_state_day_settings();
-	parse_state_night_settings();
-	parse_state_highco2day_settings();
-	parse_state_highco2night_settings();
-	parse_state_highrhday_settings();
-	parse_state_highrhnight_settings();
-	parse_state_cooking_settings();
-	parse_state_cyclingday_settings();
-	parse_state_cyclingnight_settings();
+	if (!parse_statemachine_settings())
+	{
+		message = "Failed to parse statemachine settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed statemachine settings";
+		print_message(message);
+	}
+	if (!parse_state_day_settings())
+	{
+		message = "Failed to parse state_day settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed state_day settings";
+		print_message(message);
+	}
+	if (!parse_state_night_settings())
+	{
+		message = "Failed to parse state_night settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed state_night settings";
+		print_message(message);
+	}
+	if (!parse_state_highco2day_settings())
+	{
+		message = "Failed to parse state_highco2day settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed state_highco2day settings";
+		print_message(message);
+	}
+	if (!parse_state_highco2night_settings())
+	{
+		message = "Failed to parse highco2night settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed highco2night settings";
+		print_message(message);
+	}
+	if (!parse_state_highrhday_settings())
+	{
+		message = "Failed to parse state_highco2night settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed state_highrhday settings";
+		print_message(message);
+	}
+	if (!parse_state_highrhnight_settings())
+	{
+		message = "Failed to parse state_rhnight settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed state_highrhnight settings";
+		print_message(message);
+	}
+	if (!parse_state_cooking_settings())
+	{
+		message = "Failed to parse state_cooking settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed state_cooking settings";
+		print_message(message);
+	}
+	if (!parse_state_cyclingday_settings())
+	{
+		message = "Failed to parse state_cyclingday settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed state_cyclingday settings";
+		print_message(message);
+	}
+	if (!parse_state_cyclingnight_settings())
+	{
+		message = "Failed to parse state_cyclingnight settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed state_cyclingnight settings";
+		print_message(message);
+	}
 	// parse_state_temp_settings();
 	vTaskDelay(100);
 	start_task_wifi();
-
-	// Old config
-	//process_mqtt_config();
-	//process_influxdb_config();
-	//process_i2c_config();
-	//process_rtc_config();
-	// process_statemachine_config();
-	//process_fan_config();
-	// sensor_config_data_read();
-	//valve_settings_config_read();
 
 	// Wait a little after reading config
 	vTaskDelay(100);
@@ -131,14 +279,14 @@ void setup()
 	start_task_valvecontrol();
 	start_task_i2c();
 	start_task_statemachine();
-	// start_task_mqtt();
+	start_task_mqtt();
 	start_task_neopixel();
 	start_task_system();
 	start_task_websocket();
 
 	vTaskDelay(60000); // Only write to influxDB when all tasks are running
-					   // start_task_espnow();
-					   // start_task_influxdb();
+	// start_task_espnow();
+	start_task_influxdb();
 }
 
 void loop() {}

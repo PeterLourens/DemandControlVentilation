@@ -388,6 +388,11 @@ typedef struct
     int valve11_position_temp;
 } State_temp_settings;
 
+typedef struct {
+    
+
+} Valve_control_data;
+
 extern Network_settings networksettings;
 extern RTC_settings rtcsettings;
 extern Influxdb_settings influxdbsettings;

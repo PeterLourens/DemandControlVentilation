@@ -175,7 +175,7 @@ String create_settings_json()
     }
     else
     {
-        concatJson(settings_json, settings_mqtt_str);
+        settings_json = concatJson(settings_json, settings_mqtt_str);
     }
 
     // I2C settings
@@ -198,7 +198,7 @@ String create_settings_json()
     }
     else
     {
-        concatJson(settings_json, settings_i2c_str);
+        settings_json = concatJson(settings_json, settings_i2c_str);
     }
 
     // Fan settings
@@ -224,7 +224,7 @@ String create_settings_json()
     }
     else
     {
-        concatJson(settings_json, settings_fan_str);
+        settings_json = concatJson(settings_json, settings_fan_str);
     }
 
     // Influxdb settings
@@ -248,7 +248,7 @@ String create_settings_json()
     }
     else
     {
-        concatJson(settings_json, settings_influxdb_str);
+        settings_json = concatJson(settings_json, settings_influxdb_str);
     }
 
     // RTC settings

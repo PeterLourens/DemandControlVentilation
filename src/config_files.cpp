@@ -1031,24 +1031,24 @@ bool parse_state_cyclingday_settings(void)
         }
     }
 
-    const char *enable_state_cyclingday = doc["enable_state_cycling_day"];
-    const char *state_cyclingday_fanspeed = doc["state_cycling_day_fanspeed"];
-    const char *name_state_cyclingday = doc["name_state_cycling_day"];
+    const char *enable_state_cyclingday = doc["enable_state_cyclingday"];
+    const char *state_cyclingday_fanspeed = doc["state_cyclingday_fanspeed"];
+    const char *name_state_cyclingday = doc["name_state_cyclingday"];
 
     if (settings_state_cyclingday_mutex && (xSemaphoreTake(settings_state_cyclingday_mutex, (TickType_t)10)) == pdTRUE)
     {
-        statecyclingdaysettings.valve0_position_cyclingday = doc["valve0_position_cycling_day"];
-        statecyclingdaysettings.valve1_position_cyclingday = doc["valve1_position_cycling_day"];
-        statecyclingdaysettings.valve2_position_cyclingday = doc["valve2_position_cycling_day"];
-        statecyclingdaysettings.valve3_position_cyclingday = doc["valve3_position_cycling_day"];
-        statecyclingdaysettings.valve4_position_cyclingday = doc["valve4_position_cycling_day"];
-        statecyclingdaysettings.valve5_position_cyclingday = doc["valve5_position_cycling_day"];
-        statecyclingdaysettings.valve6_position_cyclingday = doc["valve6_position_cycling_day"];
-        statecyclingdaysettings.valve7_position_cyclingday = doc["valve7_position_cycling_day"];
-        statecyclingdaysettings.valve8_position_cyclingday = doc["valve8_position_cycling_day"];
-        statecyclingdaysettings.valve9_position_cyclingday = doc["valve9_position_cycling_day"];
-        statecyclingdaysettings.valve10_position_cyclingday = doc["valve10_position_cycling_day"];
-        statecyclingdaysettings.valve11_position_cyclingday = doc["valve11_position_cycling_day"];
+        statecyclingdaysettings.valve0_position_cyclingday = doc["valve0_position_cyclingday"];
+        statecyclingdaysettings.valve1_position_cyclingday = doc["valve1_position_cyclingday"];
+        statecyclingdaysettings.valve2_position_cyclingday = doc["valve2_position_cyclingday"];
+        statecyclingdaysettings.valve3_position_cyclingday = doc["valve3_position_cyclingday"];
+        statecyclingdaysettings.valve4_position_cyclingday = doc["valve4_position_cyclingday"];
+        statecyclingdaysettings.valve5_position_cyclingday = doc["valve5_position_cyclingday"];
+        statecyclingdaysettings.valve6_position_cyclingday = doc["valve6_position_cyclingday"];
+        statecyclingdaysettings.valve7_position_cyclingday = doc["valve7_position_cyclingday"];
+        statecyclingdaysettings.valve8_position_cyclingday = doc["valve8_position_cyclingday"];
+        statecyclingdaysettings.valve9_position_cyclingday = doc["valve9_position_cyclingday"];
+        statecyclingdaysettings.valve10_position_cyclingday = doc["valve10_position_cyclingday"];
+        statecyclingdaysettings.valve11_position_cyclingday = doc["valve11_position_cyclingday"];
         xSemaphoreGive(settings_state_cyclingday_mutex);
     }
     if (enable_state_cyclingday)
@@ -1088,24 +1088,24 @@ bool parse_state_cyclingnight_settings(void)
         }
     }
 
-    const char *enable_state_cyclingnight = doc["enable_state_cycling_night"];
-    const char *state_cyclingnight_fanspeed = doc["state_cycling_night_fanspeed"];
-    const char *name_state_cyclingnight = doc["name_state_cycling_night"];
+    const char *enable_state_cyclingnight = doc["enable_state_cyclingnight"];
+    const char *state_cyclingnight_fanspeed = doc["state_cyclingnight_fanspeed"];
+    const char *name_state_cyclingnight = doc["name_state_cyclingnight"];
 
     if (settings_state_cyclingnight_mutex && (xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)10)) == pdTRUE)
     {
-        statecyclingnightsettings.valve0_position_cyclingnight = doc["valve0_position_cycling_night"];
-        statecyclingnightsettings.valve1_position_cyclingnight = doc["valve1_position_cycling_night"];
-        statecyclingnightsettings.valve2_position_cyclingnight = doc["valve2_position_cycling_night"];
-        statecyclingnightsettings.valve3_position_cyclingnight = doc["valve3_position_cycling_night"];
-        statecyclingnightsettings.valve4_position_cyclingnight = doc["valve4_position_cycling_night"];
-        statecyclingnightsettings.valve5_position_cyclingnight = doc["valve5_position_cycling_night"];
-        statecyclingnightsettings.valve6_position_cyclingnight = doc["valve6_position_cycling_night"];
-        statecyclingnightsettings.valve7_position_cyclingnight = doc["valve7_position_cycling_night"];
-        statecyclingnightsettings.valve8_position_cyclingnight = doc["valve8_position_cycling_night"];
-        statecyclingnightsettings.valve9_position_cyclingnight = doc["valve9_position_cycling_night"];
-        statecyclingnightsettings.valve10_position_cyclingnight = doc["valve10_position_cycling_night"];
-        statecyclingnightsettings.valve11_position_cyclingnight = doc["valve11_position_cycling_night"];
+        statecyclingnightsettings.valve0_position_cyclingnight = doc["valve0_position_cyclingnight"];
+        statecyclingnightsettings.valve1_position_cyclingnight = doc["valve1_position_cyclingnight"];
+        statecyclingnightsettings.valve2_position_cyclingnight = doc["valve2_position_cyclingnight"];
+        statecyclingnightsettings.valve3_position_cyclingnight = doc["valve3_position_cyclingnight"];
+        statecyclingnightsettings.valve4_position_cyclingnight = doc["valve4_position_cyclingnight"];
+        statecyclingnightsettings.valve5_position_cyclingnight = doc["valve5_position_cyclingnight"];
+        statecyclingnightsettings.valve6_position_cyclingnight = doc["valve6_position_cyclingnight"];
+        statecyclingnightsettings.valve7_position_cyclingnight = doc["valve7_position_cyclingnight"];
+        statecyclingnightsettings.valve8_position_cyclingnight = doc["valve8_position_cyclingnight"];
+        statecyclingnightsettings.valve9_position_cyclingnight = doc["valve9_position_cyclingnight"];
+        statecyclingnightsettings.valve10_position_cyclingnight = doc["valve10_position_cyclingnight"];
+        statecyclingnightsettings.valve11_position_cyclingnight = doc["valve11_position_cyclingnight"];
         xSemaphoreGive(settings_state_cyclingnight_mutex);
     }
     if (enable_state_cyclingnight)
