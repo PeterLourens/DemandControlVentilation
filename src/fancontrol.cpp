@@ -10,41 +10,49 @@ void set_fanspeed(String speed)
     String message = "";
     String http_payload = "";
 
-    String fan_control_url_high_speed_temp = "";
-    String fan_control_url_medium_speed_temp = "";
-    String fan_control_url_low_speed_temp = "";
-    String fan_control_mode_temp = "";
-    String fan_control_mqtt_topic_temp = "";
+    char fan_control_url_high_speed[XXLARGE_CONFIG_ITEM];
+    char fan_control_url_medium_speed[XXLARGE_CONFIG_ITEM];
+    char fan_control_url_low_speed[XXLARGE_CONFIG_ITEM];
+    char fan_control_mode[LARGE_CONFIG_ITEM];
+    char fan_control_mqtt_topic[XLARGE_CONFIG_ITEM];
 
     HTTPClient http;
     JsonDocument doc;
 
-    if (fanspeed_mutex != NULL)
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)100) == pdTRUE)
     {
-        if (xSemaphoreTake(fanspeed_mutex, (TickType_t)100) == pdTRUE)
-        {
-            fanspeed_temp = fanspeed;
-            fan_control_mode_temp = fan_control_mode;
-            fan_control_mqtt_topic_temp = fan_control_mqtt_topic;
-            fan_control_url_high_speed_temp = fan_control_url_high_speed;
-            fan_control_url_medium_speed_temp = fan_control_url_high_speed;
-            fan_control_url_low_speed_temp = fan_control_url_high_speed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+        fanspeed_temp = fanspeed;
+
+        strncpy(fan_control_mode, fansettings.fan_control_mode, sizeof(fan_control_mode) - 1);
+        fan_control_mode[sizeof(fan_control_mode) - 1] = '\0';
+
+        strncpy(fan_control_mqtt_topic, fansettings.fan_control_mqtt_topic, sizeof(fan_control_mqtt_topic) - 1);
+        fan_control_mqtt_topic[sizeof(fan_control_mqtt_topic) - 1] = '\0';
+
+        strncpy(fan_control_url_high_speed, fansettings.fan_control_url_high_speed, sizeof(fan_control_url_high_speed) - 1);
+        fan_control_url_high_speed[sizeof(fan_control_url_high_speed) - 1] = '\0';
+
+        strncpy(fan_control_url_medium_speed, fansettings.fan_control_url_medium_speed, sizeof(fan_control_url_medium_speed) - 1);
+        fan_control_url_medium_speed[sizeof(fan_control_url_medium_speed) - 1] = '\0';
+
+        strncpy(fan_control_url_low_speed, fansettings.fan_control_url_low_speed, sizeof(fan_control_url_low_speed) - 1);
+        fan_control_url_low_speed[sizeof(fan_control_url_low_speed) - 1] = '\0';
+
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     // String fan_control_mode = doc[String("fan_control_mode")];
     message = "Fanspeed: " + String(fanspeed_temp);
     print_message(message);
 
-    if (fan_control_mode_temp == "MQTT publish")
+    if (strcmp(fan_control_mode, "MQTT publish") == 0)
     {
         message = "Using MQTT to set fan speed";
         print_message(message);
         // String fan_control_mqtt_topic = doc[String("fan_control_mqtt_topic")];
         //  Not yet implmented, subscribe to MQTT topic, create callback function
     }
-    else if (fan_control_mode_temp == "HTTP API")
+    else if (strcmp(fan_control_mode, "HTTP API") == 0)
     {
         message = "Using HTTP API to set fan speed";
         print_message(message);
@@ -53,7 +61,7 @@ void set_fanspeed(String speed)
         {
             message = "Low speed selected";
             print_message(message);
-            http.begin(fan_control_url_low_speed_temp.c_str());
+            http.begin(String(fan_control_url_low_speed));
             httpResponseCode = http.GET();
             if (httpResponseCode > 0)
             {
@@ -66,7 +74,7 @@ void set_fanspeed(String speed)
         {
             message = "Medium speed selected";
             print_message(message);
-            http.begin(fan_control_url_medium_speed_temp.c_str());
+            http.begin(String(fan_control_url_medium_speed));
             httpResponseCode = http.GET();
             if (httpResponseCode > 0)
             {
@@ -79,7 +87,7 @@ void set_fanspeed(String speed)
         {
             message = "High speed selected";
             print_message(message);
-            http.begin(fan_control_url_high_speed_temp.c_str());
+            http.begin(String(fan_control_url_high_speed));
             httpResponseCode = http.GET();
             if (httpResponseCode > 0)
             {

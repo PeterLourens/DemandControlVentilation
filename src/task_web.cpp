@@ -560,7 +560,7 @@ void Taskwebcode(void *pvParameters)
 
 			}
 		}
-		serializeJson(settings_fan_data, settings_fan_char, sizeof(settings_fan_char));
+		serializeJson(settings_fan_doc, settings_fan_char, sizeof(settings_fan_char));
 		write_settings(SETTINGS_FAN_PATH, settings_fan_char, settings_fan_mutex);
 		parse_fan_settings(); // Apply new fan control settings
 		request->send(200, "text/html", settings_html); });

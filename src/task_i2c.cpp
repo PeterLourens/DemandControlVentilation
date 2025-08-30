@@ -2,7 +2,6 @@
 
 void start_task_i2c(void)
 {
-
     xTaskCreate(task_i2c_code, "taski2c", 30000, NULL, 6, &task_i2c);
 }
 
@@ -12,7 +11,7 @@ void task_i2c_code(void *pvParameters)
     int current_time_multiplier = 0;
     int rtc_time_multiplier = 0;
     int sync_time_multiplier = 0;
-    int lcd_address_tmp = 0;
+    int lcd_i2c_address = 0;
 
     const TickType_t timedelay = 10; // main time delay im ms
 
@@ -24,13 +23,10 @@ void task_i2c_code(void *pvParameters)
     // start with display clear and no backlight
     init_display_off();
 
-    if (settings_i2c_mutex != NULL)
+    if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
-        {
-            lcd_address_tmp = display_i2c_addr;
-            xSemaphoreGive(settings_i2c_mutex);
-        }
+        lcd_i2c_address = i2csettings.display_i2c_address;
+        xSemaphoreGive(settings_i2c_mutex);
     }
 
     for (;;)

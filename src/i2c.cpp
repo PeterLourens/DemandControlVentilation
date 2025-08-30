@@ -7,29 +7,25 @@ void read_sensors(void)
 {
     float temp_sensor_data[2][8][3] = {0};
 
-    int bus0_multiplexer_addr_tmp = 0;
-    int bus1_multiplexer_addr_tmp = 0;
+    int bus0_multiplexer_addr = 0;
+    int bus1_multiplexer_addr = 0;
 
     String sensor_type = "";
     String sensor = "";
     String message = "";
-    String sensor_config1_string = "";
-    String sensor_config2_string = "";
+    // String sensor_config1_string = "";
+    // String sensor_config2_string = "";
 
     // Read address for TCA9548. I2C address for TCA9548 may be differently configured with resistors on the board.
-    if (settings_i2c_mutex != NULL)
+    if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
-        {
-            bus0_multiplexer_addr_tmp = bus0_multiplexer_addr;
-            bus1_multiplexer_addr_tmp = bus1_multiplexer_addr;
-            xSemaphoreGive(settings_i2c_mutex);
-        }
+        bus0_multiplexer_addr = i2csettings.bus0_multiplexer_address;
+        bus1_multiplexer_addr = i2csettings.bus1_multiplexer_address;
+        xSemaphoreGive(settings_i2c_mutex);
     }
 
     for (int bus = 0; bus < 2; bus++)
     {
-
         if (bus == 0)
         {
             Wire.begin(I2C_SDA1, I2C_SCL1, 100000);
@@ -45,29 +41,24 @@ void read_sensors(void)
         {
             if (bus == 0)
             {
-                if (settings_sensor1_mutex != NULL)
+                if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                 {
-                    if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
-                    {
-                        sensor_type = String(sensor1settings[slot].wire_sensor_type);
-                        xSemaphoreGive(settings_sensor1_mutex);
-                    }
+                    sensor_type = String(sensor1settings[slot].wire_sensor_type);
+                    xSemaphoreGive(settings_sensor1_mutex);
                 }
-                Wire.beginTransmission(bus0_multiplexer_addr_tmp);
+                Wire.beginTransmission(bus0_multiplexer_addr);
                 Wire.write(1 << slot);
                 Wire.endTransmission();
             }
             if (bus == 1)
             {
-                if (settings_sensor2_mutex != NULL)
+                if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)100) == pdTRUE)
                 {
-                    if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)100) == pdTRUE)
-                    {
-                        sensor_type = String(sensor2settings[slot].wire1_sensor_type);
-                        xSemaphoreGive(settings_sensor2_mutex);
-                    }
+                    sensor_type = String(sensor2settings[slot].wire1_sensor_type);
+                    xSemaphoreGive(settings_sensor2_mutex);
                 }
-                Wire1.beginTransmission(bus1_multiplexer_addr_tmp);
+
+                Wire1.beginTransmission(bus1_multiplexer_addr);
                 Wire1.write(1 << slot);
                 Wire1.endTransmission();
             }
@@ -302,7 +293,7 @@ void display_sensors(void)
                     }
                     if (bus == 1)
                     {
-                        if(settings_sensor1_mutex != NULL)
+                        if (settings_sensor1_mutex != NULL)
                         {
                             if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
                             {
@@ -313,14 +304,14 @@ void display_sensors(void)
                                 xSemaphoreGive(settings_sensor2_mutex);
                             }
                         }
-                        //String valve_tmp = wire1_sensor_data["wire1_sensor" + String(slot) + "_valve"];
-                        //String location_tmp = wire1_sensor_data["wire1_sensor" + String(slot) + "_location"];
-                        //String rh_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_rh"];
-                        //String co2_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_co2"];
-                        //valve = valve_tmp;
-                        //rh = rh_tmp;
-                        //co2 = co2_tmp;
-                        //location = location_tmp;
+                        // String valve_tmp = wire1_sensor_data["wire1_sensor" + String(slot) + "_valve"];
+                        // String location_tmp = wire1_sensor_data["wire1_sensor" + String(slot) + "_location"];
+                        // String rh_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_rh"];
+                        // String co2_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_co2"];
+                        // valve = valve_tmp;
+                        // rh = rh_tmp;
+                        // co2 = co2_tmp;
+                        // location = location_tmp;
                     }
 
                     // row0
@@ -639,11 +630,11 @@ void sync_rtc_ntp(void)
 
     struct tm timeinfo;
 
-    char ntp_server_tmp[50];
-    char timezone_tmp[50];
+    // char ntp_server_tmp[50];
+    // char timezone_tmp[50];
 
-    String ntp_server_str = "";
-    String timezone_str = "";
+    char ntp_server[LARGE_CONFIG_ITEM] = {};
+    char timezone[LARGE_CONFIG_ITEM] = {};
     String message = "";
 
     RTC_DS3231 rtc;
@@ -652,21 +643,18 @@ void sync_rtc_ntp(void)
     rtc.begin(&Wire);
 
     // Read ntp server and timezone settings from config file
-    if (settings_rtc_mutex != NULL)
+    if (settings_rtc_mutex && xSemaphoreTake(settings_rtc_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_rtc_mutex, (TickType_t)10) == pdTRUE)
-        {
-            ntp_server_str = ntp_server;
-            timezone_str = timezone;
-            xSemaphoreGive(settings_rtc_mutex);
-        }
+        strncpy(ntp_server, rtcsettings.ntp_server, sizeof(ntp_server) - 1);
+        ntp_server[sizeof(ntp_server) - 1] = '\0';
+
+        strncpy(timezone, rtcsettings.timezone, sizeof(timezone) - 1);
+        timezone[sizeof(timezone) - 1] = '\0';
+        xSemaphoreGive(settings_rtc_mutex);
     }
 
-    ntp_server_str.toCharArray(ntp_server_tmp, 50);
-    timezone_str.toCharArray(timezone_tmp, 50);
-
     // configTzTime("CET-1CEST,M3.5.0,M10.5.0/3", "pool.ntp.org");
-    configTzTime(timezone_tmp, ntp_server_tmp);
+    configTzTime(timezone, ntp_server);
     if (!getLocalTime(&timeinfo))
     {
         message = "Failed to obtain time";
@@ -691,27 +679,24 @@ void IRAM_ATTR lcd_baclight_pb_isr()
 
 void pb_start_display(void)
 {
-
     pb_toggle = false; // global variable
 
-    int display_i2c_addr_tmp;
-    String enable_lcd_tmp = "";
+    int display_i2c_addr = 0;
+    char enable_lcd[SMALL_CONFIG_ITEM] = {};
     String message = "";
 
     // Only start display when enabled. Configured with global variable
-    if (settings_i2c_mutex != NULL)
+    if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
-        {
-            enable_lcd_tmp = enable_lcd;
-            display_i2c_addr_tmp = display_i2c_addr;
-            xSemaphoreGive(settings_i2c_mutex);
-        }
+        strncpy(enable_lcd, i2csettings.enable_lcd, sizeof(enable_lcd) - 1);
+        enable_lcd[sizeof(enable_lcd) - 1] = '\0';
+
+        display_i2c_addr = i2csettings.display_i2c_address;
+        xSemaphoreGive(settings_i2c_mutex);
     }
 
-    if (enable_lcd_tmp == "On")
+    if (strcmp(enable_lcd, "On") == 0)
     {
-
         display_time_and_date();
         display_state_fan();
         display_sensors();
@@ -732,20 +717,18 @@ void pb_start_display(void)
 void init_display_off(void)
 {
 
-    String enable_lcd_tmp = "";
+    char enable_lcd[SMALL_CONFIG_ITEM] = {};
     String message = "";
 
-    // Only start display when enabled. Configured with global variable
-    if (settings_i2c_mutex != NULL)
+    // Only start display when enabled.
+    if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
-        {
-            enable_lcd_tmp = enable_lcd;
-            xSemaphoreGive(settings_i2c_mutex);
-        }
+        strncpy(enable_lcd, i2csettings.enable_lcd, sizeof(enable_lcd) - 1);
+        enable_lcd[sizeof(enable_lcd) - 1] = '\0';
+        xSemaphoreGive(settings_i2c_mutex);
     }
 
-    if (enable_lcd_tmp == "On")
+    if (strcmp(enable_lcd, "On") == 0)
     {
         Wire1.begin(I2C_SDA2, I2C_SCL2, 100000);
         lcd.init();

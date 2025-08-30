@@ -127,10 +127,10 @@ typedef struct
 
 typedef struct
 {
-    char bus0_multiplexer_address[SMALL_CONFIG_ITEM];
-    char bus1_multiplexer_address[SMALL_CONFIG_ITEM];
+    int bus0_multiplexer_address;
+    int bus1_multiplexer_address;
     char enable_lcd[SMALL_CONFIG_ITEM];
-    char display_i2c_address[SMALL_CONFIG_ITEM];
+    int display_i2c_address;
 } I2C_settings;
 
 typedef struct
@@ -461,30 +461,30 @@ extern int minimum_state_time;*/
 //extern String mqtt_base_topic;
 
 // InfluxDB settings
-extern String enable_influxdb;
-extern String influxdb_url;
-extern String influxdb_org;
-extern String influxdb_bucket;
-extern String influxdb_token;
+//extern String enable_influxdb;
+//extern String influxdb_url;
+//extern String influxdb_org;
+//extern String influxdb_bucket;
+//extern String influxdb_token;
 
 // Settings i2C
-extern int bus0_multiplexer_addr;
-extern int bus1_multiplexer_addr;
-extern String enable_lcd;
-extern int display_i2c_addr;
+//extern int bus0_multiplexer_addr;
+//extern int bus1_multiplexer_addr;
+//extern String enable_lcd;
+//extern int display_i2c_addr;
 
 // Settings RTC
-extern String ntp_server;
-extern String timezone;
+//extern String ntp_server;
+//extern String timezone;
 
 // Fan speed control settings
-extern String fan_control_mode;
-extern String fan_control_mqtt_server;
-extern String fan_control_mqtt_port;
-extern String fan_control_mqtt_topic;
-extern String fan_control_url_high_speed;
-extern String fan_control_url_medium_speed;
-extern String fan_control_url_low_speed;
+//extern String fan_control_mode;
+//extern String fan_control_mqtt_server;
+//extern String fan_control_mqtt_port;
+//extern String fan_control_mqtt_topic;
+//extern String fan_control_url_high_speed;
+//extern String fan_control_url_medium_speed;
+//extern String fan_control_url_low_speed;
 
 // Date time data from RTC
 extern String yearStr;
