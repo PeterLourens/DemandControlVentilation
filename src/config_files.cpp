@@ -330,13 +330,15 @@ bool parse_mqtt_settings(void)
 
     const char *enable_mqtt = doc["enable_mqtt"];
     const char *mqtt_server = doc["mqtt_server"];
-    const char *mqtt_port = doc["mqtt_port"];
+    //const char *mqtt_port = doc["mqtt_port"];
     const char *mqtt_base_topic = doc["mqtt_base_topic"];
 
     if (settings_mqtt_mutex != NULL)
     {
         if (xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10))
         {
+            mqttsettings.mqtt_port = doc["mqtt_port"];
+            
             if (enable_mqtt)
             {
                 strncpy(mqttsettings.enable_mqtt, enable_mqtt, sizeof(mqttsettings.enable_mqtt) - 1);
@@ -346,11 +348,6 @@ bool parse_mqtt_settings(void)
             {
                 strncpy(mqttsettings.mqtt_server, mqtt_server, sizeof(mqttsettings.mqtt_server) - 1);
                 mqttsettings.mqtt_server[sizeof(mqttsettings.mqtt_server) - 1] = '\0';
-            }
-            if (mqtt_port)
-            {
-                strncpy(mqttsettings.mqtt_server, mqtt_port, sizeof(mqttsettings.mqtt_port) - 1);
-                mqttsettings.mqtt_port[sizeof(mqttsettings.mqtt_port) - 1] = '\0';
             }
             if (mqtt_base_topic)
             {
@@ -850,6 +847,299 @@ bool parse_state_highco2night_settings(void)
     return false;
 }
 
+bool parse_state_highrhday_settings(void)
+{
+    char buffer[700];
+
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATE_HIGHRHDAY_PATH, buffer, sizeof(buffer), settings_state_highrhday_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHRHDAY_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_state_highrhday = doc["enable_state_highrhday"];
+    const char *state_highrhday_fanspeed = doc["state_highrhday_fanspeed"];
+    const char *name_state_highrhday = doc["name_state_highrhday"];
+
+    if (settings_state_highrhday_mutex && (xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)10)) == pdTRUE)
+    {
+        statehighrhdaysettings.maximum_state_time_highrhday = doc["maximum_state_time_highrhday"];
+        statehighrhdaysettings.rh_low_state_highrhday = doc["rh_low_state_highrhday"];
+        statehighrhdaysettings.valve0_position_highrhday = doc["valve0_position_highrhday"];
+        statehighrhdaysettings.valve1_position_highrhday = doc["valve1_position_highrhday"];
+        statehighrhdaysettings.valve2_position_highrhday = doc["valve2_position_highrhday"];
+        statehighrhdaysettings.valve3_position_highrhday = doc["valve3_position_highrhday"];
+        statehighrhdaysettings.valve4_position_highrhday = doc["valve4_position_highrhday"];
+        statehighrhdaysettings.valve5_position_highrhday = doc["valve5_position_highrhday"];
+        statehighrhdaysettings.valve6_position_highrhday = doc["valve6_position_highrhday"];
+        statehighrhdaysettings.valve7_position_highrhday = doc["valve7_position_highrhday"];
+        statehighrhdaysettings.valve8_position_highrhday = doc["valve8_position_highrhday"];
+        statehighrhdaysettings.valve9_position_highrhday = doc["valve9_position_highrhday"];
+        statehighrhdaysettings.valve10_position_highrhday = doc["valve10_position_highrhday"];
+        statehighrhdaysettings.valve11_position_highrhday = doc["valve11_position_highrhday"];
+        xSemaphoreGive(settings_state_highrhday_mutex);
+    }
+    if (enable_state_highrhday)
+    {
+        strncpy(statehighrhdaysettings.enable_state_highrhday, enable_state_highrhday, sizeof(statehighrhdaysettings.enable_state_highrhday) - 1);
+        statehighrhdaysettings.enable_state_highrhday[sizeof(statehighrhdaysettings.enable_state_highrhday) - 1] = '\0';
+    }
+    if (state_highrhday_fanspeed)
+    {
+        strncpy(statehighrhdaysettings.state_highrhday_fanspeed, state_highrhday_fanspeed, sizeof(statehighrhdaysettings.state_highrhday_fanspeed) - 1);
+        statehighrhdaysettings.state_highrhday_fanspeed[sizeof(statehighrhdaysettings.state_highrhday_fanspeed) - 1] = '\0';
+    }
+    if (name_state_highrhday)
+    {
+        strncpy(statehighrhdaysettings.name_state_highrhday, name_state_highrhday, sizeof(statehighrhdaysettings.name_state_highrhday) - 1);
+        statehighrhdaysettings.name_state_highrhday[sizeof(statehighrhdaysettings.name_state_highrhday) - 1] = '\0';
+    }
+    return false;
+}
+
+bool parse_state_highrhnight_settings(void)
+{
+    char buffer[700];
+
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATE_HIGHRHNIGHT_PATH, buffer, sizeof(buffer), settings_state_highrhnight_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHRHNIGHT_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_state_highrhnight = doc["enable_state_highrhnight"];
+    const char *state_highrhnight_fanspeed = doc["state_highrhnight_fanspeed"];
+    const char *name_state_highrhnight = doc["name_state_highrhnight"];
+
+    if (settings_state_highrhnight_mutex && (xSemaphoreTake(settings_state_highrhnight_mutex, (TickType_t)10)) == pdTRUE)
+    {
+        statehighrhnightsettings.maximum_state_time_highrhnight = doc["maximum_state_time_highrhnight"];
+        statehighrhnightsettings.rh_low_state_highrhnight = doc["rh_low_state_highrhnight"];
+        statehighrhnightsettings.valve0_position_highrhnight = doc["valve0_position_highrhnight"];
+        statehighrhnightsettings.valve1_position_highrhnight = doc["valve1_position_highrhnight"];
+        statehighrhnightsettings.valve2_position_highrhnight = doc["valve2_position_highrhnight"];
+        statehighrhnightsettings.valve3_position_highrhnight = doc["valve3_position_highrhnight"];
+        statehighrhnightsettings.valve4_position_highrhnight = doc["valve4_position_highrhnight"];
+        statehighrhnightsettings.valve5_position_highrhnight = doc["valve5_position_highrhnight"];
+        statehighrhnightsettings.valve6_position_highrhnight = doc["valve6_position_highrhnight"];
+        statehighrhnightsettings.valve7_position_highrhnight = doc["valve7_position_highrhnight"];
+        statehighrhnightsettings.valve8_position_highrhnight = doc["valve8_position_highrhnight"];
+        statehighrhnightsettings.valve9_position_highrhnight = doc["valve9_position_highrhnight"];
+        statehighrhnightsettings.valve10_position_highrhnight = doc["valve10_position_highrhnight"];
+        statehighrhnightsettings.valve11_position_highrhnight = doc["valve11_position_highrhnight"];
+        xSemaphoreGive(settings_state_highrhnight_mutex);
+    }
+    if (enable_state_highrhnight)
+    {
+        strncpy(statehighrhnightsettings.enable_state_highrhnight, enable_state_highrhnight, sizeof(statehighrhnightsettings.enable_state_highrhnight) - 1);
+        statehighrhnightsettings.enable_state_highrhnight[sizeof(statehighrhnightsettings.enable_state_highrhnight) - 1] = '\0';
+    }
+    if (state_highrhnight_fanspeed)
+    {
+        strncpy(statehighrhnightsettings.state_highrhnight_fanspeed, state_highrhnight_fanspeed, sizeof(statehighrhnightsettings.state_highrhnight_fanspeed) - 1);
+        statehighrhnightsettings.state_highrhnight_fanspeed[sizeof(statehighrhnightsettings.state_highrhnight_fanspeed) - 1] = '\0';
+    }
+    if (name_state_highrhnight)
+    {
+        strncpy(statehighrhnightsettings.name_state_highrhnight, name_state_highrhnight, sizeof(statehighrhnightsettings.name_state_highrhnight) - 1);
+        statehighrhnightsettings.name_state_highrhnight[sizeof(statehighrhnightsettings.name_state_highrhnight) - 1] = '\0';
+    }
+    return false;
+}
+
+bool parse_state_cooking_settings(void)
+{
+    char buffer[700];
+
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATE_COOKING_PATH, buffer, sizeof(buffer), settings_state_cooking_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_COOKING_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_state_cooking = doc["enable_state_cooking"];
+    const char *state_cooking_fanspeed = doc["state_cooking_fanspeed"];
+    const char *name_state_cooking = doc["name_state_cooking"];
+
+    if (settings_state_cooking_mutex && (xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)10)) == pdTRUE)
+    {
+        statecookingsettings.start_hour_state_cooking = doc["start_hour_state_cooking"];
+        statecookingsettings.start_minute_state_cooking = doc["start_minute_state_cooking"];
+        statecookingsettings.stop_hour_state_cooking = doc["stop_hour_state_cooking"];
+        statecookingsettings.stop_minute_state_cooking = doc["stop_minute_state_cooking"];
+        statecookingsettings.valve0_position_cooking = doc["valve0_position_cooking"];
+        statecookingsettings.valve1_position_cooking = doc["valve1_position_cooking"];
+        statecookingsettings.valve2_position_cooking = doc["valve2_position_cooking"];
+        statecookingsettings.valve3_position_cooking = doc["valve3_position_cooking"];
+        statecookingsettings.valve4_position_cooking = doc["valve4_position_cooking"];
+        statecookingsettings.valve5_position_cooking = doc["valve5_position_cooking"];
+        statecookingsettings.valve6_position_cooking = doc["valve6_position_cooking"];
+        statecookingsettings.valve7_position_cooking = doc["valve7_position_cooking"];
+        statecookingsettings.valve8_position_cooking = doc["valve8_position_cooking"];
+        statecookingsettings.valve9_position_cooking = doc["valve9_position_cooking"];
+        statecookingsettings.valve10_position_cooking = doc["valve10_position_cooking"];
+        statecookingsettings.valve11_position_cooking = doc["valve11_position_cooking"];
+        xSemaphoreGive(settings_state_cooking_mutex);
+    }
+    if (enable_state_cooking)
+    {
+        strncpy(statecookingsettings.enable_state_cooking, enable_state_cooking, sizeof(statecookingsettings.enable_state_cooking) - 1);
+        statecookingsettings.enable_state_cooking[sizeof(statecookingsettings.enable_state_cooking) - 1] = '\0';
+    }
+    if (state_cooking_fanspeed)
+    {
+        strncpy(statecookingsettings.state_cooking_fanspeed, state_cooking_fanspeed, sizeof(statecookingsettings.state_cooking_fanspeed) - 1);
+        statecookingsettings.state_cooking_fanspeed[sizeof(statecookingsettings.state_cooking_fanspeed) - 1] = '\0';
+    }
+    if (name_state_cooking)
+    {
+        strncpy(statecookingsettings.name_state_cooking, name_state_cooking, sizeof(statecookingsettings.name_state_cooking) - 1);
+        statecookingsettings.name_state_cooking[sizeof(statecookingsettings.name_state_cooking) - 1] = '\0';
+    }
+    return false;
+}
+
+bool parse_state_cyclingday_settings(void)
+{
+    char buffer[700];
+
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATE_CYCLINGDAY_PATH, buffer, sizeof(buffer), settings_state_cyclingday_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_CYCLINGDAY_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_state_cyclingday = doc["enable_state_cycling_day"];
+    const char *state_cyclingday_fanspeed = doc["state_cycling_day_fanspeed"];
+    const char *name_state_cyclingday = doc["name_state_cycling_day"];
+
+    if (settings_state_cyclingday_mutex && (xSemaphoreTake(settings_state_cyclingday_mutex, (TickType_t)10)) == pdTRUE)
+    {
+        statecyclingdaysettings.valve0_position_cyclingday = doc["valve0_position_cycling_day"];
+        statecyclingdaysettings.valve1_position_cyclingday = doc["valve1_position_cycling_day"];
+        statecyclingdaysettings.valve2_position_cyclingday = doc["valve2_position_cycling_day"];
+        statecyclingdaysettings.valve3_position_cyclingday = doc["valve3_position_cycling_day"];
+        statecyclingdaysettings.valve4_position_cyclingday = doc["valve4_position_cycling_day"];
+        statecyclingdaysettings.valve5_position_cyclingday = doc["valve5_position_cycling_day"];
+        statecyclingdaysettings.valve6_position_cyclingday = doc["valve6_position_cycling_day"];
+        statecyclingdaysettings.valve7_position_cyclingday = doc["valve7_position_cycling_day"];
+        statecyclingdaysettings.valve8_position_cyclingday = doc["valve8_position_cycling_day"];
+        statecyclingdaysettings.valve9_position_cyclingday = doc["valve9_position_cycling_day"];
+        statecyclingdaysettings.valve10_position_cyclingday = doc["valve10_position_cycling_day"];
+        statecyclingdaysettings.valve11_position_cyclingday = doc["valve11_position_cycling_day"];
+        xSemaphoreGive(settings_state_cyclingday_mutex);
+    }
+    if (enable_state_cyclingday)
+    {
+        strncpy(statecyclingdaysettings.enable_state_cyclingday, enable_state_cyclingday, sizeof(statecyclingdaysettings.enable_state_cyclingday) - 1);
+        statecyclingdaysettings.enable_state_cyclingday[sizeof(statecyclingdaysettings.enable_state_cyclingday) - 1] = '\0';
+    }
+    if (state_cyclingday_fanspeed)
+    {
+        strncpy(statecyclingdaysettings.state_cyclingday_fanspeed, state_cyclingday_fanspeed, sizeof(statecyclingdaysettings.state_cyclingday_fanspeed) - 1);
+        statecyclingdaysettings.state_cyclingday_fanspeed[sizeof(statecyclingdaysettings.state_cyclingday_fanspeed) - 1] = '\0';
+    }
+    if (name_state_cyclingday)
+    {
+        strncpy(statecyclingdaysettings.name_state_cyclingday, name_state_cyclingday, sizeof(statecyclingdaysettings.name_state_cyclingday) - 1);
+        statecyclingdaysettings.name_state_cyclingday[sizeof(statecyclingdaysettings.name_state_cyclingday) - 1] = '\0';
+    }
+    return false;
+}
+
+bool parse_state_cyclingnight_settings(void)
+{
+    char buffer[700];
+
+    String message;
+    JsonDocument doc;
+
+    if (read_settings(SETTINGS_STATE_CYCLINGNIGHT_PATH, buffer, sizeof(buffer), settings_state_cyclingnight_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_CYCLINGNIGHT_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    const char *enable_state_cyclingnight = doc["enable_state_cycling_night"];
+    const char *state_cyclingnight_fanspeed = doc["state_cycling_night_fanspeed"];
+    const char *name_state_cyclingnight = doc["name_state_cycling_night"];
+
+    if (settings_state_cyclingnight_mutex && (xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)10)) == pdTRUE)
+    {
+        statecyclingnightsettings.valve0_position_cyclingnight = doc["valve0_position_cycling_night"];
+        statecyclingnightsettings.valve1_position_cyclingnight = doc["valve1_position_cycling_night"];
+        statecyclingnightsettings.valve2_position_cyclingnight = doc["valve2_position_cycling_night"];
+        statecyclingnightsettings.valve3_position_cyclingnight = doc["valve3_position_cycling_night"];
+        statecyclingnightsettings.valve4_position_cyclingnight = doc["valve4_position_cycling_night"];
+        statecyclingnightsettings.valve5_position_cyclingnight = doc["valve5_position_cycling_night"];
+        statecyclingnightsettings.valve6_position_cyclingnight = doc["valve6_position_cycling_night"];
+        statecyclingnightsettings.valve7_position_cyclingnight = doc["valve7_position_cycling_night"];
+        statecyclingnightsettings.valve8_position_cyclingnight = doc["valve8_position_cycling_night"];
+        statecyclingnightsettings.valve9_position_cyclingnight = doc["valve9_position_cycling_night"];
+        statecyclingnightsettings.valve10_position_cyclingnight = doc["valve10_position_cycling_night"];
+        statecyclingnightsettings.valve11_position_cyclingnight = doc["valve11_position_cycling_night"];
+        xSemaphoreGive(settings_state_cyclingnight_mutex);
+    }
+    if (enable_state_cyclingnight)
+    {
+        strncpy(statecyclingnightsettings.enable_state_cyclingnight, enable_state_cyclingnight, sizeof(statecyclingnightsettings.enable_state_cyclingnight) - 1);
+        statecyclingnightsettings.enable_state_cyclingnight[sizeof(statecyclingnightsettings.enable_state_cyclingnight) - 1] = '\0';
+    }
+    if (state_cyclingnight_fanspeed)
+    {
+        strncpy(statecyclingnightsettings.state_cyclingnight_fanspeed, state_cyclingnight_fanspeed, sizeof(statecyclingnightsettings.state_cyclingnight_fanspeed) - 1);
+        statecyclingnightsettings.state_cyclingnight_fanspeed[sizeof(statecyclingnightsettings.state_cyclingnight_fanspeed) - 1] = '\0';
+    }
+    if (name_state_cyclingnight)
+    {
+        strncpy(statecyclingnightsettings.name_state_cyclingnight, name_state_cyclingnight, sizeof(statecyclingnightsettings.name_state_cyclingnight) - 1);
+        statecyclingnightsettings.name_state_cyclingnight[sizeof(statecyclingnightsettings.name_state_cyclingnight) - 1] = '\0';
+    }
+    return false;
+}
+
 // Old config
 //
 //
@@ -861,7 +1151,8 @@ bool parse_state_highco2night_settings(void)
 //
 //
 // Read network settings
-String read_network_config(void)
+
+/*String read_network_config(void)
 {
     bool settings_network_file_present = 0;
     String settings_network_string = "";
@@ -1226,409 +1517,11 @@ String read_statemachine_config(void)
     return settings_statemachine_string;
 }
 
-/*void process_statemachine_config(void)
-{
-    String settings_statemachine_string = "";
-    String message = "";
-
-    JsonDocument settings_statemachine_doc;
-
-    settings_statemachine_string = read_statemachine_config();
-
-    if (settings_statemachine_string == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_statemachine_doc, settings_statemachine_string);
-        if (err)
-        {
-            message = message = "[ERROR] Failed to parse: " + String(SETTINGS_STATEMACHINE_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    String weekend_day_1_temp = settings_statemachine_data["weekend_day_1"];
-    String weekend_day_2_temp = settings_statemachine_data["weekend_day_2"];
-
-    if (settings_statemachine_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)100) == pdTRUE)
-        {
-            weekday_day_hour_start = settings_statemachine_data["weekday_day_hour_start"];
-            weekday_day_minute_start = settings_statemachine_data["weekday_day_hour_start"];
-            weekday_night_hour_start = settings_statemachine_data["weekday_night_hour_start"];
-            weekday_night_minute_start = settings_statemachine_data["weekday_night_hour_start"];
-            weekend_day_hour_start = settings_statemachine_data["weekend_day_hour_start"];
-            weekend_day_minute_start = settings_statemachine_data["weekend_day_hour_start"];
-            weekend_night_hour_start = settings_statemachine_data["weekend_night_hour_start"];
-            weekend_night_minute_start = settings_statemachine_data["weekend_night_hour_start"];
-            weekend_day_1 = weekend_day_1_temp;
-            weekend_day_2 = weekend_day_2_temp;
-            minimum_state_time = settings_statemachine_data["minimum_state_time"];
-            xSemaphoreGive(settings_statemachine_mutex);
-        }
-    }
-}*/
-
-// Read both sensor config files an place contents in global variable
-/*void sensor_config_data_read()
-{
-    bool sensor_config1_file_present = 0;
-    bool sensor_config2_file_present = 0;
-
-    String sensor_config1_string = "";
-    String sensor_config2_string = "";
-    String message = "";
-
-    if (sensor_config_file_mutex != NULL)
-    {
-        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
-        {
-            sensor_config1_file_present = check_file_exists(SENSOR_CONFIG1_PATH);
-            if (sensor_config1_file_present == 1)
-            {
-                sensor_config1_string = read_config_file(SENSOR_CONFIG1_PATH);
-            }
-            xSemaphoreGive(sensor_config_file_mutex);
-        }
-    }
-    if (sensor_config1_string == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err1 = deserializeJson(wire_sensor_data, sensor_config1_string);
-        if (err1)
-        {
-            message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG1_PATH) + " with error: " + String(err1.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    if (sensor_config_file_mutex != NULL)
-    {
-        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
-        {
-            sensor_config2_file_present = check_file_exists(SENSOR_CONFIG2_PATH);
-            if (sensor_config2_file_present == 1)
-            {
-                sensor_config2_string = read_config_file(SENSOR_CONFIG2_PATH);
-            }
-            xSemaphoreGive(sensor_config_file_mutex);
-        }
-    }
-    if (sensor_config2_string == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err2 = deserializeJson(wire1_sensor_data, sensor_config2_string);
-        if (err2)
-        {
-            message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG2_PATH) + " with error: " + String(err2.c_str());
-            print_message(message);
-            return;
-        }
-    }
-}*/
-
 // Function to read settings (e.g. valve positions) for each state and put these in the global variable
 void valve_settings_config_read()
 {
-    //bool settings_state_day_present = 0;
-    //bool settings_state_night_present = 0;
-    //bool settings_state_highco2day_present = 0;
-    //bool settings_state_highco2night_present = 0;
-    bool settings_state_highrhday_present = 0;
-    bool settings_state_highrhnight_present = 0;
-    bool settings_state_cooking_present = 0;
-    bool settings_state_cyclingday_present = 0;
-    bool settings_state_cyclingnight_present = 0;
-
-    //String settings_state_day_str = "";
-    //String settings_state_night_str = "";
-    //String settings_state_highco2day_str = "";
-    //String settings_state_highco2night_str = "";
-    String settings_state_highrhday_str = "";
-    String settings_state_highrhnight_str = "";
-    String settings_state_cooking_str = "";
-    String settings_state_cyclingday_str = "";
-    String settings_state_cyclingnight_str = "";
-    String message = "";
-
-    /*if (settings_state_day_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_day_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_day_present = check_file_exists(SETTINGS_STATE_DAY_PATH);
-            if (settings_state_day_present == 1)
-            {
-                settings_state_day_str = read_config_file(SETTINGS_STATE_DAY_PATH);
-            }
-            xSemaphoreGive(settings_state_day_mutex);
-        }
-    }
-    if (settings_state_day_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_day, settings_state_day_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_DAY_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    if (settings_state_night_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_night_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_night_present = check_file_exists(SETTINGS_STATE_NIGHT_PATH);
-            if (settings_state_night_present == 1)
-            {
-                settings_state_night_str = read_config_file(SETTINGS_STATE_NIGHT_PATH);
-            }
-            xSemaphoreGive(settings_state_night_mutex);
-        }
-    }
-    if (settings_state_night_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_night, settings_state_night_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_NIGHT_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    if (settings_state_highco2day_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_highco2day_present = check_file_exists(SETTINGS_STATE_HIGHCO2DAY_PATH);
-            if (settings_state_highco2day_present == 1)
-            {
-                settings_state_highco2day_str = read_config_file(SETTINGS_STATE_HIGHCO2DAY_PATH);
-            }
-            xSemaphoreGive(settings_state_highco2day_mutex);
-        }
-    }
-    if (settings_state_highco2day_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_highco2day, settings_state_highco2day_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHCO2DAY_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    if (settings_state_highco2night_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_highco2night_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_highco2night_present = check_file_exists(SETTINGS_STATE_HIGHCO2NIGHT_PATH);
-            if (settings_state_highco2night_present == 1)
-            {
-                settings_state_highco2night_str = read_config_file(SETTINGS_STATE_HIGHCO2NIGHT_PATH);
-            }
-            xSemaphoreGive(settings_state_highco2night_mutex);
-        }
-    }
-    if (settings_state_highco2night_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_highco2night, settings_state_highco2night_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHCO2NIGHT_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }*/
-
-    if (settings_state_highrhday_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_highrhday_present = check_file_exists(SETTINGS_STATE_HIGHRHDAY_PATH);
-            if (settings_state_highrhday_present == 1)
-            {
-                settings_state_highrhday_str = read_config_file(SETTINGS_STATE_HIGHRHDAY_PATH);
-            }
-            xSemaphoreGive(settings_state_highrhday_mutex);
-        }
-    }
-    if (settings_state_highrhday_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_highrhday, settings_state_highrhday_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHRHDAY_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    if (settings_state_highrhnight_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_highrhnight_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_highrhnight_present = check_file_exists(SETTINGS_STATE_HIGHRHNIGHT_PATH);
-            if (settings_state_highrhnight_present == 1)
-            {
-                settings_state_highrhnight_str = read_config_file(SETTINGS_STATE_HIGHRHNIGHT_PATH);
-            }
-            xSemaphoreGive(settings_state_highrhnight_mutex);
-        }
-    }
-    if (settings_state_highrhnight_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_highrhnight, settings_state_highrhnight_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHRHNIGHT_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    if (settings_state_cooking_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_cooking_present = check_file_exists(SETTINGS_STATE_COOKING_PATH);
-            if (settings_state_cooking_present == 1)
-            {
-                settings_state_cooking_str = read_config_file(SETTINGS_STATE_COOKING_PATH);
-            }
-            xSemaphoreGive(settings_state_cooking_mutex);
-        }
-    }
-    if (settings_state_cooking_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_cooking, settings_state_cooking_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_COOKING_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    if (settings_state_cyclingday_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_cyclingday_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_cyclingday_present = check_file_exists(SETTINGS_STATE_CYCLINGDAY_PATH);
-            if (settings_state_cyclingday_present == 1)
-            {
-                settings_state_cyclingday_str = read_config_file(SETTINGS_STATE_CYCLINGDAY_PATH);
-            }
-            xSemaphoreGive(settings_state_cyclingday_mutex);
-        }
-    }
-    if (settings_state_cyclingday_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_cyclingday, settings_state_cyclingday_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_CYCLINGDAY_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-
-    if (settings_state_cyclingnight_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_cyclingnight_present = check_file_exists(SETTINGS_STATE_CYCLINGNIGHT_PATH);
-            if (settings_state_cyclingnight_present == 1)
-            {
-                settings_state_cyclingnight_str = read_config_file(SETTINGS_STATE_CYCLINGNIGHT_PATH);
-            }
-            xSemaphoreGive(settings_state_cyclingnight_mutex);
-        }
-    }
-    if (settings_state_cyclingnight_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(settings_state_cyclingnight, settings_state_cyclingnight_str);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_CYCLINGNIGHT_PATH) + " with error: " + String(err.c_str());
-            print_message(message);
-            return;
-        }
-    }
-}
+    
+}*/
 
 // Write valve status file with all valve positions 0
 void valve_status_file_create()

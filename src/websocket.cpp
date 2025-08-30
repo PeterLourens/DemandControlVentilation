@@ -23,8 +23,6 @@ String create_index_json()
     String date_time = "";
 
     JsonDocument doc;
-    // JsonDocument wire_sensor_data_temp;
-    // JsonDocument wire1_sensor_data_temp;
 
     // Read from sensor queue
     if (sensor_queue != 0)
@@ -34,44 +32,15 @@ String create_index_json()
         }
     }
 
-    // Read setting for valve and valve name
-    /*if (sensor_config_file_mutex != NULL)
-    {
-        if (xSemaphoreTake(sensor_config_file_mutex, (TickType_t)100) == pdTRUE)
-        {
-            wire_sensor_data_temp = wire_sensor_data;
-            wire1_sensor_data_temp = wire1_sensor_data;
-            xSemaphoreGive(sensor_config_file_mutex);
-        }
-    }*/
-
-    /*for (int i = 0; i < 8; i++)
-    {
-        wire_sensor_data_temp["wire_sensor" + String(i) + "_type"] = sensor1settings[i].wire_sensor_type;
-        wire_sensor_data_temp["wire_sensor" + String(i) + "_valve"] = sensor1settings[i].wire_sensor_valve;
-        wire_sensor_data_temp["wire_sensor" + String(i) + "_location"] = sensor1settings[i].wire_sensor_location;
-        wire_sensor_data_temp["wire_sensor" + String(i) + "_rh"] = sensor1settings[i].wire_sensor_rh;
-        wire_sensor_data_temp["wire_sensor" + String(i) + "_co2"] = sensor1settings[i].wire_sensor_co2;
-
-        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
-        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_valve"] = sensor2settings[i].wire1_sensor_valve;
-        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_location"] = sensor2settings[i].wire1_sensor_location;
-        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_rh"] = sensor2settings[i].wire1_sensor_rh;
-        wire1_sensor_data_temp["wire1_sensor" + String(i) + "_co2"] = sensor2settings[i].wire1_sensor_co2;
-    }*/
-
     // Valve positions
-    if (valve_position_file_mutex != NULL)
+    if (valve_position_file_mutex && xSemaphoreTake(valve_position_file_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(valve_position_file_mutex, (TickType_t)10) == pdTRUE)
+        status_valve_file_present = check_file_exists(VALVE_POSITIONS_PATH);
+        if (status_valve_file_present == 1)
         {
-            status_valve_file_present = check_file_exists(VALVE_POSITIONS_PATH);
-            if (status_valve_file_present == 1)
-            {
-                json_valves = read_config_file(VALVE_POSITIONS_PATH);
-            }
-            xSemaphoreGive(valve_position_file_mutex);
+            json_valves = read_config_file(VALVE_POSITIONS_PATH);
         }
+        xSemaphoreGive(valve_position_file_mutex);
     }
 
     DeserializationError err = deserializeJson(doc, json_valves);
@@ -83,22 +52,16 @@ String create_index_json()
     }
 
     // General
-    if (statemachine_state_mutex != NULL)
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-        {
-            state_tmp = state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+        state_tmp = state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (fanspeed_mutex != NULL)
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
-        {
-            fanspeed_tmp = fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+        fanspeed_tmp = fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     date_time = formatted_datetime();
@@ -110,56 +73,33 @@ String create_index_json()
 
     for (int i = 0; i < 8; i++)
     {
-        // Bus0 sensor data
-        /*doc["bus0_sensor" + String(i) + "_type"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_type"];
-        doc["bus0_sensor" + String(i) + "_valve"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_valve"];
-        doc["bus0_sensor" + String(i) + "_location"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_location"];
-        doc["bus0_sensor" + String(i) + "_rhs"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_rh"];
-        doc["bus0_sensor" + String(i) + "_co2s"] = wire_sensor_data_temp["wire_sensor" + String(i) + "_co2"];
-        doc["bus0_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[0][i][0]);
-        doc["bus0_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[0][i][1]);
-        doc["bus0_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[0][i][2]);
-
-        // Bus1 sensor data
-        doc["bus1_sensor" + String(i) + "_type"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_type"];
-        doc["bus1_sensor" + String(i) + "_valve"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_valve"];
-        doc["bus1_sensor" + String(i) + "_location"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_location"];
-        doc["bus1_sensor" + String(i) + "_rhs"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_rh"];
-        doc["bus1_sensor" + String(i) + "_co2s"] = wire1_sensor_data_temp["wire1_sensor" + String(i) + "_co2"];
-        doc["bus1_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[1][i][0]);
-        doc["bus1_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[1][i][1]);
-        doc["bus1_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[1][i][2]);*/
-
         // Bus 0 sensor data
-        if (settings_sensor1_mutex != NULL)
+        if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
         {
-            if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
-            {
-                doc["bus0_sensor" + String(i) + "_type"] = sensor1settings[i].wire_sensor_type;
-                doc["bus0_sensor" + String(i) + "_valve"] = sensor1settings[i].wire_sensor_valve;
-                doc["bus0_sensor" + String(i) + "_location"] = sensor1settings[i].wire_sensor_location;
-                doc["bus0_sensor" + String(i) + "_rhs"] = sensor1settings[i].wire_sensor_rh;
-                doc["bus0_sensor" + String(i) + "_co2s"] = sensor1settings[i].wire_sensor_co2;
-                xSemaphoreGive(settings_sensor1_mutex);
-            }
+            doc["bus0_sensor" + String(i) + "_type"] = sensor1settings[i].wire_sensor_type;
+            doc["bus0_sensor" + String(i) + "_valve"] = sensor1settings[i].wire_sensor_valve;
+            doc["bus0_sensor" + String(i) + "_location"] = sensor1settings[i].wire_sensor_location;
+            doc["bus0_sensor" + String(i) + "_rhs"] = sensor1settings[i].wire_sensor_rh;
+            doc["bus0_sensor" + String(i) + "_co2s"] = sensor1settings[i].wire_sensor_co2;
+            xSemaphoreGive(settings_sensor1_mutex);
         }
+
         doc["bus0_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[0][i][0]);
         doc["bus0_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[0][i][1]);
         doc["bus0_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[0][i][2]);
 
         // Bus1 sensor data
-        if (settings_sensor2_mutex != NULL)
+
+        if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
         {
-            if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
-            {
-                doc["bus1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
-                doc["bus1_sensor" + String(i) + "_valve"] = sensor2settings[i].wire1_sensor_valve;
-                doc["bus1_sensor" + String(i) + "_location"] = sensor2settings[i].wire1_sensor_location;
-                doc["bus1_sensor" + String(i) + "_rhs"] = sensor2settings[i].wire1_sensor_rh;
-                doc["bus1_sensor" + String(i) + "_co2s"] = sensor2settings[i].wire1_sensor_co2;
-                xSemaphoreGive(settings_sensor2_mutex);
-            }
+            doc["bus1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
+            doc["bus1_sensor" + String(i) + "_valve"] = sensor2settings[i].wire1_sensor_valve;
+            doc["bus1_sensor" + String(i) + "_location"] = sensor2settings[i].wire1_sensor_location;
+            doc["bus1_sensor" + String(i) + "_rhs"] = sensor2settings[i].wire1_sensor_rh;
+            doc["bus1_sensor" + String(i) + "_co2s"] = sensor2settings[i].wire1_sensor_co2;
+            xSemaphoreGive(settings_sensor2_mutex);
         }
+
         doc["bus1_sensor" + String(i) + "_temp"] = roundToTwoDecimals(temp_sensor_data[1][i][0]);
         doc["bus1_sensor" + String(i) + "_hum"] = roundToTwoDecimals(temp_sensor_data[1][i][1]);
         doc["bus1_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[1][i][2]);
@@ -173,95 +113,164 @@ String create_index_json()
 String create_settings_json()
 {
     String settings_json = "";
-    String settings_rtc_string = "";
-    String settings_influxdb_string = "";
-    String settings_i2c_string = "";
-    String settings_mqtt_string = "";
-    String settings_fan_string = "";
-    String settings_network_string = "";
+    String settings_rtc_str = "";
+    String settings_influxdb_str = "";
+    String settings_i2c_str = "";
+    String settings_mqtt_str = "";
+    String settings_fan_str = "";
+    String settings_network_str = "";
     String message = "";
 
-    // RTC settings
-    settings_rtc_string = read_rtc_config();
+    JsonDocument settings_network_doc;
+    JsonDocument settings_rtc_doc;
+    JsonDocument settings_influxdb_doc;
+    JsonDocument settings_i2c_doc;
+    JsonDocument settings_mqtt_doc;
+    JsonDocument settings_fan_doc;
 
-    if (settings_rtc_string == "")
+    // Network settings
+    if (settings_network_mutex && xSemaphoreTake(settings_network_mutex, (TickType_t)10))
     {
-        message = "[ERROR] RTC Config string is empty or failed to read file";
+        settings_network_doc["enable_dhcp"] = networksettings.enable_dhcp;
+        settings_network_doc["ssid"] = networksettings.ssid;
+        settings_network_doc["wifi_password"] = networksettings.wifi_password;
+        settings_network_doc["ip_address"] = networksettings.ip_address;
+        settings_network_doc["subnet_mask"] = networksettings.subnet_mask;
+        settings_network_doc["gateway"] = networksettings.gateway;
+        settings_network_doc["primary_dns"] = networksettings.primary_dns;
+        settings_network_doc["secondary_dns"] = networksettings.secondary_dns;
+        xSemaphoreGive(settings_network_mutex);
+    }
+
+    serializeJson(settings_network_doc, settings_network_str);
+
+    if (settings_network_str == "")
+    {
+        message = "[ERROR] Network settings string is empty.";
         print_message(message);
         return "";
     }
     else
     {
-        settings_json = settings_rtc_string;
+        settings_json = settings_network_str;
+    }
+
+    // MQTT settings
+    if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10))
+    {
+        settings_mqtt_doc["enable_mqtt"] = mqttsettings.enable_mqtt;
+        settings_mqtt_doc["mqtt_server"] = mqttsettings.mqtt_server;
+        settings_mqtt_doc["mqtt_port"] = mqttsettings.mqtt_port;
+        settings_mqtt_doc["mqtt_base_topic"] = mqttsettings.mqtt_base_topic;
+        xSemaphoreGive(settings_mqtt_mutex);
+    }
+
+    serializeJson(settings_mqtt_doc, settings_mqtt_str);
+
+    if (settings_mqtt_str == "")
+    {
+        message = "[ERROR] mqtt settings string is empty.";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        concatJson(settings_json, settings_mqtt_str);
+    }
+
+    // I2C settings
+    if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10))
+    {
+        settings_i2c_doc["bus0_multiplexer_address"] = i2csettings.bus0_multiplexer_address;
+        settings_i2c_doc["bus1_multiplexer_address"] = i2csettings.bus1_multiplexer_address;
+        settings_i2c_doc["enable_lcd"] = i2csettings.enable_lcd;
+        settings_i2c_doc["display_i2c_address"] = i2csettings.display_i2c_address;
+        xSemaphoreGive(settings_i2c_mutex);
+    }
+
+    serializeJson(settings_i2c_doc, settings_i2c_str);
+
+    if (settings_i2c_str == "")
+    {
+        message = "[ERROR] I2C settings string is empty.";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        concatJson(settings_json, settings_i2c_str);
+    }
+
+    // Fan settings
+    if (settings_fan_mutex && xSemaphoreTake(settings_fan_mutex, (TickType_t)10))
+    {
+        settings_fan_doc["fan_control_mode"] = fansettings.fan_control_mode;
+        settings_fan_doc["fan_control_mqtt_server"] = fansettings.fan_control_mqtt_server;
+        settings_fan_doc["fan_control_mqtt_port"] = fansettings.fan_control_mqtt_port;
+        settings_fan_doc["fan_control_mqtt_topic"] = fansettings.fan_control_mqtt_topic;
+        settings_fan_doc["fan_control_url_high_speed"] = fansettings.fan_control_url_high_speed;
+        settings_fan_doc["fan_control_url_medium_speed"] = fansettings.fan_control_url_medium_speed;
+        settings_fan_doc["fan_control_url_low_speed"] = fansettings.fan_control_url_low_speed;
+        xSemaphoreGive(settings_fan_mutex);
+    }
+
+    serializeJson(settings_fan_doc, settings_fan_str);
+
+    if (settings_fan_str == "")
+    {
+        message = "[ERROR] fan settings string is empty.";
+        print_message(message);
+        return "";
+    }
+    else
+    {
+        concatJson(settings_json, settings_fan_str);
     }
 
     // Influxdb settings
-    settings_influxdb_string = read_influxdb_config();
-
-    if (settings_influxdb_string == "")
+    if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10))
     {
-        message = "[ERROR] Influxdb config string is empty or failed to read file";
+        settings_influxdb_doc["enable_influxdb"] = influxdbsettings.enable_influxdb;
+        settings_influxdb_doc["influxdb_url"] = influxdbsettings.influxdb_url;
+        settings_influxdb_doc["influxdb_org"] = influxdbsettings.influxdb_org;
+        settings_influxdb_doc["influxdb_bucket"] = influxdbsettings.influxdb_bucket;
+        settings_influxdb_doc["influxdb_token"] = influxdbsettings.influxdb_token;
+        xSemaphoreGive(settings_influxdb_mutex);
+    }
+
+    serializeJson(settings_influxdb_doc, settings_influxdb_str);
+
+    if (settings_influxdb_str == "")
+    {
+        message = "[ERROR] influxdb settings string is empty.";
         print_message(message);
         return "";
     }
     else
     {
-        settings_json = concatJson(settings_json, settings_influxdb_string);
+        concatJson(settings_json, settings_influxdb_str);
     }
 
-    // I2C config
-    settings_i2c_string = read_i2c_config();
-    if (settings_i2c_string == "")
+    // RTC settings
+    if (settings_rtc_mutex && xSemaphoreTake(settings_rtc_mutex, (TickType_t)10))
     {
-        message = "[ERROR] I2C config string is empty or failed to read file";
+        settings_rtc_doc["ntp_server"] = rtcsettings.ntp_server;
+        settings_rtc_doc["timezone"] = rtcsettings.timezone;
+        xSemaphoreGive(settings_rtc_mutex);
+    }
+
+    serializeJson(settings_rtc_doc, settings_rtc_str);
+
+    if (settings_rtc_str == "")
+    {
+        message = "[ERROR] RTC settings string is empty.";
         print_message(message);
         return "";
     }
     else
     {
-        settings_json = concatJson(settings_json, settings_i2c_string);
+        settings_json = concatJson(settings_json, settings_rtc_str);
     }
-
-    // MQTT Config
-    settings_mqtt_string = read_mqtt_config();
-    if (settings_mqtt_string == "")
-    {
-        message = "[ERROR] MQTT config string is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        settings_json = concatJson(settings_json, settings_mqtt_string);
-    }
-
-    // Fan config
-    settings_fan_string = read_fan_config();
-    if (settings_fan_string == "")
-    {
-        message = "[ERROR] Fan config string is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        settings_json = concatJson(settings_json, settings_fan_string);
-    }
-
-    // Network config
-    settings_network_string = read_network_config();
-    // Serial.print("Settings in websocket: " + settings_network_string);
-    if (settings_network_string == "")
-    {
-        message = "[ERROR] Network config string is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        settings_json = concatJson(settings_json, settings_network_string);
-    }
-
     return settings_json;
 }
 
@@ -329,17 +338,6 @@ String create_sensors_json()
 
 String create_statemachine_json()
 {
-    // bool settings_statemachine_present = 0;
-    //  bool settings_state_day_present = 0;
-    //  bool settings_state_night_present = 0;
-    // bool settings_state_highco2day_present = 0;
-    bool settings_state_highco2night_present = 0;
-    bool settings_state_highrhday_present = 0;
-    bool settings_state_highrhnight_present = 0;
-    bool settings_state_cooking_present = 0;
-    bool settings_state_cyclingday_present = 0;
-    bool settings_state_cyclingnight_present = 0;
-
     String settings_statemachine_str = "";
     String settings_state_day_str = "";
     String settings_state_night_str = "";
@@ -539,136 +537,32 @@ String create_statemachine_json()
         statemachine_json = concatJson(statemachine_json, settings_state_highco2night_str);
     }
 
-    /*if (settings_statemachine_mutex != NULL)
+    if (settings_state_highrhday_mutex && xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_statemachine_present = check_file_exists(SETTINGS_STATEMACHINE_PATH);
-            if (settings_statemachine_present == 1)
-            {
-                settings_statemachine_str = read_config_file(SETTINGS_STATEMACHINE_PATH);
-            }
-            xSemaphoreGive(settings_statemachine_mutex);
-        }
+        doc_highrhday["enable_state_highrhday"] = statehighrhdaysettings.enable_state_highrhday;
+        doc_highrhday["state_highrhday_fanspeed"] = statehighrhdaysettings.state_highrhday_fanspeed;
+        doc_highrhday["name_state_highrhday"] = statehighrhdaysettings.name_state_highrhday;
+        doc_highrhday["maximum_state_time_highrhday"] = statehighrhdaysettings.maximum_state_time_highrhday;
+        doc_highrhday["rh_low_state_highrhday"] = statehighrhdaysettings.rh_low_state_highrhday;
+        doc_highrhday["valve0_position_highrhday"] = statehighrhdaysettings.valve0_position_highrhday;
+        doc_highrhday["valve1_position_highrhday"] = statehighrhdaysettings.valve1_position_highrhday;
+        doc_highrhday["valve2_position_highrhday"] = statehighrhdaysettings.valve2_position_highrhday;
+        doc_highrhday["valve3_position_highrhday"] = statehighrhdaysettings.valve3_position_highrhday;
+        doc_highrhday["valve4_position_highrhday"] = statehighrhdaysettings.valve4_position_highrhday;
+        doc_highrhday["valve5_position_highrhday"] = statehighrhdaysettings.valve5_position_highrhday;
+        doc_highrhday["valve6_position_highrhday"] = statehighrhdaysettings.valve6_position_highrhday;
+        doc_highrhday["valve7_position_highrhday"] = statehighrhdaysettings.valve7_position_highrhday;
+        doc_highrhday["valve8_position_highrhday"] = statehighrhdaysettings.valve8_position_highrhday;
+        doc_highrhday["valve9_position_highrhday"] = statehighrhdaysettings.valve9_position_highrhday;
+        doc_highrhday["valve10_position_highrhday"] = statehighrhdaysettings.valve10_position_highrhday;
+        doc_highrhday["valve11_position_highrhday"] = statehighrhdaysettings.valve11_position_highrhday;
+        xSemaphoreGive(settings_state_highrhday_mutex);
     }
-    if (settings_statemachine_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        statemachine_json = settings_statemachine_str;
-    }
-
-    if (settings_state_day_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_day_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_day_present = check_file_exists(SETTINGS_STATE_DAY_PATH);
-            if (settings_state_day_present == 1)
-            {
-                settings_state_day_str = read_config_file(SETTINGS_STATE_DAY_PATH);
-            }
-            xSemaphoreGive(settings_state_day_mutex);
-        }
-    }
-    if (settings_state_day_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        statemachine_json = concatJson(statemachine_json, settings_state_day_str);
-    }
-
-    if (settings_state_night_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_night_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_night_present = check_file_exists(SETTINGS_STATE_NIGHT_PATH);
-            if (settings_state_night_present == 1)
-            {
-                settings_state_night_str = read_config_file(SETTINGS_STATE_NIGHT_PATH);
-            }
-            xSemaphoreGive(settings_state_night_mutex);
-        }
-    }
-    if (settings_state_night_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        statemachine_json = concatJson(statemachine_json, settings_state_night_str);
-    }
-
-    if (settings_state_highco2day_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_highco2day_present = check_file_exists(SETTINGS_STATE_HIGHCO2DAY_PATH);
-            if (settings_state_highco2day_present == 1)
-            {
-                settings_state_highco2day_str = read_config_file(SETTINGS_STATE_HIGHCO2DAY_PATH);
-            }
-            xSemaphoreGive(settings_state_highco2day_mutex);
-        }
-    }
-    if (settings_state_highco2day_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        statemachine_json = concatJson(statemachine_json, settings_state_highco2day_str);
-    }*/
-
-    if (settings_state_highco2night_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_highco2night_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_highco2night_present = check_file_exists(SETTINGS_STATE_HIGHCO2NIGHT_PATH);
-            if (settings_state_highco2night_present == 1)
-            {
-                settings_state_highco2night_str = read_config_file(SETTINGS_STATE_HIGHCO2NIGHT_PATH);
-            }
-            xSemaphoreGive(settings_state_highco2night_mutex);
-        }
-    }
-    if (settings_state_highco2night_str == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        statemachine_json = concatJson(statemachine_json, settings_state_highco2night_str);
-    }
-
-    if (settings_state_highrhday_mutex != NULL)
-    {
-        if (xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_highrhday_present = check_file_exists(SETTINGS_STATE_HIGHRHDAY_PATH);
-            if (settings_state_highrhday_present == 1)
-            {
-                settings_state_highrhday_str = read_config_file(SETTINGS_STATE_HIGHRHDAY_PATH);
-            }
-            xSemaphoreGive(settings_state_highrhday_mutex);
-        }
-    }
+    doc_highrhday.shrinkToFit();
+    serializeJson(doc_highrhday, settings_state_highrhday_str);
     if (settings_state_highrhday_str == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] String is empty. Failed to read high RH day state settings.";
         print_message(message);
         return "";
     }
@@ -677,21 +571,32 @@ String create_statemachine_json()
         statemachine_json = concatJson(statemachine_json, settings_state_highrhday_str);
     }
 
-    if (settings_state_highrhnight_mutex != NULL)
+    if (settings_state_highrhnight_mutex && xSemaphoreTake(settings_state_highrhnight_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_state_highrhnight_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_highrhnight_present = check_file_exists(SETTINGS_STATE_HIGHRHNIGHT_PATH);
-            if (settings_state_highrhnight_present == 1)
-            {
-                settings_state_highrhnight_str = read_config_file(SETTINGS_STATE_HIGHRHNIGHT_PATH);
-            }
-            xSemaphoreGive(settings_state_highrhnight_mutex);
-        }
+        doc_highrhnight["enable_state_highrhnight"] = statehighrhnightsettings.enable_state_highrhnight;
+        doc_highrhnight["state_highrhnight_fanspeed"] = statehighrhnightsettings.state_highrhnight_fanspeed;
+        doc_highrhnight["name_state_highrhnight"] = statehighrhnightsettings.name_state_highrhnight;
+        doc_highrhnight["maximum_state_time_highrhnight"] = statehighrhnightsettings.maximum_state_time_highrhnight;
+        doc_highrhnight["rh_low_state_highrhnight"] = statehighrhnightsettings.rh_low_state_highrhnight;
+        doc_highrhnight["valve0_position_highrhnight"] = statehighrhnightsettings.valve0_position_highrhnight;
+        doc_highrhnight["valve1_position_highrhnight"] = statehighrhnightsettings.valve1_position_highrhnight;
+        doc_highrhnight["valve2_position_highrhnight"] = statehighrhnightsettings.valve2_position_highrhnight;
+        doc_highrhnight["valve3_position_highrhnight"] = statehighrhnightsettings.valve3_position_highrhnight;
+        doc_highrhnight["valve4_position_highrhnight"] = statehighrhnightsettings.valve4_position_highrhnight;
+        doc_highrhnight["valve5_position_highrhnight"] = statehighrhnightsettings.valve5_position_highrhnight;
+        doc_highrhnight["valve6_position_highrhnight"] = statehighrhnightsettings.valve6_position_highrhnight;
+        doc_highrhnight["valve7_position_highrhnight"] = statehighrhnightsettings.valve7_position_highrhnight;
+        doc_highrhnight["valve8_position_highrhnight"] = statehighrhnightsettings.valve8_position_highrhnight;
+        doc_highrhnight["valve9_position_highrhnight"] = statehighrhnightsettings.valve9_position_highrhnight;
+        doc_highrhnight["valve10_position_highrhnight"] = statehighrhnightsettings.valve10_position_highrhnight;
+        doc_highrhnight["valve11_position_highrhnight"] = statehighrhnightsettings.valve11_position_highrhnight;
+        xSemaphoreGive(settings_state_highrhnight_mutex);
     }
+    doc_highrhnight.shrinkToFit();
+    serializeJson(doc_highrhnight, settings_state_highrhnight_str);
     if (settings_state_highrhnight_str == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] String is empty. Failed to read high RH night state settings.";
         print_message(message);
         return "";
     }
@@ -700,21 +605,35 @@ String create_statemachine_json()
         statemachine_json = concatJson(statemachine_json, settings_state_highrhnight_str);
     }
 
-    if (settings_state_cooking_mutex != NULL)
+    // Cooking state settings
+    if (settings_state_cooking_mutex && xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_cooking_present = check_file_exists(SETTINGS_STATE_COOKING_PATH);
-            if (settings_state_cooking_present == 1)
-            {
-                settings_state_cooking_str = read_config_file(SETTINGS_STATE_COOKING_PATH);
-            }
-            xSemaphoreGive(settings_state_cooking_mutex);
-        }
+        doc_cooking["enable_state_cooking"] = statecookingsettings.enable_state_cooking;
+        doc_cooking["state_cooking_fanspeed"] = statecookingsettings.state_cooking_fanspeed;
+        doc_cooking["name_state_cooking"] = statecookingsettings.name_state_cooking;
+        doc_cooking["start_hour_state_cooking"] = statecookingsettings.start_hour_state_cooking;
+        doc_cooking["start_minute_state_cooking"] = statecookingsettings.start_minute_state_cooking;
+        doc_cooking["stop_hour_state_cooking"] = statecookingsettings.stop_hour_state_cooking;
+        doc_cooking["stop_minute_state_cooking"] = statecookingsettings.stop_minute_state_cooking;
+        doc_cooking["valve0_position_cooking"] = statecookingsettings.valve0_position_cooking;
+        doc_cooking["valve1_position_cooking"] = statecookingsettings.valve1_position_cooking;
+        doc_cooking["valve2_position_cooking"] = statecookingsettings.valve2_position_cooking;
+        doc_cooking["valve3_position_cooking"] = statecookingsettings.valve3_position_cooking;
+        doc_cooking["valve4_position_cooking"] = statecookingsettings.valve4_position_cooking;
+        doc_cooking["valve5_position_cooking"] = statecookingsettings.valve5_position_cooking;
+        doc_cooking["valve6_position_cooking"] = statecookingsettings.valve6_position_cooking;
+        doc_cooking["valve7_position_cooking"] = statecookingsettings.valve7_position_cooking;
+        doc_cooking["valve8_position_cooking"] = statecookingsettings.valve8_position_cooking;
+        doc_cooking["valve9_position_cooking"] = statecookingsettings.valve9_position_cooking;
+        doc_cooking["valve10_position_cooking"] = statecookingsettings.valve10_position_cooking;
+        doc_cooking["valve11_position_cooking"] = statecookingsettings.valve11_position_cooking;
+        xSemaphoreGive(settings_state_cooking_mutex);
     }
+    doc_cooking.shrinkToFit();
+    serializeJson(doc_cooking, settings_state_cooking_str);
     if (settings_state_cooking_str == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] String is empty. Failed to read cooking state settings.";
         print_message(message);
         return "";
     }
@@ -723,21 +642,31 @@ String create_statemachine_json()
         statemachine_json = concatJson(statemachine_json, settings_state_cooking_str);
     }
 
-    if (settings_state_cyclingday_mutex != NULL)
+    // Cycling day state settings
+    if (settings_state_cyclingday_mutex && xSemaphoreTake(settings_state_cyclingday_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_state_cyclingday_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_cyclingday_present = check_file_exists(SETTINGS_STATE_CYCLINGDAY_PATH);
-            if (settings_state_cyclingday_present == 1)
-            {
-                settings_state_cyclingday_str = read_config_file(SETTINGS_STATE_CYCLINGDAY_PATH);
-            }
-            xSemaphoreGive(settings_state_cyclingday_mutex);
-        }
+        doc_cyclingday["enable_state_cyclingday"] = statecyclingdaysettings.enable_state_cyclingday;
+        doc_cyclingday["state_cyclingday_fanspeed"] = statecyclingdaysettings.state_cyclingday_fanspeed;
+        doc_cyclingday["name_state_cyclingday"] = statecyclingdaysettings.name_state_cyclingday;
+        doc_cyclingday["valve0_position_cyclingday"] = statecyclingdaysettings.valve0_position_cyclingday;
+        doc_cyclingday["valve1_position_cyclingday"] = statecyclingdaysettings.valve1_position_cyclingday;
+        doc_cyclingday["valve2_position_cyclingday"] = statecyclingdaysettings.valve2_position_cyclingday;
+        doc_cyclingday["valve3_position_cyclingday"] = statecyclingdaysettings.valve3_position_cyclingday;
+        doc_cyclingday["valve4_position_cyclingday"] = statecyclingdaysettings.valve4_position_cyclingday;
+        doc_cyclingday["valve5_position_cyclingday"] = statecyclingdaysettings.valve5_position_cyclingday;
+        doc_cyclingday["valve6_position_cyclingday"] = statecyclingdaysettings.valve6_position_cyclingday;
+        doc_cyclingday["valve7_position_cyclingday"] = statecyclingdaysettings.valve7_position_cyclingday;
+        doc_cyclingday["valve8_position_cyclingday"] = statecyclingdaysettings.valve8_position_cyclingday;
+        doc_cyclingday["valve9_position_cyclingday"] = statecyclingdaysettings.valve9_position_cyclingday;
+        doc_cyclingday["valve10_position_cyclingday"] = statecyclingdaysettings.valve10_position_cyclingday;
+        doc_cyclingday["valve11_position_cyclingday"] = statecyclingdaysettings.valve11_position_cyclingday;
+        xSemaphoreGive(settings_state_cyclingday_mutex);
     }
+    doc_cyclingday.shrinkToFit();
+    serializeJson(doc_cyclingday, settings_state_cyclingday_str);
     if (settings_state_cyclingday_str == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] String is empty. Failed to read cycling day state settings.";
         print_message(message);
         return "";
     }
@@ -746,21 +675,31 @@ String create_statemachine_json()
         statemachine_json = concatJson(statemachine_json, settings_state_cyclingday_str);
     }
 
-    if (settings_state_cyclingnight_mutex != NULL)
+    // Cycling night state settings
+    if (settings_state_cyclingnight_mutex && xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)100) == pdTRUE)
-        {
-            settings_state_cyclingnight_present = check_file_exists(SETTINGS_STATE_CYCLINGNIGHT_PATH);
-            if (settings_state_cyclingnight_present == 1)
-            {
-                settings_state_cyclingnight_str = read_config_file(SETTINGS_STATE_CYCLINGNIGHT_PATH);
-            }
-            xSemaphoreGive(settings_state_cyclingnight_mutex);
-        }
+        doc_cyclingnight["enable_state_cyclingnight"] = statecyclingnightsettings.enable_state_cyclingnight;
+        doc_cyclingnight["state_cyclingnight_fanspeed"] = statecyclingnightsettings.state_cyclingnight_fanspeed;
+        doc_cyclingnight["name_state_cyclingnight"] = statecyclingnightsettings.name_state_cyclingnight;
+        doc_cyclingnight["valve0_position_cyclingnight"] = statecyclingnightsettings.valve0_position_cyclingnight;
+        doc_cyclingnight["valve1_position_cyclingnight"] = statecyclingnightsettings.valve1_position_cyclingnight;
+        doc_cyclingnight["valve2_position_cyclingnight"] = statecyclingnightsettings.valve2_position_cyclingnight;
+        doc_cyclingnight["valve3_position_cyclingnight"] = statecyclingnightsettings.valve3_position_cyclingnight;
+        doc_cyclingnight["valve4_position_cyclingnight"] = statecyclingnightsettings.valve4_position_cyclingnight;
+        doc_cyclingnight["valve5_position_cyclingnight"] = statecyclingnightsettings.valve5_position_cyclingnight;
+        doc_cyclingnight["valve6_position_cyclingnight"] = statecyclingnightsettings.valve6_position_cyclingnight;
+        doc_cyclingnight["valve7_position_cyclingnight"] = statecyclingnightsettings.valve7_position_cyclingnight;
+        doc_cyclingnight["valve8_position_cyclingnight"] = statecyclingnightsettings.valve8_position_cyclingnight;
+        doc_cyclingnight["valve9_position_cyclingnight"] = statecyclingnightsettings.valve9_position_cyclingnight;
+        doc_cyclingnight["valve10_position_cyclingnight"] = statecyclingnightsettings.valve10_position_cyclingnight;
+        doc_cyclingnight["valve11_position_cyclingnight"] = statecyclingnightsettings.valve11_position_cyclingnight;
+        xSemaphoreGive(settings_state_cyclingnight_mutex);
     }
+    doc_cyclingnight.shrinkToFit();
+    serializeJson(doc_cyclingnight, settings_state_cyclingnight_str);
     if (settings_state_cyclingnight_str == "")
     {
-        message = "[ERROR] String is empty or failed to read file";
+        message = "[ERROR] String is empty. Failed to read cycling night state settings.";
         print_message(message);
         return "";
     }
@@ -769,7 +708,6 @@ String create_statemachine_json()
         statemachine_json = concatJson(statemachine_json, settings_state_cyclingnight_str);
     }
 
-    // Serial.print("Statemachine json: " + statemachine_json + "\n");
     return statemachine_json;
 }
 

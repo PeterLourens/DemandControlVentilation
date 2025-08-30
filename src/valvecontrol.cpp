@@ -415,6 +415,7 @@ void valve_position_statemachine(String statemachine_state)
 
     JsonDocument state_valve_pos_doc;
     JsonDocument actual_valve_pos_doc;
+    JsonDocument settings_state_temp;
 
     // Actual valve positions
     const char *actual_valve_pos_path = "/json/valvepositions.json";

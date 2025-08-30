@@ -12,5 +12,7 @@ void sync_rtc_ntp(void);
 bool cooking_times(void);
 bool valve_cycle_times_day(void);
 bool valve_cycle_times_night(void);
+bool is_weekend(void);
+bool is_day(void);
 
 #endif

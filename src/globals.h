@@ -137,7 +137,7 @@ typedef struct
 {
     char enable_mqtt[SMALL_CONFIG_ITEM];
     char mqtt_server[XLARGE_CONFIG_ITEM];
-    char mqtt_port[SMALL_CONFIG_ITEM];
+    int mqtt_port;
     char mqtt_base_topic[LARGE_CONFIG_ITEM];
 } MQTT_settings;
 
@@ -162,8 +162,8 @@ typedef struct
     int weekend_day_minute_start;
     int weekend_night_hour_start;
     int weekend_night_minute_start;
-    char weekend_day_1[SMALL_CONFIG_ITEM];
-    char weekend_day_2[SMALL_CONFIG_ITEM];
+    char weekend_day_1[MEDIUM_CONFIG_ITEM];
+    char weekend_day_2[MEDIUM_CONFIG_ITEM];
     int minimum_state_time;
 } Statemachine_settings;
 
@@ -248,7 +248,6 @@ typedef struct
     int valve11_position_highco2day;
 } State_highco2day_settings;
 
-
 typedef struct
 {
     char enable_state_highco2night[SMALL_CONFIG_ITEM];
@@ -275,7 +274,8 @@ typedef struct
     char enable_state_highrhday[SMALL_CONFIG_ITEM];
     char state_highrhday_fanspeed[SMALL_CONFIG_ITEM];
     char name_state_highrhday[LARGE_CONFIG_ITEM];
-    int rh_high_state_highrhday;
+    int rh_low_state_highrhday;
+    int maximum_state_time_highrhday;
     int valve0_position_highrhday;
     int valve1_position_highrhday;
     int valve2_position_highrhday;
@@ -295,7 +295,8 @@ typedef struct
     char enable_state_highrhnight[SMALL_CONFIG_ITEM];
     char state_highrhnight_fanspeed[SMALL_CONFIG_ITEM];
     char name_state_highrhnight[LARGE_CONFIG_ITEM];
-    int rh_high_state_highrhnight;
+    int rh_low_state_highrhnight;
+    int maximum_state_time_highrhnight;
     int valve0_position_highrhnight;
     int valve1_position_highrhnight;
     int valve2_position_highrhnight;
@@ -315,7 +316,10 @@ typedef struct
     char enable_state_cooking[SMALL_CONFIG_ITEM];
     char state_cooking_fanspeed[SMALL_CONFIG_ITEM];
     char name_state_cooking[LARGE_CONFIG_ITEM];
-    int cooking_duration;
+    int start_hour_state_cooking;
+    int start_minute_state_cooking;
+    int stop_hour_state_cooking;
+    int stop_minute_state_cooking;
     int valve0_position_cooking;
     int valve1_position_cooking;
     int valve2_position_cooking;
@@ -335,8 +339,6 @@ typedef struct
     char enable_state_cyclingday[SMALL_CONFIG_ITEM];
     char state_cyclingday_fanspeed[SMALL_CONFIG_ITEM];
     char name_state_cyclingday[LARGE_CONFIG_ITEM];
-    int cyclingday_interval;
-    int cyclingday_duration;
     int valve0_position_cyclingday;
     int valve1_position_cyclingday;
     int valve2_position_cyclingday;
@@ -356,8 +358,6 @@ typedef struct
     char enable_state_cyclingnight[SMALL_CONFIG_ITEM];
     char state_cyclingnight_fanspeed[SMALL_CONFIG_ITEM];
     char name_state_cyclingnight[LARGE_CONFIG_ITEM];
-    int cyclingnight_interval;
-    int cyclingnight_duration;
     int valve0_position_cyclingnight;
     int valve1_position_cyclingnight;
     int valve2_position_cyclingnight;
@@ -395,8 +395,10 @@ extern I2C_settings i2csettings;
 extern MQTT_settings mqttsettings;
 extern Fan_settings fansettings;
 extern Statemachine_settings statemachinesettings;
+
 extern Sensor1_settings sensor1settings[SENSOR_COUNT];
 extern Sensor2_settings sensor2settings[SENSOR_COUNT];
+
 extern State_day_settings statedaysettings;
 extern State_night_settings statenightsettings;
 extern State_highco2day_settings statehighco2daysettings;
@@ -425,16 +427,16 @@ extern JsonDocument valve_control_data;
 extern JsonDocument settings_fan_data;
 // extern JsonDocument settings_statemachine_data;
 
-//extern JsonDocument settings_state_day;
-//extern JsonDocument settings_state_night;
-//extern JsonDocument settings_state_highco2day;
-extern JsonDocument settings_state_highco2night;
-extern JsonDocument settings_state_highrhday;
-extern JsonDocument settings_state_highrhnight;
-extern JsonDocument settings_state_cooking;
-extern JsonDocument settings_state_cyclingday;
-extern JsonDocument settings_state_cyclingnight;
-extern JsonDocument settings_state_temp;
+// extern JsonDocument settings_state_day;
+// extern JsonDocument settings_state_night;
+// extern JsonDocument settings_state_highco2day;
+// extern JsonDocument settings_state_highco2night;
+// extern JsonDocument settings_state_highrhday;
+// extern JsonDocument settings_state_highrhnight;
+// extern JsonDocument settings_state_cooking;
+// extern JsonDocument settings_state_cyclingday;
+// extern JsonDocument settings_state_cyclingnight;
+// extern JsonDocument settings_state_temp;
 
 extern String wire_sensor_config_string;
 extern String wire1_sensor_config_string;
@@ -453,10 +455,10 @@ extern String weekend_day_2;
 extern int minimum_state_time;*/
 
 // MQTT settings
-extern String enable_mqtt;
-extern String mqtt_server;
-extern int mqtt_port;
-extern String mqtt_base_topic;
+//extern String enable_mqtt;
+//extern String mqtt_server;
+//extern int mqtt_port;
+//extern String mqtt_base_topic;
 
 // InfluxDB settings
 extern String enable_influxdb;

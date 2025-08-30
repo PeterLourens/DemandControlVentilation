@@ -305,7 +305,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="name_state_highco2day">Name:</label>
-                                <input type="text" name="name_state_highco2day" id="name_state_highco2day" class="pure-input-1-1" />
+                                <input type="text" name="name_state_highco2day" id="name_state_highco2day" maxlength="32" class="pure-input-1-1" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="co2_low_state_highco2day">CO2 Low level:</label>
@@ -374,14 +374,14 @@ const char statemachine_html[] = R"rawliteral(
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_highco2night">
                     <fieldset>
                         <div class="pure-g">
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_highco2night">State:</label>
                                 <select id="enable_state_highco2night" name="enable_state_highco2night" class="pure-input-1-1">
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_highco2night_fanspeed">Fan speed:</label>
                                 <select id="state_highco2night_fanspeed" name="state_highco2night_fanspeed" class="pure-input-1-1">
                                     <option>Low</option>
@@ -389,18 +389,17 @@ const char statemachine_html[] = R"rawliteral(
                                     <option>High</option>
                                 </select>
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="name_state_highco2night">Name:</label>
-                                <input type="text" name="name_state_highco2night" id="name_state_highco2night" class="pure-input-1-1" />
+                                <input type="text" name="name_state_highco2night" id="name_state_highco2night" maxlength="32" class="pure-input-1-1" />
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6"></div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="co2_low_state_highco2night">CO2 Low level:</label>
-                                <input type="number" value="700" min="500" name="co2_low_state_highco2night" id="co2_low_state_highco2night" class="pure-input-1-2" />
+                                <input type="number" min="500" name="co2_low_state_highco2night" id="co2_low_state_highco2night" class="pure-input-1-3" />
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="co2_high_state_highco2night">CO2 High level:</label>
-                                <input type="number" value="1000" min="500" name="co2_high_state_highco2night" id="co2_high_state_highco2night" class="pure-input-1-2" />
+                                <input type="number" min="500" name="co2_high_state_highco2night" id="co2_high_state_highco2night" class="pure-input-1-3" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_highco2night">Valve0:</label>
@@ -461,14 +460,14 @@ const char statemachine_html[] = R"rawliteral(
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_highrhday">
                     <fieldset>
                         <div class="pure-g">
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_highrhday">State:</label>
                                 <select id="enable_state_highrhday" name="enable_state_highrhday" class="pure-input-1-1">
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_highrhday_fanspeed">Fan speed:</label>
                                 <select id="state_highrhday_fanspeed" name="state_highrhday_fanspeed" class="pure-input-1-1">
                                     <option>Low</option>
@@ -476,18 +475,17 @@ const char statemachine_html[] = R"rawliteral(
                                     <option>High</option>
                                 </select>
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="name_state_highrhday">Name:</label>
-                                <input type="text" name="name_state_highrhday" id="name_state_highrhday" class="pure-input-1-1" />
+                                <input type="text" name="name_state_highrhday" id="name_state_highrhday" maxlength="32" class="pure-input-1-1" />
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6"></div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="rh_low_state_highrhday">RH Low level:</label>
-                                <input type="number" value="75" max="100" min="0" name="rh_low_state_highrhday" id="rh_low_state_highrhday" class="pure-input-1-2" />
+                                <input type="number" max="100" min="0" name="rh_low_state_highrhday" id="rh_low_state_highrhday" class="pure-input-1-3" />
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
-                                <label for="rh_high_state_highrhday">RH High level:</label>
-                                <input type="number" value="85" max="100" min="0" name="rh_high_state_highrhday" id="rh_high_state_highrhday" class="pure-input-1-2" />
+                            <div class="pure-u-1 pure-u-md-1-2">
+                                <label for="maximum state_time">Maximum state time (sec):</label>
+                                <input type="number" max="1800" min="0" name="maximum_state_time_highrhday" id="maximum_state_time_highrhday" class="pure-input-1-3" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_highrhday">Valve0:</label>
@@ -548,14 +546,14 @@ const char statemachine_html[] = R"rawliteral(
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_highrhnight">
                     <fieldset>
                         <div class="pure-g">
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="enable_state_highrhnight">State:</label>
                                 <select id="enable_state_highrhnight" name="enable_state_highrhnight" class="pure-input-1-1">
                                     <option>On</option>
                                     <option>Off</option>
                                 </select>
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="state_highrhnight_fanspeed">Fan speed:</label>
                                 <select id="state_highrhnight_fanspeed" name="state_highrhnight_fanspeed" class="pure-input-1-1">
                                     <option>Low</option>
@@ -563,18 +561,17 @@ const char statemachine_html[] = R"rawliteral(
                                     <option>High</option>
                                 </select>
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="name_state_highrhnight">Name:</label>
-                                <input type="text" name="name_state_highrhnight" id="name_state_highrhnight" class="pure-input-1-1" />
+                                <input type="text" name="name_state_highrhnight" id="name_state_highrhnight" maxlength="32" class="pure-input-1-1" />
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6"></div>
-                            <div class="pure-u-1 pure-u-md-1-6">
+                            <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="rh_low_state_highrhnight">RH Low level:</label>
-                                <input type="number" value="75" max="100" min="0" name="rh_low_state_highrhnight" id="rh_low_state_highrhnight" class="pure-input-1-2" />
+                                <input type="number" max="100" min="0" name="rh_low_state_highrhnight" id="rh_low_state_highrhnight" class="pure-input-1-3" />
                             </div>
-                            <div class="pure-u-1 pure-u-md-1-6">
-                                <label for="rh_high_state_highrhnight">RH High level:</label>
-                                <input type="number" value="85" max="100" min="0" name="rh_high_state_highrhnight" id="rh_high_state_highrhnight" class="pure-input-1-2" />
+                            <div class="pure-u-1 pure-u-md-1-2">
+                                <label for="maximum_state_time_highrhnight">Maximum state time (sec):</label>
+                                <input type="number" max="100" min="0" name="maximum_state_time_highrhnight" id="maximum_state_time_highrhnight" class="pure-input-1-3" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_highrhnight">Valve0:</label>
@@ -652,23 +649,23 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="name_state_cooking">Name:</label>
-                                <input type="text" name="name_state_cooking" id="name_state_cooking" class="pure-input-1-1" />
+                                <input type="text" name="name_state_cooking" id="name_state_cooking" maxlength="32" class="pure-input-1-1" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="start_hour_state_cooking">Cooking start hour:</label>
                                 <input type="number" value="17" min="0" max="23" name="start_hour_state_cooking" id="start_hour_state_cooking" class="pure-input-1-1" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
-                                <label for="start_min_state_cooking">Cooking start minutes:</label>
-                                <input type="number" value="20" min="0" max="59" name="start_min_state_cooking" id="start_min_state_cooking" class="pure-input-1-1" />
+                                <label for="start_minute_state_cooking">Cooking start minutes:</label>
+                                <input type="number" value="20" min="0" max="59" name="start_minute_state_cooking" id="start_minute_state_cooking" class="pure-input-1-1" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
                                 <label for="stop_hour_state_cooking">Cooking stop hour:</label>
                                 <input type="number" value="18" min="0" max="23" name="stop_hour_state_cooking" id="stop_hour_state_cooking" class="pure-input-1-1" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-4">
-                                <label for="stop_min_state_cooking">Cooking stop minutes:</label>
-                                <input type="number" value="20" min="0" max="59" name="stop_min_state_cooking" id="stop_min_state_cooking" class="pure-input-1-1" />
+                                <label for="stop_minute_state_cooking">Cooking stop minutes:</label>
+                                <input type="number" value="20" min="0" max="59" name="stop_minute_state_cooking" id="stop_minute_state_cooking" class="pure-input-1-1" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_cooking">Valve0:</label>
@@ -746,7 +743,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="name_state_cyclingday">Name:</label>
-                                <input type="text" name="name_state_cyclingday" id="name_state_cyclingday" class="pure-input-1-1" />
+                                <input type="text" name="name_state_cyclingday" id="name_state_cyclingday" maxlength="32" class="pure-input-1-1" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_cyclingday">Valve0:</label>
@@ -824,7 +821,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-3">
                                 <label for="name_state_cyclingnight">Name:</label>
-                                <input type="text" name="name_state_cyclingnight" id="name_state_cyclingnight" class="pure-input-1-1" />
+                                <input type="text" name="name_state_cyclingnight" id="name_state_cyclingnight" maxlength="32" class="pure-input-1-1" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_cyclingnight">Valve0:</label>

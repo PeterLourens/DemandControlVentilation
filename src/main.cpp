@@ -58,6 +58,8 @@ void setup()
 	sensor_avg_queue = xQueueCreate(1, sizeof(temp));
 	webserial_queue = xQueueCreate(30, sizeof(txBuffer));
 
+	String message = "";
+
 	if (webserial_queue == 0 || sensor_queue == 0 || sensor_avg_queue == 0)
 	{
 		Serial.print("\nFailed to create queues");
@@ -76,27 +78,50 @@ void setup()
 	// setup_wifi();
 
 	// New config
-	//vTaskDelay(10000); // Wait a little before reading config
-	parse_network_settings();
-	parse_sensor1_settings();
-	parse_sensor2_settings();
+	parse_fan_settings();
+	parse_i2c_settings();
+	parse_influxdb_settings();
+	parse_mqtt_settings();
+	parse_rtc_settings();
+	if (!parse_network_settings())
+	{
+		message = "Failed to parse network settings";
+		print_message(message);
+	}
+	if (!parse_sensor1_settings())
+	{
+		message = "Failed to parse sensor1 settings";
+		print_message(message);
+	}
+	if (!parse_sensor2_settings())
+	{
+		message = "Failed to parse sensor2 settings";
+		print_message(message);
+	}
+
 	parse_statemachine_settings();
 	parse_state_day_settings();
 	parse_state_night_settings();
 	parse_state_highco2day_settings();
 	parse_state_highco2night_settings();
+	parse_state_highrhday_settings();
+	parse_state_highrhnight_settings();
+	parse_state_cooking_settings();
+	parse_state_cyclingday_settings();
+	parse_state_cyclingnight_settings();
+	// parse_state_temp_settings();
 	vTaskDelay(100);
 	start_task_wifi();
 
 	// Old config
-	process_mqtt_config();
-	process_influxdb_config();
-	process_i2c_config();
-	process_rtc_config();
-	//process_statemachine_config();
-	process_fan_config();
-	//sensor_config_data_read();
-	valve_settings_config_read();
+	//process_mqtt_config();
+	//process_influxdb_config();
+	//process_i2c_config();
+	//process_rtc_config();
+	// process_statemachine_config();
+	//process_fan_config();
+	// sensor_config_data_read();
+	//valve_settings_config_read();
 
 	// Wait a little after reading config
 	vTaskDelay(100);
@@ -106,14 +131,14 @@ void setup()
 	start_task_valvecontrol();
 	start_task_i2c();
 	start_task_statemachine();
-	//start_task_mqtt();
+	// start_task_mqtt();
 	start_task_neopixel();
 	start_task_system();
 	start_task_websocket();
 
 	vTaskDelay(60000); // Only write to influxDB when all tasks are running
-	// start_task_espnow();
-	//start_task_influxdb();
+					   // start_task_espnow();
+					   // start_task_influxdb();
 }
 
 void loop() {}

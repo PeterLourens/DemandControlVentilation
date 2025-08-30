@@ -16,7 +16,5 @@ String formatted_uptime(void);
 void sensor_data_average(void);
 void fifoPush(int, int, int, float, int);
 float roundToTwoDecimals(float);
-bool is_weekend(void);
-bool is_day(void);
 
 #endif
