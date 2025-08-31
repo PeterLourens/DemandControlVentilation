@@ -13,8 +13,6 @@ void read_sensors(void)
     String sensor_type = "";
     String sensor = "";
     String message = "";
-    // String sensor_config1_string = "";
-    // String sensor_config2_string = "";
 
     // Read address for TCA9548. I2C address for TCA9548 may be differently configured with resistors on the board.
     if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
@@ -29,12 +27,10 @@ void read_sensors(void)
         if (bus == 0)
         {
             Wire.begin(I2C_SDA1, I2C_SCL1, 100000);
-            // sensor_config1_file_present = check_file_exists(SENSOR_CONFIG1_PATH);
         }
         if (bus == 1)
         {
             Wire1.begin(I2C_SDA2, I2C_SCL2, 100000);
-            // sensor_config2_file_present = check_file_exists(SENSOR_CONFIG2_PATH);
         }
 
         for (int slot = 0; slot < 8; slot++)
@@ -130,7 +126,6 @@ void read_sensors(void)
 
             else if (sensor_type == "SCD40" || sensor_type == "SCD41")
             {
-
                 if (bus == 0)
                 {
                     SensirionI2cScd4x SCD4X_1;
@@ -141,7 +136,6 @@ void read_sensors(void)
                     uint16_t co2 = 0;
                     float temperature = 0.0f;
                     float humidity = 0.0f;
-                    // bool isDataReady = false;
 
                     error = SCD4X_1.readMeasurement(co2, temperature, humidity);
                     if (error)
@@ -282,14 +276,6 @@ void display_sensors(void)
                                 xSemaphoreGive(settings_sensor1_mutex);
                             }
                         }
-                        // String valve_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_valve"];
-                        // String location_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_location"];
-                        // String rh_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_rh"];
-                        // String co2_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_co2"];
-                        // valve = valve_tmp;
-                        // rh = rh_tmp;
-                        // co2 = co2_tmp;
-                        // location = location_tmp;
                     }
                     if (bus == 1)
                     {
@@ -304,14 +290,6 @@ void display_sensors(void)
                                 xSemaphoreGive(settings_sensor2_mutex);
                             }
                         }
-                        // String valve_tmp = wire1_sensor_data["wire1_sensor" + String(slot) + "_valve"];
-                        // String location_tmp = wire1_sensor_data["wire1_sensor" + String(slot) + "_location"];
-                        // String rh_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_rh"];
-                        // String co2_tmp = wire_sensor_data["wire_sensor" + String(slot) + "_co2"];
-                        // valve = valve_tmp;
-                        // rh = rh_tmp;
-                        // co2 = co2_tmp;
-                        // location = location_tmp;
                     }
 
                     // row0
@@ -595,7 +573,7 @@ void display_state_fan(void)
     Wire1.endTransmission();
 }
 
-String current_time(void)
+void current_time(void)
 {
 
     char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -617,24 +595,28 @@ String current_time(void)
             minuteStr = (now.minute() < 10 ? "0" : "") + String(now.minute(), DEC);
             secondStr = (now.second() < 10 ? "0" : "") + String(now.second(), DEC);
             dayOfWeek = daysOfTheWeek[now.dayOfTheWeek()];
-            formattedTime = dayOfWeek + ", " + yearStr + "-" + monthStr + "-" + dayStr + " " + hourStr + ":" + minuteStr + ":" + secondStr;
+            //formattedTime = dayOfWeek + ", " + yearStr + "-" + monthStr + "-" + dayStr + " " + hourStr + ":" + minuteStr + ":" + secondStr;
+            rtcdatetime.year = now.year();
+            rtcdatetime.month = now.month();
+            rtcdatetime.day = now.day();
+            rtcdatetime.hour = now.hour();
+            rtcdatetime.minute = now.minute();
+            rtcdatetime.second = now.second();
+            rtcdatetime.day_of_week = now.dayOfTheWeek();
             xSemaphoreGive(date_time_mutex);
         }
     }
     Wire.endTransmission();
-    return formattedTime;
+    //return formattedTime;
 }
 
 void sync_rtc_ntp(void)
 {
-
     struct tm timeinfo;
-
-    // char ntp_server_tmp[50];
-    // char timezone_tmp[50];
 
     char ntp_server[LARGE_CONFIG_ITEM] = {};
     char timezone[LARGE_CONFIG_ITEM] = {};
+    
     String message = "";
 
     RTC_DS3231 rtc;

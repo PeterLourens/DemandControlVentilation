@@ -177,6 +177,7 @@ void publish_valve_positions(void)
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
     const char *mqtt_server;
 
+    String json = "";
     JsonDocument doc;
 
     if (settings_mqtt_mutex != NULL)

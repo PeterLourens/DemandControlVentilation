@@ -23,7 +23,6 @@ void print_message(String message)
 
 String formatted_datetime(void)
 {
-
     String temp_datetime = "";
     String temp_year = "";
     String temp_month = "";
@@ -32,22 +31,53 @@ String formatted_datetime(void)
     String temp_minute = "";
     String temp_second = "";
 
-    if (date_time_mutex != NULL)
+    if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
-        {
-            temp_year = yearStr;
-            temp_month = monthStr;
-            temp_day = dayStr;
-            temp_hour = hourStr;
-            temp_minute = minuteStr;
-            temp_second = secondStr;
-            xSemaphoreGive(date_time_mutex);
-        }
+        temp_year = yearStr;
+        temp_month = monthStr;
+        temp_day = dayStr;
+        temp_hour = hourStr;
+        temp_minute = minuteStr;
+        temp_second = secondStr;
+        xSemaphoreGive(date_time_mutex);
     }
+
     // temp_datetime =  + "/" + monthStr + "/" + dayStr + " - " + hourStr + ":" + minuteStr + ":" + secondStr;
-    temp_datetime = temp_year + "/" + temp_month + "/" + temp_day + "-" + temp_hour + ":" + temp_minute + ":" + temp_second;
+    temp_datetime = temp_year + "/" + temp_month + "/" + temp_day + " - " + temp_hour + ":" + temp_minute + ":" + temp_second;
     return temp_datetime;
+}
+
+void datetime(char *buf, size_t bufsize)
+{
+    int year = 0;
+    int month = 0;
+    int day = 0;
+    int hour = 0;
+    int minute = 0;
+    int second = 0;
+    int dayofweek = 0;
+
+    //static char date_time[30]; // static so it persists after function returns
+    static const char *day_names[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+    };
+
+    if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
+    {
+        year = rtcdatetime.year;
+        month = rtcdatetime.month;
+        day = rtcdatetime.day;
+        hour = rtcdatetime.hour;
+        minute = rtcdatetime.minute;
+        second = rtcdatetime.second;
+        dayofweek = rtcdatetime.day_of_week;
+        xSemaphoreGive(date_time_mutex);
+    }
+    
+    // Clamp dayofweek to valid range just in case
+    if (dayofweek < 0 || dayofweek > 6) {
+        dayofweek = 0;
+    }
+    snprintf(buf, bufsize,"%s %04d/%02d/%02d - %02d:%02d:%02d",day_names[dayofweek], year, month, day, hour, minute, second);
 }
 
 String concatJson(String json1, String json2)
@@ -180,4 +210,3 @@ float roundToTwoDecimals(float value)
 {
     return roundf(value * 100) / 100;
 }
-

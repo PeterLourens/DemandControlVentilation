@@ -25,7 +25,7 @@ void display_valve_positions(void);
 void display_time_and_date(void);
 void display_state_fan(void);
 void sync_rtc_ntp(void);
-String current_time(void);
+void current_time(void);
 void IRAM_ATTR lcd_baclight_pb_isr(void);
 void pb_start_display(void);
 void init_display_off(void);

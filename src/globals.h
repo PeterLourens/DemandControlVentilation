@@ -49,6 +49,7 @@
 #define SENSOR_DATA_FIELDS 3 // 0=Temp, 1=RH, 2=CO2
 
 #define MAX_SENSORS 16 // Maximum number of sensors supported by the hardware
+#define MAX_VALVES 12  // Maximum number of valves
 
 extern TaskHandle_t task_influxdb;
 extern TaskHandle_t task_i2c;
@@ -388,10 +389,27 @@ typedef struct
     int valve11_position_temp;
 } State_temp_settings;
 
-typedef struct {
-    
+typedef struct
+{
+    int valve_number[MAX_VALVES];
+    int position_change[MAX_VALVES];
+    int direction[MAX_VALVES];
+    bool check;
+    bool write_new_position;
 
 } Valve_control_data;
+
+typedef struct
+{
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
+    int day_of_week;
+
+} RTC_date_time;
 
 extern Network_settings networksettings;
 extern RTC_settings rtcsettings;
@@ -400,6 +418,10 @@ extern I2C_settings i2csettings;
 extern MQTT_settings mqttsettings;
 extern Fan_settings fansettings;
 extern Statemachine_settings statemachinesettings;
+
+extern Valve_control_data valvecontroldata;
+
+extern RTC_date_time rtcdatetime;
 
 extern Sensor1_settings sensor1settings[SENSOR_COUNT];
 extern Sensor2_settings sensor2settings[SENSOR_COUNT];
@@ -413,6 +435,7 @@ extern State_highrhnight_settings statehighrhnightsettings;
 extern State_cooking_settings statecookingsettings;
 extern State_cyclingday_settings statecyclingdaysettings;
 extern State_cyclingnight_settings statecyclingnightsettings;
+
 extern State_temp_settings statetempsettings;
 
 //
@@ -427,69 +450,10 @@ extern State_temp_settings statetempsettings;
 //
 // Old style
 extern JsonDocument valve_control_data;
-// extern JsonDocument wire_sensor_data;
-// extern JsonDocument wire1_sensor_data;
-extern JsonDocument settings_fan_data;
-// extern JsonDocument settings_statemachine_data;
-
-// extern JsonDocument settings_state_day;
-// extern JsonDocument settings_state_night;
-// extern JsonDocument settings_state_highco2day;
-// extern JsonDocument settings_state_highco2night;
-// extern JsonDocument settings_state_highrhday;
-// extern JsonDocument settings_state_highrhnight;
-// extern JsonDocument settings_state_cooking;
-// extern JsonDocument settings_state_cyclingday;
-// extern JsonDocument settings_state_cyclingnight;
-// extern JsonDocument settings_state_temp;
+// extern JsonDocument settings_fan_data;
 
 extern String wire_sensor_config_string;
 extern String wire1_sensor_config_string;
-
-// Statemachine variables
-/*extern int weekday_day_hour_start;
-extern int weekday_day_minute_start;
-extern int weekday_night_hour_start;
-extern int weekday_night_minute_start;
-extern int weekend_day_hour_start;
-extern int weekend_day_minute_start;
-extern int weekend_night_hour_start;
-extern int weekend_night_minute_start;
-extern String weekend_day_1;
-extern String weekend_day_2;
-extern int minimum_state_time;*/
-
-// MQTT settings
-//extern String enable_mqtt;
-//extern String mqtt_server;
-//extern int mqtt_port;
-//extern String mqtt_base_topic;
-
-// InfluxDB settings
-//extern String enable_influxdb;
-//extern String influxdb_url;
-//extern String influxdb_org;
-//extern String influxdb_bucket;
-//extern String influxdb_token;
-
-// Settings i2C
-//extern int bus0_multiplexer_addr;
-//extern int bus1_multiplexer_addr;
-//extern String enable_lcd;
-//extern int display_i2c_addr;
-
-// Settings RTC
-//extern String ntp_server;
-//extern String timezone;
-
-// Fan speed control settings
-//extern String fan_control_mode;
-//extern String fan_control_mqtt_server;
-//extern String fan_control_mqtt_port;
-//extern String fan_control_mqtt_topic;
-//extern String fan_control_url_high_speed;
-//extern String fan_control_url_medium_speed;
-//extern String fan_control_url_low_speed;
 
 // Date time data from RTC
 extern String yearStr;

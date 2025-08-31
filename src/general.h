@@ -13,6 +13,7 @@ void print_message(String);
 String formatted_datetime(void);
 String concatJson(String, String);
 String formatted_uptime(void);
+void datetime(char *, size_t);
 void sensor_data_average(void);
 void fifoPush(int, int, int, float, int);
 float roundToTwoDecimals(float);

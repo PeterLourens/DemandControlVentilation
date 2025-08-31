@@ -50,6 +50,7 @@ QueueHandle_t sensor_queue;     // Handle for sensor queue data
 QueueHandle_t sensor_avg_queue; // Handle for sensor queue data
 QueueHandle_t webserial_queue;  // Handle for webserial queue data
 
+// Structs for settings
 Network_settings networksettings;
 RTC_settings rtcsettings;
 Influxdb_settings influxdbsettings;
@@ -57,6 +58,7 @@ I2C_settings i2csettings;
 MQTT_settings mqttsettings;
 Fan_settings fansettings;
 
+// Structs for statemachine settings
 Statemachine_settings statemachinesettings;
 State_day_settings statedaysettings;
 State_night_settings statenightsettings;
@@ -69,79 +71,19 @@ State_cyclingday_settings statecyclingdaysettings;
 State_cyclingnight_settings statecyclingnightsettings;
 State_temp_settings statetempsettings;
 
+// Store data for valve control from web page
+Valve_control_data valvecontroldata;
+
+// Date and time information from RTC
+RTC_date_time rtcdatetime;
+
+// Sensor settings
 Sensor1_settings sensor1settings[SENSOR_COUNT];
 Sensor2_settings sensor2settings[SENSOR_COUNT];
 
+// To be removed once struct implemented
 JsonDocument valve_control_data; // Global for valve control data
 
-
-
-
-// JsonDocument wire_sensor_data;           // Global for bus0 sensor configuration
-// JsonDocument wire1_sensor_data;          // Global for bus1 sensor configuration
-//JsonDocument settings_fan_data; // Define global fanspeed settings
-// JsonDocument settings_statemachine_data; // Define global statemachine settings
-
-// JsonDocument settings_state_day;          // Settings for state day
-// JsonDocument settings_state_night;        // Settings for state night
-// JsonDocument settings_state_highco2day;   // Settings for state highco2day
-// JsonDocument settings_state_highco2night; // Settings for state highco2night
-// JsonDocument settings_state_highrhday;    // Settings for state highrhday
-// JsonDocument settings_state_highrhnight;  // Settings for state highrhnight
-//JsonDocument settings_state_cooking;      // Settings for state cooking
-//JsonDocument settings_state_cyclingday;   // Settings for state valve cycling day
-//JsonDocument settings_state_cyclingnight; // Settings for state valve cycling night
-//JsonDocument settings_state_temp;         // Settings for dynamic valve control
-
-//String wire_sensor_config_string = {};
-//String wire1_sensor_config_string = {};
-
-// Statemachine variables
-/*int weekday_day_hour_start = 0;
-int weekday_day_minute_start = 0;
-int weekday_night_hour_start = 0;
-int weekday_night_minute_start = 0;
-int weekend_day_hour_start = 0;
-int weekend_day_minute_start = 0;
-int weekend_night_hour_start = 0;
-int weekend_night_minute_start = 0;
-String weekend_day_1 = "";
-String weekend_day_2 = "";
-int minimum_state_time = 0;*/
-
-// Settings for MQTT
-//String enable_mqtt = "";
-//String mqtt_server = "";
-//int mqtt_port = 0;
-//String mqtt_base_topic = "";
-
-// InfluxDB settings
-//String enable_influxdb = "";
-//String influxdb_url = "";
-//String influxdb_org = "";
-//String influxdb_bucket = "";
-//String influxdb_token = "";
-
-// Settings i2C
-//int bus0_multiplexer_addr = 0;
-//int bus1_multiplexer_addr = 0;
-//String enable_lcd = "";
-//int display_i2c_addr = 0;
-
-// Settings RTC
-//String ntp_server = "";
-//String timezone = "";
-
-// Fan speed control settings
-/*String fan_control_mode = "";
-String fan_control_mqtt_server = "";
-String fan_control_mqtt_port = "";
-String fan_control_mqtt_topic = "";
-String fan_control_url_high_speed = "";
-String fan_control_url_medium_speed = "";
-String fan_control_url_low_speed = "";*/
-
-// Date time data from RTC
 String yearStr = "";
 String monthStr = "";
 String dayStr = "";
