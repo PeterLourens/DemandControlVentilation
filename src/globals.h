@@ -17,10 +17,10 @@
 
 #elif defined(DEVICE_ESP32)
 
-#define I2C_SCL1 1 // Wire I/O settings (SDA1/SCL1) and
-#define I2C_SDA1 2
-#define I2C_SCL2 3 // Wire1 I/O settings (SDA2/SCL2)
-#define I2C_SDA2 4
+#define I2C_SCL1 17 // Wire I/O settings (SDA1/SCL1) and
+#define I2C_SDA1 16
+#define I2C_SCL2 18 // Wire1 I/O settings (SDA2/SCL2)
+#define I2C_SDA2 19
 
 #else
 #error "No device type defined! Please define DEVICE_ESP32S3 or DEVICE_ESP32."

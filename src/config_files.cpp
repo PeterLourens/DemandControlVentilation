@@ -316,7 +316,7 @@ bool parse_mqtt_settings(void)
 
     const char *enable_mqtt = doc["enable_mqtt"];
     const char *mqtt_server = doc["mqtt_server"];
-    //const char *mqtt_port = doc["mqtt_port"];
+    // const char *mqtt_port = doc["mqtt_port"];
     const char *mqtt_base_topic = doc["mqtt_base_topic"];
 
     if (settings_mqtt_mutex != NULL)
@@ -324,7 +324,7 @@ bool parse_mqtt_settings(void)
         if (xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10))
         {
             mqttsettings.mqtt_port = doc["mqtt_port"];
-            
+
             if (enable_mqtt)
             {
                 strncpy(mqttsettings.enable_mqtt, enable_mqtt, sizeof(mqttsettings.enable_mqtt) - 1);
@@ -769,6 +769,7 @@ bool parse_state_highco2day_settings(void)
             statehighco2daysettings.name_state_highco2day[sizeof(statehighco2daysettings.name_state_highco2day) - 1] = '\0';
         }
         xSemaphoreGive(settings_state_highco2day_mutex);
+        return true;
     }
     return false;
 }
@@ -829,6 +830,7 @@ bool parse_state_highco2night_settings(void)
             statehighco2nightsettings.name_state_highco2night[sizeof(statehighco2nightsettings.name_state_highco2night) - 1] = '\0';
         }
         xSemaphoreGive(settings_state_highco2night_mutex);
+        return true;
     }
     return false;
 }
@@ -872,22 +874,24 @@ bool parse_state_highrhday_settings(void)
         statehighrhdaysettings.valve9_position_highrhday = doc["valve9_position_highrhday"];
         statehighrhdaysettings.valve10_position_highrhday = doc["valve10_position_highrhday"];
         statehighrhdaysettings.valve11_position_highrhday = doc["valve11_position_highrhday"];
+
+        if (enable_state_highrhday)
+        {
+            strncpy(statehighrhdaysettings.enable_state_highrhday, enable_state_highrhday, sizeof(statehighrhdaysettings.enable_state_highrhday) - 1);
+            statehighrhdaysettings.enable_state_highrhday[sizeof(statehighrhdaysettings.enable_state_highrhday) - 1] = '\0';
+        }
+        if (state_highrhday_fanspeed)
+        {
+            strncpy(statehighrhdaysettings.state_highrhday_fanspeed, state_highrhday_fanspeed, sizeof(statehighrhdaysettings.state_highrhday_fanspeed) - 1);
+            statehighrhdaysettings.state_highrhday_fanspeed[sizeof(statehighrhdaysettings.state_highrhday_fanspeed) - 1] = '\0';
+        }
+        if (name_state_highrhday)
+        {
+            strncpy(statehighrhdaysettings.name_state_highrhday, name_state_highrhday, sizeof(statehighrhdaysettings.name_state_highrhday) - 1);
+            statehighrhdaysettings.name_state_highrhday[sizeof(statehighrhdaysettings.name_state_highrhday) - 1] = '\0';
+        }
         xSemaphoreGive(settings_state_highrhday_mutex);
-    }
-    if (enable_state_highrhday)
-    {
-        strncpy(statehighrhdaysettings.enable_state_highrhday, enable_state_highrhday, sizeof(statehighrhdaysettings.enable_state_highrhday) - 1);
-        statehighrhdaysettings.enable_state_highrhday[sizeof(statehighrhdaysettings.enable_state_highrhday) - 1] = '\0';
-    }
-    if (state_highrhday_fanspeed)
-    {
-        strncpy(statehighrhdaysettings.state_highrhday_fanspeed, state_highrhday_fanspeed, sizeof(statehighrhdaysettings.state_highrhday_fanspeed) - 1);
-        statehighrhdaysettings.state_highrhday_fanspeed[sizeof(statehighrhdaysettings.state_highrhday_fanspeed) - 1] = '\0';
-    }
-    if (name_state_highrhday)
-    {
-        strncpy(statehighrhdaysettings.name_state_highrhday, name_state_highrhday, sizeof(statehighrhdaysettings.name_state_highrhday) - 1);
-        statehighrhdaysettings.name_state_highrhday[sizeof(statehighrhdaysettings.name_state_highrhday) - 1] = '\0';
+        return true;
     }
     return false;
 }
@@ -931,22 +935,24 @@ bool parse_state_highrhnight_settings(void)
         statehighrhnightsettings.valve9_position_highrhnight = doc["valve9_position_highrhnight"];
         statehighrhnightsettings.valve10_position_highrhnight = doc["valve10_position_highrhnight"];
         statehighrhnightsettings.valve11_position_highrhnight = doc["valve11_position_highrhnight"];
+
+        if (enable_state_highrhnight)
+        {
+            strncpy(statehighrhnightsettings.enable_state_highrhnight, enable_state_highrhnight, sizeof(statehighrhnightsettings.enable_state_highrhnight) - 1);
+            statehighrhnightsettings.enable_state_highrhnight[sizeof(statehighrhnightsettings.enable_state_highrhnight) - 1] = '\0';
+        }
+        if (state_highrhnight_fanspeed)
+        {
+            strncpy(statehighrhnightsettings.state_highrhnight_fanspeed, state_highrhnight_fanspeed, sizeof(statehighrhnightsettings.state_highrhnight_fanspeed) - 1);
+            statehighrhnightsettings.state_highrhnight_fanspeed[sizeof(statehighrhnightsettings.state_highrhnight_fanspeed) - 1] = '\0';
+        }
+        if (name_state_highrhnight)
+        {
+            strncpy(statehighrhnightsettings.name_state_highrhnight, name_state_highrhnight, sizeof(statehighrhnightsettings.name_state_highrhnight) - 1);
+            statehighrhnightsettings.name_state_highrhnight[sizeof(statehighrhnightsettings.name_state_highrhnight) - 1] = '\0';
+        }
         xSemaphoreGive(settings_state_highrhnight_mutex);
-    }
-    if (enable_state_highrhnight)
-    {
-        strncpy(statehighrhnightsettings.enable_state_highrhnight, enable_state_highrhnight, sizeof(statehighrhnightsettings.enable_state_highrhnight) - 1);
-        statehighrhnightsettings.enable_state_highrhnight[sizeof(statehighrhnightsettings.enable_state_highrhnight) - 1] = '\0';
-    }
-    if (state_highrhnight_fanspeed)
-    {
-        strncpy(statehighrhnightsettings.state_highrhnight_fanspeed, state_highrhnight_fanspeed, sizeof(statehighrhnightsettings.state_highrhnight_fanspeed) - 1);
-        statehighrhnightsettings.state_highrhnight_fanspeed[sizeof(statehighrhnightsettings.state_highrhnight_fanspeed) - 1] = '\0';
-    }
-    if (name_state_highrhnight)
-    {
-        strncpy(statehighrhnightsettings.name_state_highrhnight, name_state_highrhnight, sizeof(statehighrhnightsettings.name_state_highrhnight) - 1);
-        statehighrhnightsettings.name_state_highrhnight[sizeof(statehighrhnightsettings.name_state_highrhnight) - 1] = '\0';
+        return true;
     }
     return false;
 }
@@ -992,22 +998,24 @@ bool parse_state_cooking_settings(void)
         statecookingsettings.valve9_position_cooking = doc["valve9_position_cooking"];
         statecookingsettings.valve10_position_cooking = doc["valve10_position_cooking"];
         statecookingsettings.valve11_position_cooking = doc["valve11_position_cooking"];
+
+        if (enable_state_cooking)
+        {
+            strncpy(statecookingsettings.enable_state_cooking, enable_state_cooking, sizeof(statecookingsettings.enable_state_cooking) - 1);
+            statecookingsettings.enable_state_cooking[sizeof(statecookingsettings.enable_state_cooking) - 1] = '\0';
+        }
+        if (state_cooking_fanspeed)
+        {
+            strncpy(statecookingsettings.state_cooking_fanspeed, state_cooking_fanspeed, sizeof(statecookingsettings.state_cooking_fanspeed) - 1);
+            statecookingsettings.state_cooking_fanspeed[sizeof(statecookingsettings.state_cooking_fanspeed) - 1] = '\0';
+        }
+        if (name_state_cooking)
+        {
+            strncpy(statecookingsettings.name_state_cooking, name_state_cooking, sizeof(statecookingsettings.name_state_cooking) - 1);
+            statecookingsettings.name_state_cooking[sizeof(statecookingsettings.name_state_cooking) - 1] = '\0';
+        }
         xSemaphoreGive(settings_state_cooking_mutex);
-    }
-    if (enable_state_cooking)
-    {
-        strncpy(statecookingsettings.enable_state_cooking, enable_state_cooking, sizeof(statecookingsettings.enable_state_cooking) - 1);
-        statecookingsettings.enable_state_cooking[sizeof(statecookingsettings.enable_state_cooking) - 1] = '\0';
-    }
-    if (state_cooking_fanspeed)
-    {
-        strncpy(statecookingsettings.state_cooking_fanspeed, state_cooking_fanspeed, sizeof(statecookingsettings.state_cooking_fanspeed) - 1);
-        statecookingsettings.state_cooking_fanspeed[sizeof(statecookingsettings.state_cooking_fanspeed) - 1] = '\0';
-    }
-    if (name_state_cooking)
-    {
-        strncpy(statecookingsettings.name_state_cooking, name_state_cooking, sizeof(statecookingsettings.name_state_cooking) - 1);
-        statecookingsettings.name_state_cooking[sizeof(statecookingsettings.name_state_cooking) - 1] = '\0';
+        return true;
     }
     return false;
 }
@@ -1049,22 +1057,24 @@ bool parse_state_cyclingday_settings(void)
         statecyclingdaysettings.valve9_position_cyclingday = doc["valve9_position_cyclingday"];
         statecyclingdaysettings.valve10_position_cyclingday = doc["valve10_position_cyclingday"];
         statecyclingdaysettings.valve11_position_cyclingday = doc["valve11_position_cyclingday"];
+
+        if (enable_state_cyclingday)
+        {
+            strncpy(statecyclingdaysettings.enable_state_cyclingday, enable_state_cyclingday, sizeof(statecyclingdaysettings.enable_state_cyclingday) - 1);
+            statecyclingdaysettings.enable_state_cyclingday[sizeof(statecyclingdaysettings.enable_state_cyclingday) - 1] = '\0';
+        }
+        if (state_cyclingday_fanspeed)
+        {
+            strncpy(statecyclingdaysettings.state_cyclingday_fanspeed, state_cyclingday_fanspeed, sizeof(statecyclingdaysettings.state_cyclingday_fanspeed) - 1);
+            statecyclingdaysettings.state_cyclingday_fanspeed[sizeof(statecyclingdaysettings.state_cyclingday_fanspeed) - 1] = '\0';
+        }
+        if (name_state_cyclingday)
+        {
+            strncpy(statecyclingdaysettings.name_state_cyclingday, name_state_cyclingday, sizeof(statecyclingdaysettings.name_state_cyclingday) - 1);
+            statecyclingdaysettings.name_state_cyclingday[sizeof(statecyclingdaysettings.name_state_cyclingday) - 1] = '\0';
+        }
         xSemaphoreGive(settings_state_cyclingday_mutex);
-    }
-    if (enable_state_cyclingday)
-    {
-        strncpy(statecyclingdaysettings.enable_state_cyclingday, enable_state_cyclingday, sizeof(statecyclingdaysettings.enable_state_cyclingday) - 1);
-        statecyclingdaysettings.enable_state_cyclingday[sizeof(statecyclingdaysettings.enable_state_cyclingday) - 1] = '\0';
-    }
-    if (state_cyclingday_fanspeed)
-    {
-        strncpy(statecyclingdaysettings.state_cyclingday_fanspeed, state_cyclingday_fanspeed, sizeof(statecyclingdaysettings.state_cyclingday_fanspeed) - 1);
-        statecyclingdaysettings.state_cyclingday_fanspeed[sizeof(statecyclingdaysettings.state_cyclingday_fanspeed) - 1] = '\0';
-    }
-    if (name_state_cyclingday)
-    {
-        strncpy(statecyclingdaysettings.name_state_cyclingday, name_state_cyclingday, sizeof(statecyclingdaysettings.name_state_cyclingday) - 1);
-        statecyclingdaysettings.name_state_cyclingday[sizeof(statecyclingdaysettings.name_state_cyclingday) - 1] = '\0';
+        return true;
     }
     return false;
 }
@@ -1106,22 +1116,23 @@ bool parse_state_cyclingnight_settings(void)
         statecyclingnightsettings.valve9_position_cyclingnight = doc["valve9_position_cyclingnight"];
         statecyclingnightsettings.valve10_position_cyclingnight = doc["valve10_position_cyclingnight"];
         statecyclingnightsettings.valve11_position_cyclingnight = doc["valve11_position_cyclingnight"];
+        if (enable_state_cyclingnight)
+        {
+            strncpy(statecyclingnightsettings.enable_state_cyclingnight, enable_state_cyclingnight, sizeof(statecyclingnightsettings.enable_state_cyclingnight) - 1);
+            statecyclingnightsettings.enable_state_cyclingnight[sizeof(statecyclingnightsettings.enable_state_cyclingnight) - 1] = '\0';
+        }
+        if (state_cyclingnight_fanspeed)
+        {
+            strncpy(statecyclingnightsettings.state_cyclingnight_fanspeed, state_cyclingnight_fanspeed, sizeof(statecyclingnightsettings.state_cyclingnight_fanspeed) - 1);
+            statecyclingnightsettings.state_cyclingnight_fanspeed[sizeof(statecyclingnightsettings.state_cyclingnight_fanspeed) - 1] = '\0';
+        }
+        if (name_state_cyclingnight)
+        {
+            strncpy(statecyclingnightsettings.name_state_cyclingnight, name_state_cyclingnight, sizeof(statecyclingnightsettings.name_state_cyclingnight) - 1);
+            statecyclingnightsettings.name_state_cyclingnight[sizeof(statecyclingnightsettings.name_state_cyclingnight) - 1] = '\0';
+        }
         xSemaphoreGive(settings_state_cyclingnight_mutex);
-    }
-    if (enable_state_cyclingnight)
-    {
-        strncpy(statecyclingnightsettings.enable_state_cyclingnight, enable_state_cyclingnight, sizeof(statecyclingnightsettings.enable_state_cyclingnight) - 1);
-        statecyclingnightsettings.enable_state_cyclingnight[sizeof(statecyclingnightsettings.enable_state_cyclingnight) - 1] = '\0';
-    }
-    if (state_cyclingnight_fanspeed)
-    {
-        strncpy(statecyclingnightsettings.state_cyclingnight_fanspeed, state_cyclingnight_fanspeed, sizeof(statecyclingnightsettings.state_cyclingnight_fanspeed) - 1);
-        statecyclingnightsettings.state_cyclingnight_fanspeed[sizeof(statecyclingnightsettings.state_cyclingnight_fanspeed) - 1] = '\0';
-    }
-    if (name_state_cyclingnight)
-    {
-        strncpy(statecyclingnightsettings.name_state_cyclingnight, name_state_cyclingnight, sizeof(statecyclingnightsettings.name_state_cyclingnight) - 1);
-        statecyclingnightsettings.name_state_cyclingnight[sizeof(statecyclingnightsettings.name_state_cyclingnight) - 1] = '\0';
+        return true;
     }
     return false;
 }

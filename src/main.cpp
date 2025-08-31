@@ -79,17 +79,6 @@ void setup()
 
 	// New config
 	vTaskDelay(10000); // So can lauch serial monitor
-	if (!parse_fan_settings())
-	{
-		message = "Failed to parse fan settings";
-		print_message(message);
-	}
-	else
-	{
-		message = "Successfully parsed fan settings";
-		print_message(message);
-	}
-
 	if (!parse_i2c_settings())
 	{
 		message = "Failed to parse I2C settings";
@@ -98,6 +87,28 @@ void setup()
 	else
 	{
 		message = "Successfully parsed I2C settings";
+		print_message(message);
+	}
+
+	if (!parse_rtc_settings())
+	{
+		message = "Failed to parse RTC settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed RTC settings";
+		print_message(message);
+	}
+
+	if (!parse_fan_settings())
+	{
+		message = "Failed to parse fan settings";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed fan settings";
 		print_message(message);
 	}
 
@@ -120,17 +131,6 @@ void setup()
 	else
 	{
 		message = "Successfully parsed MQTT settings";
-		print_message(message);
-	}
-
-	if (!parse_rtc_settings())
-	{
-		message = "Failed to parse RTC settings";
-		print_message(message);
-	}
-	else
-	{
-		message = "Successfully parsed RTC settings";
 		print_message(message);
 	}
 
@@ -197,6 +197,7 @@ void setup()
 		message = "Successfully parsed state_night settings";
 		print_message(message);
 	}
+
 	if (!parse_state_highco2day_settings())
 	{
 		message = "Failed to parse state_highco2day settings";
@@ -207,6 +208,7 @@ void setup()
 		message = "Successfully parsed state_highco2day settings";
 		print_message(message);
 	}
+
 	if (!parse_state_highco2night_settings())
 	{
 		message = "Failed to parse highco2night settings";
@@ -217,6 +219,7 @@ void setup()
 		message = "Successfully parsed highco2night settings";
 		print_message(message);
 	}
+
 	if (!parse_state_highrhday_settings())
 	{
 		message = "Failed to parse state_highco2night settings";
@@ -227,6 +230,7 @@ void setup()
 		message = "Successfully parsed state_highrhday settings";
 		print_message(message);
 	}
+
 	if (!parse_state_highrhnight_settings())
 	{
 		message = "Failed to parse state_rhnight settings";
@@ -237,6 +241,7 @@ void setup()
 		message = "Successfully parsed state_highrhnight settings";
 		print_message(message);
 	}
+
 	if (!parse_state_cooking_settings())
 	{
 		message = "Failed to parse state_cooking settings";
@@ -247,6 +252,7 @@ void setup()
 		message = "Successfully parsed state_cooking settings";
 		print_message(message);
 	}
+
 	if (!parse_state_cyclingday_settings())
 	{
 		message = "Failed to parse state_cyclingday settings";
@@ -257,6 +263,7 @@ void setup()
 		message = "Successfully parsed state_cyclingday settings";
 		print_message(message);
 	}
+
 	if (!parse_state_cyclingnight_settings())
 	{
 		message = "Failed to parse state_cyclingnight settings";
@@ -270,18 +277,13 @@ void setup()
 	// parse_state_temp_settings();
 	vTaskDelay(100);
 	start_task_wifi();
-
-	// Wait a little after reading config
-	vTaskDelay(100);
-
-	// Start tasks
-	startTaskwebcode();
-	start_task_valvecontrol();
 	start_task_i2c();
 	start_task_statemachine();
+	start_task_valvecontrol();
 	start_task_mqtt();
 	start_task_neopixel();
-	start_task_system();
+	// start_task_system();
+	startTaskwebcode();
 	start_task_websocket();
 
 	vTaskDelay(60000); // Only write to influxDB when all tasks are running

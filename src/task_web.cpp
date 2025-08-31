@@ -1502,33 +1502,33 @@ void Taskwebcode(void *pvParameters)
 					settings_state_cyclingday_doc["name_state_cyclingday"] = p->value().c_str();
 				if (p->name() == VALVE0_POSITION_CYCLINGDAY)
 					settings_state_cyclingday_doc["valve0_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE1_POSITION_CYCLINGDAY)
+				if (p->name() == VALVE1_POSITION_CYCLINGDAY)
 					settings_state_cyclingday_doc["valve1_position_cyclingday"] = p->value().c_str();
 				if (p->name() ==  VALVE2_POSITION_CYCLINGDAY) 
 					settings_state_cyclingday_doc["valve2_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE3_POSITION_CYCLINGDAY) 
+				if (p->name() == VALVE3_POSITION_CYCLINGDAY) 
 					settings_state_cyclingday_doc["valve3_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE4_POSITION_CYCLINGDAY) 
+				if (p->name() == VALVE4_POSITION_CYCLINGDAY) 
 					settings_state_cyclingday_doc["valve4_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE5_POSITION_CYCLINGDAY) 
+				if (p->name() == VALVE5_POSITION_CYCLINGDAY) 
 					settings_state_cyclingday_doc["valve5_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE6_POSITION_CYCLINGDAY) 
+				if (p->name() == VALVE6_POSITION_CYCLINGDAY) 
 					settings_state_cyclingday_doc["valve6_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE7_POSITION_CYCLINGDAY)
+				if (p->name() == VALVE7_POSITION_CYCLINGDAY)
 					settings_state_cyclingday_doc["valve7_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE8_POSITION_CYCLINGDAY)
+				if (p->name() == VALVE8_POSITION_CYCLINGDAY)
 					settings_state_cyclingday_doc["valve8_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE9_POSITION_CYCLINGDAY) 
+				if (p->name() == VALVE9_POSITION_CYCLINGDAY) 
 					settings_state_cyclingday_doc["valve9_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE10_POSITION_CYCLINGDAY) 
+				if (p->name() == VALVE10_POSITION_CYCLINGDAY) 
 					settings_state_cyclingday_doc["valve10_position_cyclingday"] = p->value().c_str();
-				if (p->name() ==  VALVE11_POSITION_CYCLINGDAY)
+				if (p->name() == VALVE11_POSITION_CYCLINGDAY)
 					settings_state_cyclingday_doc["valve11_position_cyclingday"] = p->value().c_str();
 			}
 		}
 		serializeJson(settings_state_cyclingday_doc, settings_state_cyclingday_char, sizeof(settings_state_cyclingday_char));
 		write_settings(SETTINGS_STATE_CYCLINGDAY_PATH, settings_state_cyclingday_char, settings_state_cyclingday_mutex);
-		parse_state_cyclingday_settings;
+		parse_state_cyclingday_settings();
 		request->send(200, "text/html", statemachine_html); });
 
 	// Settings statemachine valvecyclingnight
@@ -1549,27 +1549,27 @@ void Taskwebcode(void *pvParameters)
 					settings_state_cyclingnight_doc["name_state_cyclingnight"] = p->value().c_str();
 				if (p->name() == VALVE0_POSITION_CYCLINGNIGHT)
 					settings_state_cyclingnight_doc["valve0_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE1_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE1_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve1_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE2_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE2_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve2_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE3_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE3_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve3_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE4_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE4_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve4_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE5_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE5_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve5_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE6_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE6_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve6_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE7_POSITION_CYCLINGNIGHT)
+				if (p->name() == VALVE7_POSITION_CYCLINGNIGHT)
 					settings_state_cyclingnight_doc["valve7_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE8_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE8_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve8_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE9_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE9_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve9_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE10_POSITION_CYCLINGNIGHT) 
+				if (p->name() == VALVE10_POSITION_CYCLINGNIGHT) 
 					settings_state_cyclingnight_doc["valve10_position_cyclingnight"] = p->value().c_str();
-				if (p->name() ==  VALVE11_POSITION_CYCLINGNIGHT)
+				if (p->name() == VALVE11_POSITION_CYCLINGNIGHT)
 					settings_state_cyclingnight_doc["valve11_position_cyclingnight"] = p->value().c_str();
 			}
 		}
