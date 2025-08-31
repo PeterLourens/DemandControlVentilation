@@ -5,10 +5,26 @@
 #include <ArduinoJson.h>
 #include <RTClib.h>
 
+#define DEVICE_ESP32S3
+// #define DEVICE_ESP32
+
+#if defined(DEVICE_ESP32S3)
+
 #define I2C_SCL1 38 // Wire I/O settings (SDA1/SCL1) and
 #define I2C_SDA1 39
 #define I2C_SCL2 40 // Wire1 I/O settings (SDA2/SCL2)
 #define I2C_SDA2 41
+
+#elif defined(DEVICE_ESP32)
+
+#define I2C_SCL1 1 // Wire I/O settings (SDA1/SCL1) and
+#define I2C_SDA1 2
+#define I2C_SCL2 3 // Wire1 I/O settings (SDA2/SCL2)
+#define I2C_SDA2 4
+
+#else
+#error "No device type defined! Please define DEVICE_ESP32S3 or DEVICE_ESP32."
+#endif
 
 #define LCD_ROWS 4     // LCD display rows
 #define LCD_COLUMNS 20 // LCD display columns
@@ -483,5 +499,4 @@ extern int latchPin2;
 extern int dataPin2;
 
 // Function definitions
-
 #endif
