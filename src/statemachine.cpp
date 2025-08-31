@@ -1310,7 +1310,7 @@ void valve_cycle_day_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        fanspeed = temp_fanspeed;
+        fanspeed = state_fanspeed;
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -1370,8 +1370,8 @@ void valve_cycle_day_transitions(void)
         }
     }*/
 
-    message = "Number of RH sensor with high reading: " + String(rh_sensors_high) + ". Number of CO2 sensor with high reading: " + String(co2_sensors_high);
-    print_message(message);
+    // message = "Number of RH sensor with high reading: " + String(rh_sensors_high) + ". Number of CO2 sensor with high reading: " + String(co2_sensors_high);
+    // print_message(message);
 
     // Conditions for transition
     if (valve_cycle_times_day() == false)
@@ -1451,13 +1451,10 @@ void valve_cycle_night_transitions(void)
         xSemaphoreGive(settings_state_cyclingnight_mutex);
     }
 
-    if (fanspeed_mutex != NULL)
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
-        {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+        fanspeed = state_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     // Disable valve moving when valves are already moving
