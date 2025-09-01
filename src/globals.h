@@ -472,13 +472,13 @@ extern String wire_sensor_config_string;
 extern String wire1_sensor_config_string;
 
 // Date time data from RTC
-extern String yearStr;
+/*extern String yearStr;
 extern String monthStr;
 extern String dayStr;
 extern String hourStr;
 extern String minuteStr;
 extern String secondStr;
-extern String dayOfWeek;
+extern String dayOfWeek;*/
 
 extern String state;
 extern String fanspeed;

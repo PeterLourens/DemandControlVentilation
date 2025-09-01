@@ -21,32 +21,6 @@ void print_message(String message)
     }
 }
 
-/*String formatted_datetime(void)
-{
-    String temp_datetime = "";
-    String temp_year = "";
-    String temp_month = "";
-    String temp_day = "";
-    String temp_hour = "";
-    String temp_minute = "";
-    String temp_second = "";
-
-    if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
-    {
-        temp_year = yearStr;
-        temp_month = monthStr;
-        temp_day = dayStr;
-        temp_hour = hourStr;
-        temp_minute = minuteStr;
-        temp_second = secondStr;
-        xSemaphoreGive(date_time_mutex);
-    }
-
-    // temp_datetime =  + "/" + monthStr + "/" + dayStr + " - " + hourStr + ":" + minuteStr + ":" + secondStr;
-    temp_datetime = temp_year + "/" + temp_month + "/" + temp_day + " - " + temp_hour + ":" + temp_minute + ":" + temp_second;
-    return temp_datetime;
-}*/
-
 void formatted_daydatetime(char *buf, size_t bufsize)
 {
     int year = 0;
@@ -135,6 +109,27 @@ void formatted_time(char *buf, size_t bufsize)
     }
 
     snprintf(buf, bufsize, "%02d:%02d:%02d", hour, minute, second);
+}
+
+void formatted_day(char *buf, size_t bufsize)
+{
+    int dayofweek = 0;
+
+    static const char *day_names[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+    if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
+    {
+        dayofweek = rtcdatetime.day_of_week;
+        xSemaphoreGive(date_time_mutex);
+    }
+
+    // Clamp dayofweek to valid range just in case
+    if (dayofweek < 0 || dayofweek > 6)
+    {
+        dayofweek = 0;
+    }
+
+    snprintf(buf, bufsize, "%s", day_names[dayofweek]);
 }
 
 String concatJson(String json1, String json2)

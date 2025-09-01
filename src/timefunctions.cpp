@@ -11,8 +11,10 @@ bool cooking_times(void) {
 
     if (date_time_mutex != NULL) {
         if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
+            //temp_hour = hourStr.toInt();
+            //temp_minute = minuteStr.toInt();
+            temp_hour = rtcdatetime.hour;
+            temp_minute = rtcdatetime.minute;
             xSemaphoreGive(date_time_mutex);
         }
     }
@@ -42,8 +44,10 @@ bool valve_cycle_times_day(void) {
 
     if (date_time_mutex != NULL) {
         if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
+            //temp_hour = hourStr.toInt();
+            //temp_minute = minuteStr.toInt();
+            temp_hour = rtcdatetime.hour;
+            temp_minute = rtcdatetime.minute;
             xSemaphoreGive(date_time_mutex);
         }
     }
@@ -83,8 +87,10 @@ bool valve_cycle_times_night(void) {
 
     if (date_time_mutex != NULL) {
         if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
+            //temp_hour = hourStr.toInt();
+            //temp_minute = minuteStr.toInt();
+            temp_hour = rtcdatetime.hour;
+            temp_minute = rtcdatetime.minute;
             xSemaphoreGive(date_time_mutex);
         }
     }
@@ -111,15 +117,10 @@ bool valve_cycle_times_night(void) {
 
 bool is_weekend(void)
 {
-    String temp_day_of_week = "";
-
-    if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
-    {
-        temp_day_of_week = dayOfWeek;
-        xSemaphoreGive(date_time_mutex);
-    }
-
-    if (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday")
+    char day_buffer[10];
+    formatted_day(day_buffer, sizeof(day_buffer));
+  
+    if (String(day_buffer) == "Saturday" || String(day_buffer) == "Sunday")
     {
         return true;
     }
@@ -139,8 +140,7 @@ bool is_day(void)
     int weekend_day_minute_start = 0;
     int weekend_night_hour_start = 0;
     int weekend_night_minute_start = 0;
-    int temp_hour = 0;
-    int temp_minute = 0;
+    int current_minutes = 0;
 
     if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
     {
@@ -157,12 +157,9 @@ bool is_day(void)
 
     if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
     {
-        temp_hour = hourStr.toInt();
-        temp_minute = minuteStr.toInt();
+        current_minutes = rtcdatetime.hour * 60 + rtcdatetime.minute;
         xSemaphoreGive(date_time_mutex);
     }
-
-    int current_minutes = temp_hour * 60 + temp_minute;
 
     if (is_weekend())
     {

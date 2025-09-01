@@ -557,12 +557,12 @@ void valve_position_statemachine(String statemachine_state)
     }
     else if (sum_move < 0)
     {
-        message = "Valve move sum is < 0 (" + String(sum_move) + "). This should not happen. Check your code.";
+        message = "Valve move sum is < 0 (" + String(sum_move) + "). This should not happen, check code.";
         print_message(message);
     }
     else
     {
-        message = "Valve move sum is " + String(sum_move) + ". No valve movement required. Don't call function to move valves.";
+        message = "Valve move sum is " + String(sum_move) + ". No valve movement required.";
         print_message(message);
     }
 }

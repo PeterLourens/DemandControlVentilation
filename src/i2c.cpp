@@ -560,14 +560,6 @@ void current_time(void)
     {
         if (xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
         {
-            yearStr = String(now.year(), DEC);
-            monthStr = (now.month() < 10 ? "0" : "") + String(now.month(), DEC);
-            dayStr = (now.day() < 10 ? "0" : "") + String(now.day(), DEC);
-            hourStr = (now.hour() < 10 ? "0" : "") + String(now.hour(), DEC);
-            minuteStr = (now.minute() < 10 ? "0" : "") + String(now.minute(), DEC);
-            secondStr = (now.second() < 10 ? "0" : "") + String(now.second(), DEC);
-            dayOfWeek = daysOfTheWeek[now.dayOfTheWeek()];
-            // formattedTime = dayOfWeek + ", " + yearStr + "-" + monthStr + "-" + dayStr + " " + hourStr + ":" + minuteStr + ":" + secondStr;
             rtcdatetime.year = now.year();
             rtcdatetime.month = now.month();
             rtcdatetime.day = now.day();
@@ -579,7 +571,6 @@ void current_time(void)
         }
     }
     Wire.endTransmission();
-    // return formattedTime;
 }
 
 void sync_rtc_ntp(void)

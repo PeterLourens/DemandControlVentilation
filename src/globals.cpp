@@ -69,6 +69,8 @@ State_highrhnight_settings statehighrhnightsettings;
 State_cooking_settings statecookingsettings;
 State_cyclingday_settings statecyclingdaysettings;
 State_cyclingnight_settings statecyclingnightsettings;
+
+// Used to store settings when sensors reach high CO2 or high RH and a single valve is required to move
 State_temp_settings statetempsettings;
 
 // Store data for valve control from web page
