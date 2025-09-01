@@ -15,8 +15,8 @@ void move_valve(void)
     int valve_position_change = 0;
     int new_valve_position_change = 0;
     int new_valve_position = 0;
-    bool store_valve_position = false;
-    bool check_valve_position = false;
+    int store_valve_position = 0;
+    int check_valve_position = 0;
 
     int write_failed_counter = 0;
 
@@ -409,8 +409,8 @@ void valve_position_statemachine(String statemachine_state)
     //JsonDocument settings_state_temp;
 
     // Actual valve positions
-    //const char *actual_valve_pos_path = "/json/valvepositions.json";
-    //bool status_file_present;
+    const char *actual_valve_pos_path = "/json/valvepositions.json";
+    bool status_file_present;
     //bool state_valve_pos_file_present = false;
     int move = 0;
     int direction = 0;
@@ -477,10 +477,10 @@ void valve_position_statemachine(String statemachine_state)
             print_message(message);
             return;
         }
-    }
+    }*/
 
     // From string to JSONdoc
-    /*deserializeJson(state_valve_pos_doc, state_valve_pos_str);
+    //deserializeJson(state_valve_pos_doc, state_valve_pos_str);
 
     status_file_present = check_file_exists(actual_valve_pos_path);
 
@@ -502,7 +502,7 @@ void valve_position_statemachine(String statemachine_state)
         message = "Failed to parse valvepositions.json: ";
         print_message(message);
         return;
-    }*/
+    }
 
     for (int i = 0; i < 12; i++)
     {
@@ -636,15 +636,15 @@ void valve_position_statemachine(String statemachine_state)
             {
                 // valve_control_data["checks"][0] = 0; // store not required
                 // valve_control_data["checks"][1] = 1; // check required
-                valvecontroldata.write_new_position = false;
-                valvecontroldata.check_position = true;
+                valvecontroldata.write_new_position = 0;
+                valvecontroldata.check_position = 1;
             }
             else
             {
                 // valve_control_data["checks"][0] = 1; // store required
                 // valve_control_data["checks"][1] = 1; // check required
-                valvecontroldata.write_new_position = true;
-                valvecontroldata.check_position = true;
+                valvecontroldata.write_new_position = 1;
+                valvecontroldata.check_position = 1;
             }
             xSemaphoreGive(valve_control_data_mutex);
         }

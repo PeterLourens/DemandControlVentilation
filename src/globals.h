@@ -410,8 +410,8 @@ typedef struct
     int valve_number[MAX_VALVES];
     int position_change[MAX_VALVES];
     int direction[MAX_VALVES];
-    bool check_position;
-    bool write_new_position;
+    int check_position;
+    int write_new_position;
 
 } Valve_control_data;
 
