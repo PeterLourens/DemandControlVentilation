@@ -209,8 +209,8 @@ typedef struct
     char name_state_day[LARGE_CONFIG_ITEM];
     int state_day_highco2;
     int state_day_highrh;
-    int valve0_position_day;
-    int valve1_position_day;
+    int valve_position_day[12];
+    /*int valve1_position_day;
     int valve2_position_day;
     int valve3_position_day;
     int valve4_position_day;
@@ -220,7 +220,7 @@ typedef struct
     int valve8_position_day;
     int valve9_position_day;
     int valve10_position_day;
-    int valve11_position_day;
+    int valve11_position_day;*/
 } State_day_settings;
 
 typedef struct
@@ -230,8 +230,8 @@ typedef struct
     char name_state_night[LARGE_CONFIG_ITEM];
     int state_night_highco2;
     int state_night_highrh;
-    int valve0_position_night;
-    int valve1_position_night;
+    int valve_position_night[12];
+    /*int valve1_position_night;
     int valve2_position_night;
     int valve3_position_night;
     int valve4_position_night;
@@ -241,7 +241,7 @@ typedef struct
     int valve8_position_night;
     int valve9_position_night;
     int valve10_position_night;
-    int valve11_position_night;
+    int valve11_position_night;*/
 } State_night_settings;
 
 typedef struct
@@ -251,8 +251,8 @@ typedef struct
     char name_state_highco2day[LARGE_CONFIG_ITEM];
     int co2_high_state_highco2day;
     int co2_low_state_highco2day;
-    int valve0_position_highco2day;
-    int valve1_position_highco2day;
+    int valve_position_highco2day[12];
+    /*int valve1_position_highco2day;
     int valve2_position_highco2day;
     int valve3_position_highco2day;
     int valve4_position_highco2day;
@@ -262,7 +262,7 @@ typedef struct
     int valve8_position_highco2day;
     int valve9_position_highco2day;
     int valve10_position_highco2day;
-    int valve11_position_highco2day;
+    int valve11_position_highco2day;*/
 } State_highco2day_settings;
 
 typedef struct
@@ -272,8 +272,8 @@ typedef struct
     char name_state_highco2night[LARGE_CONFIG_ITEM];
     int co2_high_state_highco2night;
     int co2_low_state_highco2night;
-    int valve0_position_highco2night;
-    int valve1_position_highco2night;
+    int valve_position_highco2night[12];
+    /*int valve1_position_highco2night;
     int valve2_position_highco2night;
     int valve3_position_highco2night;
     int valve4_position_highco2night;
@@ -283,7 +283,7 @@ typedef struct
     int valve8_position_highco2night;
     int valve9_position_highco2night;
     int valve10_position_highco2night;
-    int valve11_position_highco2night;
+    int valve11_position_highco2night;*/
 } State_highco2night_settings;
 
 typedef struct
@@ -293,8 +293,8 @@ typedef struct
     char name_state_highrhday[LARGE_CONFIG_ITEM];
     int rh_low_state_highrhday;
     int maximum_state_time_highrhday;
-    int valve0_position_highrhday;
-    int valve1_position_highrhday;
+    int valve_position_highrhday[12];
+    /*int valve1_position_highrhday;
     int valve2_position_highrhday;
     int valve3_position_highrhday;
     int valve4_position_highrhday;
@@ -304,7 +304,7 @@ typedef struct
     int valve8_position_highrhday;
     int valve9_position_highrhday;
     int valve10_position_highrhday;
-    int valve11_position_highrhday;
+    int valve11_position_highrhday;*/
 } State_highrhday_settings;
 
 typedef struct
@@ -314,8 +314,8 @@ typedef struct
     char name_state_highrhnight[LARGE_CONFIG_ITEM];
     int rh_low_state_highrhnight;
     int maximum_state_time_highrhnight;
-    int valve0_position_highrhnight;
-    int valve1_position_highrhnight;
+    int valve_position_highrhnight[12];
+    /*int valve1_position_highrhnight;
     int valve2_position_highrhnight;
     int valve3_position_highrhnight;
     int valve4_position_highrhnight;
@@ -325,7 +325,7 @@ typedef struct
     int valve8_position_highrhnight;
     int valve9_position_highrhnight;
     int valve10_position_highrhnight;
-    int valve11_position_highrhnight;
+    int valve11_position_highrhnight;*/
 } State_highrhnight_settings;
 
 typedef struct
@@ -337,8 +337,8 @@ typedef struct
     int start_minute_state_cooking;
     int stop_hour_state_cooking;
     int stop_minute_state_cooking;
-    int valve0_position_cooking;
-    int valve1_position_cooking;
+    int valve_position_cooking[12];
+    /*int valve1_position_cooking;
     int valve2_position_cooking;
     int valve3_position_cooking;
     int valve4_position_cooking;
@@ -348,7 +348,7 @@ typedef struct
     int valve8_position_cooking;
     int valve9_position_cooking;
     int valve10_position_cooking;
-    int valve11_position_cooking;
+    int valve11_position_cooking;*/
 } State_cooking_settings;
 
 typedef struct
@@ -356,8 +356,8 @@ typedef struct
     char enable_state_cyclingday[SMALL_CONFIG_ITEM];
     char state_cyclingday_fanspeed[SMALL_CONFIG_ITEM];
     char name_state_cyclingday[LARGE_CONFIG_ITEM];
-    int valve0_position_cyclingday;
-    int valve1_position_cyclingday;
+    int valve_position_cyclingday[12];
+    /*int valve1_position_cyclingday;
     int valve2_position_cyclingday;
     int valve3_position_cyclingday;
     int valve4_position_cyclingday;
@@ -367,7 +367,7 @@ typedef struct
     int valve8_position_cyclingday;
     int valve9_position_cyclingday;
     int valve10_position_cyclingday;
-    int valve11_position_cyclingday;
+    int valve11_position_cyclingday;*/
 } State_cyclingday_settings;
 
 typedef struct
@@ -375,24 +375,24 @@ typedef struct
     char enable_state_cyclingnight[SMALL_CONFIG_ITEM];
     char state_cyclingnight_fanspeed[SMALL_CONFIG_ITEM];
     char name_state_cyclingnight[LARGE_CONFIG_ITEM];
-    int valve0_position_cyclingnight;
-    int valve1_position_cyclingnight;
-    int valve2_position_cyclingnight;
-    int valve3_position_cyclingnight;
-    int valve4_position_cyclingnight;
-    int valve5_position_cyclingnight;
-    int valve6_position_cyclingnight;
-    int valve7_position_cyclingnight;
-    int valve8_position_cyclingnight;
-    int valve9_position_cyclingnight;
-    int valve10_position_cyclingnight;
-    int valve11_position_cyclingnight;
+    int valve_position_cyclingnight[12];
+    //int valve1_position_cyclingnight;
+    //int valve2_position_cyclingnight;
+    //int valve3_position_cyclingnight;
+    //int valve4_position_cyclingnight;
+    //int valve5_position_cyclingnight;
+    //int valve6_position_cyclingnight;
+    //int valve7_position_cyclingnight;
+    //int valve8_position_cyclingnight;
+    //int valve9_position_cyclingnight;
+    //int valve10_position_cyclingnight;
+    //int valve11_position_cyclingnight;
 } State_cyclingnight_settings;
 
 typedef struct
 {
-    int valve0_position_temp;
-    int valve1_position_temp;
+    int valve_position_temp[12];
+    /*int valve1_position_temp;
     int valve2_position_temp;
     int valve3_position_temp;
     int valve4_position_temp;
@@ -402,7 +402,7 @@ typedef struct
     int valve8_position_temp;
     int valve9_position_temp;
     int valve10_position_temp;
-    int valve11_position_temp;
+    int valve11_position_temp;*/
 } State_temp_settings;
 
 typedef struct
@@ -410,7 +410,7 @@ typedef struct
     int valve_number[MAX_VALVES];
     int position_change[MAX_VALVES];
     int direction[MAX_VALVES];
-    bool check;
+    bool check_position;
     bool write_new_position;
 
 } Valve_control_data;
@@ -454,32 +454,6 @@ extern State_cyclingnight_settings statecyclingnightsettings;
 
 extern State_temp_settings statetempsettings;
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-// Old style
-extern JsonDocument valve_control_data;
-// extern JsonDocument settings_fan_data;
-
-extern String wire_sensor_config_string;
-extern String wire1_sensor_config_string;
-
-// Date time data from RTC
-/*extern String yearStr;
-extern String monthStr;
-extern String dayStr;
-extern String hourStr;
-extern String minuteStr;
-extern String secondStr;
-extern String dayOfWeek;*/
-
 extern String state;
 extern String fanspeed;
 
@@ -497,6 +471,9 @@ extern int dataPin1;
 extern int clockPin2;
 extern int latchPin2;
 extern int dataPin2;
+
+// Old style
+//extern JsonDocument valve_control_data;
 
 // Function definitions
 #endif

@@ -618,7 +618,12 @@ bool parse_state_day_settings(void)
     {
         statedaysettings.state_day_highco2 = doc["state_day_highco2"];
         statedaysettings.state_day_highrh = doc["state_day_highrh"];
-        statedaysettings.valve0_position_day = doc["valve0_position_day"];
+
+        for (int i = 0; i < 12; i++)
+        {
+            statedaysettings.valve_position_day[i] = doc["valve" + String(i) + "_position_day"];
+        }
+        /*statedaysettings.valve0_position_day = doc["valve0_position_day"];
         statedaysettings.valve1_position_day = doc["valve1_position_day"];
         statedaysettings.valve2_position_day = doc["valve2_position_day"];
         statedaysettings.valve3_position_day = doc["valve3_position_day"];
@@ -629,7 +634,7 @@ bool parse_state_day_settings(void)
         statedaysettings.valve8_position_day = doc["valve8_position_day"];
         statedaysettings.valve9_position_day = doc["valve9_position_day"];
         statedaysettings.valve10_position_day = doc["valve10_position_day"];
-        statedaysettings.valve11_position_day = doc["valve11_position_day"];
+        statedaysettings.valve11_position_day = doc["valve11_position_day"];*/
 
         if (enable_state_day)
         {
@@ -679,7 +684,12 @@ bool parse_state_night_settings(void)
     {
         statenightsettings.state_night_highco2 = doc["state_night_highco2"];
         statenightsettings.state_night_highrh = doc["state_night_highrh"];
-        statenightsettings.valve0_position_night = doc["valve0_position_night"];
+
+        for (int i = 0; i < 12; i++)
+        {
+            statenightsettings.valve_position_night[i] = doc["valve" + String(i) + "_position_night"];
+        }
+        /*statenightsettings.valve0_position_night = doc["valve0_position_night"];
         statenightsettings.valve1_position_night = doc["valve1_position_night"];
         statenightsettings.valve2_position_night = doc["valve2_position_night"];
         statenightsettings.valve3_position_night = doc["valve3_position_night"];
@@ -690,7 +700,7 @@ bool parse_state_night_settings(void)
         statenightsettings.valve8_position_night = doc["valve8_position_night"];
         statenightsettings.valve9_position_night = doc["valve9_position_night"];
         statenightsettings.valve10_position_night = doc["valve10_position_night"];
-        statenightsettings.valve11_position_night = doc["valve11_position_night"];
+        statenightsettings.valve11_position_night = doc["valve11_position_night"];*/
 
         if (enable_state_night)
         {
@@ -740,7 +750,12 @@ bool parse_state_highco2day_settings(void)
     {
         statehighco2daysettings.co2_high_state_highco2day = doc["co2_high_state_highco2day"];
         statehighco2daysettings.co2_low_state_highco2day = doc["co2_low_state_highco2day"];
-        statehighco2daysettings.valve0_position_highco2day = doc["valve0_position_highco2day"];
+
+        for (int i = 0; i < 12; i++)
+        {
+            statehighco2daysettings.valve_position_highco2day[i] = doc["valve" + String(i) + "_position_highco2day"];
+        }
+        /*statehighco2daysettings.valve0_position_highco2day = doc["valve0_position_highco2day"];
         statehighco2daysettings.valve1_position_highco2day = doc["valve1_position_highco2day"];
         statehighco2daysettings.valve2_position_highco2day = doc["valve2_position_highco2day"];
         statehighco2daysettings.valve3_position_highco2day = doc["valve3_position_highco2day"];
@@ -751,7 +766,7 @@ bool parse_state_highco2day_settings(void)
         statehighco2daysettings.valve8_position_highco2day = doc["valve8_position_highco2day"];
         statehighco2daysettings.valve9_position_highco2day = doc["valve9_position_highco2day"];
         statehighco2daysettings.valve10_position_highco2day = doc["valve10_position_highco2day"];
-        statehighco2daysettings.valve11_position_highco2day = doc["valve11_position_highco2day"];
+        statehighco2daysettings.valve11_position_highco2day = doc["valve11_position_highco2day"];*/
 
         if (enable_state_highco2day)
         {
@@ -801,7 +816,12 @@ bool parse_state_highco2night_settings(void)
     {
         statehighco2nightsettings.co2_high_state_highco2night = doc["co2_high_state_highco2night"];
         statehighco2nightsettings.co2_low_state_highco2night = doc["co2_low_state_highco2night"];
-        statehighco2nightsettings.valve0_position_highco2night = doc["valve0_position_highco2night"];
+
+        for (int i = 0; i < 12; i++)
+        {
+            statehighco2nightsettings.valve_position_highco2night[i] = doc["valve" + String(i) + "_position_highco2night"];
+        }
+        /*statehighco2nightsettings.valve0_position_highco2night = doc["valve0_position_highco2night"];
         statehighco2nightsettings.valve1_position_highco2night = doc["valve1_position_highco2night"];
         statehighco2nightsettings.valve2_position_highco2night = doc["valve2_position_highco2night"];
         statehighco2nightsettings.valve3_position_highco2night = doc["valve3_position_highco2night"];
@@ -812,7 +832,7 @@ bool parse_state_highco2night_settings(void)
         statehighco2nightsettings.valve8_position_highco2night = doc["valve8_position_highco2night"];
         statehighco2nightsettings.valve9_position_highco2night = doc["valve9_position_highco2night"];
         statehighco2nightsettings.valve10_position_highco2night = doc["valve10_position_highco2night"];
-        statehighco2nightsettings.valve11_position_highco2night = doc["valve11_position_highco2night"];
+        statehighco2nightsettings.valve11_position_highco2night = doc["valve11_position_highco2night"];*/
 
         if (enable_state_highco2night)
         {
@@ -862,7 +882,12 @@ bool parse_state_highrhday_settings(void)
     {
         statehighrhdaysettings.maximum_state_time_highrhday = doc["maximum_state_time_highrhday"];
         statehighrhdaysettings.rh_low_state_highrhday = doc["rh_low_state_highrhday"];
-        statehighrhdaysettings.valve0_position_highrhday = doc["valve0_position_highrhday"];
+
+        for (int i = 0; i < 12; i++)
+        {
+            statehighrhdaysettings.valve_position_highrhday[i] = doc["valve" + String(i) + "_position_highrhday"];
+        }
+        /*statehighrhdaysettings.valve0_position_highrhday = doc["valve0_position_highrhday"];
         statehighrhdaysettings.valve1_position_highrhday = doc["valve1_position_highrhday"];
         statehighrhdaysettings.valve2_position_highrhday = doc["valve2_position_highrhday"];
         statehighrhdaysettings.valve3_position_highrhday = doc["valve3_position_highrhday"];
@@ -873,7 +898,7 @@ bool parse_state_highrhday_settings(void)
         statehighrhdaysettings.valve8_position_highrhday = doc["valve8_position_highrhday"];
         statehighrhdaysettings.valve9_position_highrhday = doc["valve9_position_highrhday"];
         statehighrhdaysettings.valve10_position_highrhday = doc["valve10_position_highrhday"];
-        statehighrhdaysettings.valve11_position_highrhday = doc["valve11_position_highrhday"];
+        statehighrhdaysettings.valve11_position_highrhday = doc["valve11_position_highrhday"];*/
 
         if (enable_state_highrhday)
         {
@@ -923,7 +948,12 @@ bool parse_state_highrhnight_settings(void)
     {
         statehighrhnightsettings.maximum_state_time_highrhnight = doc["maximum_state_time_highrhnight"];
         statehighrhnightsettings.rh_low_state_highrhnight = doc["rh_low_state_highrhnight"];
-        statehighrhnightsettings.valve0_position_highrhnight = doc["valve0_position_highrhnight"];
+
+        for (int i = 0; i < 12; i++)
+        {
+            statehighrhnightsettings.valve_position_highrhnight[i] = doc["valve" + String(i) + "_position_highrhnight"];
+        }
+        /*statehighrhnightsettings.valve0_position_highrhnight = doc["valve0_position_highrhnight"];
         statehighrhnightsettings.valve1_position_highrhnight = doc["valve1_position_highrhnight"];
         statehighrhnightsettings.valve2_position_highrhnight = doc["valve2_position_highrhnight"];
         statehighrhnightsettings.valve3_position_highrhnight = doc["valve3_position_highrhnight"];
@@ -934,7 +964,7 @@ bool parse_state_highrhnight_settings(void)
         statehighrhnightsettings.valve8_position_highrhnight = doc["valve8_position_highrhnight"];
         statehighrhnightsettings.valve9_position_highrhnight = doc["valve9_position_highrhnight"];
         statehighrhnightsettings.valve10_position_highrhnight = doc["valve10_position_highrhnight"];
-        statehighrhnightsettings.valve11_position_highrhnight = doc["valve11_position_highrhnight"];
+        statehighrhnightsettings.valve11_position_highrhnight = doc["valve11_position_highrhnight"];*/
 
         if (enable_state_highrhnight)
         {
@@ -986,7 +1016,12 @@ bool parse_state_cooking_settings(void)
         statecookingsettings.start_minute_state_cooking = doc["start_minute_state_cooking"];
         statecookingsettings.stop_hour_state_cooking = doc["stop_hour_state_cooking"];
         statecookingsettings.stop_minute_state_cooking = doc["stop_minute_state_cooking"];
-        statecookingsettings.valve0_position_cooking = doc["valve0_position_cooking"];
+
+        for (int i = 0; i < 12; i++)
+        {
+            statecookingsettings.valve_position_cooking[i] = doc["valve" + String(i) + "_position_cooking"];
+        }
+        /*statecookingsettings.valve0_position_cooking = doc["valve0_position_cooking"];
         statecookingsettings.valve1_position_cooking = doc["valve1_position_cooking"];
         statecookingsettings.valve2_position_cooking = doc["valve2_position_cooking"];
         statecookingsettings.valve3_position_cooking = doc["valve3_position_cooking"];
@@ -997,7 +1032,7 @@ bool parse_state_cooking_settings(void)
         statecookingsettings.valve8_position_cooking = doc["valve8_position_cooking"];
         statecookingsettings.valve9_position_cooking = doc["valve9_position_cooking"];
         statecookingsettings.valve10_position_cooking = doc["valve10_position_cooking"];
-        statecookingsettings.valve11_position_cooking = doc["valve11_position_cooking"];
+        statecookingsettings.valve11_position_cooking = doc["valve11_position_cooking"];*/
 
         if (enable_state_cooking)
         {
@@ -1045,7 +1080,11 @@ bool parse_state_cyclingday_settings(void)
 
     if (settings_state_cyclingday_mutex && (xSemaphoreTake(settings_state_cyclingday_mutex, (TickType_t)10)) == pdTRUE)
     {
-        statecyclingdaysettings.valve0_position_cyclingday = doc["valve0_position_cyclingday"];
+        for (int i = 0; i < 12; i++)
+        {
+            statecyclingdaysettings.valve_position_cyclingday[i] = doc["valve" + String(i) + "_position_cyclingday"];
+        }
+        /*statecyclingdaysettings.valve0_position_cyclingday = doc["valve0_position_cyclingday"];
         statecyclingdaysettings.valve1_position_cyclingday = doc["valve1_position_cyclingday"];
         statecyclingdaysettings.valve2_position_cyclingday = doc["valve2_position_cyclingday"];
         statecyclingdaysettings.valve3_position_cyclingday = doc["valve3_position_cyclingday"];
@@ -1056,7 +1095,7 @@ bool parse_state_cyclingday_settings(void)
         statecyclingdaysettings.valve8_position_cyclingday = doc["valve8_position_cyclingday"];
         statecyclingdaysettings.valve9_position_cyclingday = doc["valve9_position_cyclingday"];
         statecyclingdaysettings.valve10_position_cyclingday = doc["valve10_position_cyclingday"];
-        statecyclingdaysettings.valve11_position_cyclingday = doc["valve11_position_cyclingday"];
+        statecyclingdaysettings.valve11_position_cyclingday = doc["valve11_position_cyclingday"];*/
 
         if (enable_state_cyclingday)
         {
@@ -1104,7 +1143,11 @@ bool parse_state_cyclingnight_settings(void)
 
     if (settings_state_cyclingnight_mutex && (xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)10)) == pdTRUE)
     {
-        statecyclingnightsettings.valve0_position_cyclingnight = doc["valve0_position_cyclingnight"];
+        for (int i = 0; i < 12; i++)
+        {
+            statecyclingnightsettings.valve_position_cyclingnight[i] = doc["valve" + String(i) + "_position_cyclingnight"];
+        }
+        /*statecyclingnightsettings.valve0_position_cyclingnight = doc["valve0_position_cyclingnight"];
         statecyclingnightsettings.valve1_position_cyclingnight = doc["valve1_position_cyclingnight"];
         statecyclingnightsettings.valve2_position_cyclingnight = doc["valve2_position_cyclingnight"];
         statecyclingnightsettings.valve3_position_cyclingnight = doc["valve3_position_cyclingnight"];
@@ -1115,7 +1158,7 @@ bool parse_state_cyclingnight_settings(void)
         statecyclingnightsettings.valve8_position_cyclingnight = doc["valve8_position_cyclingnight"];
         statecyclingnightsettings.valve9_position_cyclingnight = doc["valve9_position_cyclingnight"];
         statecyclingnightsettings.valve10_position_cyclingnight = doc["valve10_position_cyclingnight"];
-        statecyclingnightsettings.valve11_position_cyclingnight = doc["valve11_position_cyclingnight"];
+        statecyclingnightsettings.valve11_position_cyclingnight = doc["valve11_position_cyclingnight"];*/
         if (enable_state_cyclingnight)
         {
             strncpy(statecyclingnightsettings.enable_state_cyclingnight, enable_state_cyclingnight, sizeof(statecyclingnightsettings.enable_state_cyclingnight) - 1);

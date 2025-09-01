@@ -511,7 +511,7 @@ void high_co2_day_transitions(void)
         xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (settings_state_highco2day_mutex && xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)100) == pdTRUE)
+    if (settings_state_highco2day_mutex && xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)10) == pdTRUE)
     {
         state_fanspeed = String(statehighco2daysettings.state_highco2day_fanspeed);
         co2highlevel = statehighco2daysettings.co2_low_state_highco2day;
@@ -556,7 +556,11 @@ void high_co2_day_transitions(void)
     // Temp valve settings for individual valves starting with default settings for this state. Should read these from file and not hardcode them
     if (settings_state_highco2day_mutex && xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)10) == pdTRUE)
     {
-        state_valve_position[0] = statehighco2daysettings.valve0_position_highco2day;
+        for (int i = 0; i < 12; i++)
+        {
+            state_valve_position[i] = statehighco2daysettings.valve_position_highco2day[i];
+        }
+        /*state_valve_position[0] = statehighco2daysettings.valve0_position_highco2day;
         state_valve_position[1] = statehighco2daysettings.valve1_position_highco2day;
         state_valve_position[2] = statehighco2daysettings.valve2_position_highco2day;
         state_valve_position[3] = statehighco2daysettings.valve3_position_highco2day;
@@ -567,7 +571,7 @@ void high_co2_day_transitions(void)
         state_valve_position[8] = statehighco2daysettings.valve8_position_highco2day;
         state_valve_position[9] = statehighco2daysettings.valve9_position_highco2day;
         state_valve_position[10] = statehighco2daysettings.valve10_position_highco2day;
-        state_valve_position[11] = statehighco2daysettings.valve11_position_highco2day;
+        state_valve_position[11] = statehighco2daysettings.valve11_position_highco2day;*/
         xSemaphoreGive(settings_state_highco2day_mutex);
     }
 
@@ -617,7 +621,11 @@ void high_co2_day_transitions(void)
     // Copy values to temp settings
     if (settings_state_temp_mutex && xSemaphoreTake(settings_state_temp_mutex, (TickType_t)10) == pdTRUE)
     {
-        statetempsettings.valve0_position_temp = state_valve_position[0];
+        for (int i = 0; i < 12; i++)
+        {
+            statetempsettings.valve_position_temp[i] = state_valve_position[i];
+        }
+        /*statetempsettings.valve0_position_temp = state_valve_position[0];
         statetempsettings.valve1_position_temp = state_valve_position[1];
         statetempsettings.valve2_position_temp = state_valve_position[2];
         statetempsettings.valve3_position_temp = state_valve_position[3];
@@ -628,7 +636,7 @@ void high_co2_day_transitions(void)
         statetempsettings.valve8_position_temp = state_valve_position[8];
         statetempsettings.valve9_position_temp = state_valve_position[9];
         statetempsettings.valve10_position_temp = state_valve_position[10];
-        statetempsettings.valve11_position_temp = state_valve_position[11];
+        statetempsettings.valve11_position_temp = state_valve_position[11];*/
         xSemaphoreGive(settings_state_temp_mutex);
     }
 
@@ -745,7 +753,11 @@ void high_co2_night_transitions(void)
 
     if (settings_state_highco2night_mutex && xSemaphoreTake(settings_state_highco2night_mutex, (TickType_t)10) == pdTRUE)
     {
-        state_valve_position[0] = statehighco2nightsettings.valve0_position_highco2night;
+        for (int i = 0; i < 12; i++)
+        {
+            state_valve_position[i] = statehighco2nightsettings.valve_position_highco2night[i];
+        }
+        /*state_valve_position[0] = statehighco2nightsettings.valve0_position_highco2night;
         state_valve_position[1] = statehighco2nightsettings.valve1_position_highco2night;
         state_valve_position[2] = statehighco2nightsettings.valve2_position_highco2night;
         state_valve_position[3] = statehighco2nightsettings.valve3_position_highco2night;
@@ -756,7 +768,7 @@ void high_co2_night_transitions(void)
         state_valve_position[8] = statehighco2nightsettings.valve8_position_highco2night;
         state_valve_position[9] = statehighco2nightsettings.valve9_position_highco2night;
         state_valve_position[10] = statehighco2nightsettings.valve10_position_highco2night;
-        state_valve_position[11] = statehighco2nightsettings.valve11_position_highco2night;
+        state_valve_position[11] = statehighco2nightsettings.valve11_position_highco2night;*/
         xSemaphoreGive(settings_state_highco2night_mutex);
     }
 
@@ -805,7 +817,12 @@ void high_co2_night_transitions(void)
     // Copy values to temp settings
     if (settings_state_temp_mutex && xSemaphoreTake(settings_state_temp_mutex, (TickType_t)10) == pdTRUE)
     {
-        statetempsettings.valve0_position_temp = state_valve_position[0];
+        for (int i = 0; i < 12; i++)
+        {
+            statetempsettings.valve_position_temp[i] = state_valve_position[i];
+        }
+
+        /*statetempsettings.valve0_position_temp = state_valve_position[0];
         statetempsettings.valve1_position_temp = state_valve_position[1];
         statetempsettings.valve2_position_temp = state_valve_position[2];
         statetempsettings.valve3_position_temp = state_valve_position[3];
@@ -816,7 +833,7 @@ void high_co2_night_transitions(void)
         statetempsettings.valve8_position_temp = state_valve_position[8];
         statetempsettings.valve9_position_temp = state_valve_position[9];
         statetempsettings.valve10_position_temp = state_valve_position[10];
-        statetempsettings.valve11_position_temp = state_valve_position[11];
+        statetempsettings.valve11_position_temp = state_valve_position[11];*/
         xSemaphoreGive(settings_state_temp_mutex);
     }
 
@@ -1116,7 +1133,7 @@ void cooking_transitions(void)
     }
 
     // read fanspeed from config of this state
-    if (settings_state_cooking_mutex && xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)100) == pdTRUE)
+    if (settings_state_cooking_mutex && xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)10) == pdTRUE)
     {
         state_fanspeed = statecookingsettings.state_cooking_fanspeed;
         xSemaphoreGive(settings_state_cooking_mutex);
@@ -1275,7 +1292,7 @@ void valve_cycle_night_transitions(void)
     }
 
     // read fanspeed from config of this state
-    if (settings_state_cyclingnight_mutex && xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)100) == pdTRUE)
+    if (settings_state_cyclingnight_mutex && xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)10) == pdTRUE)
     {
         state_fanspeed = statecyclingnightsettings.state_cyclingnight_fanspeed;
         xSemaphoreGive(settings_state_cyclingnight_mutex);
@@ -1296,7 +1313,6 @@ void valve_cycle_night_transitions(void)
             xSemaphoreGive(lock_valve_move_mutex);
         }
     }
-
 
     message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);

@@ -401,7 +401,11 @@ String create_statemachine_json()
         doc_day["name_state_day"] = statedaysettings.name_state_day;
         doc_day["state_day_highco2"] = statedaysettings.state_day_highco2;
         doc_day["state_day_highrh"] = statedaysettings.state_day_highrh;
-        doc_day["valve0_position_day"] = statedaysettings.valve0_position_day;
+        for (int i = 0; i < 12; i++)
+        {
+            doc_day["valve" + String(i) + "_position_day"] = statedaysettings.valve_position_day[i];
+        }
+        /*doc_day["valve0_position_day"] = statedaysettings.valve0_position_day;
         doc_day["valve1_position_day"] = statedaysettings.valve1_position_day;
         doc_day["valve2_position_day"] = statedaysettings.valve2_position_day;
         doc_day["valve3_position_day"] = statedaysettings.valve3_position_day;
@@ -412,7 +416,7 @@ String create_statemachine_json()
         doc_day["valve8_position_day"] = statedaysettings.valve8_position_day;
         doc_day["valve9_position_day"] = statedaysettings.valve9_position_day;
         doc_day["valve10_position_day"] = statedaysettings.valve10_position_day;
-        doc_day["valve11_position_day"] = statedaysettings.valve11_position_day;
+        doc_day["valve11_position_day"] = statedaysettings.valve11_position_day;*/
         xSemaphoreGive(settings_state_day_mutex);
     }
 
@@ -438,7 +442,11 @@ String create_statemachine_json()
         doc_night["name_state_night"] = statenightsettings.name_state_night;
         doc_night["state_night_highco2"] = statenightsettings.state_night_highco2;
         doc_night["state_night_highrh"] = statenightsettings.state_night_highrh;
-        doc_night["valve0_position_night"] = statenightsettings.valve0_position_night;
+        for (int i = 0; i < 12; i++)
+        {
+            doc_night["valve" + String(i) + "_position_night"] = statenightsettings.valve_position_night[i];
+        }
+        /*doc_night["valve0_position_night"] = statenightsettings.valve0_position_night;
         doc_night["valve1_position_night"] = statenightsettings.valve1_position_night;
         doc_night["valve2_position_night"] = statenightsettings.valve2_position_night;
         doc_night["valve3_position_night"] = statenightsettings.valve3_position_night;
@@ -449,7 +457,7 @@ String create_statemachine_json()
         doc_night["valve8_position_night"] = statenightsettings.valve8_position_night;
         doc_night["valve9_position_night"] = statenightsettings.valve9_position_night;
         doc_night["valve10_position_night"] = statenightsettings.valve10_position_night;
-        doc_night["valve11_position_night"] = statenightsettings.valve11_position_night;
+        doc_night["valve11_position_night"] = statenightsettings.valve11_position_night;*/
         xSemaphoreGive(settings_state_night_mutex);
     }
 
@@ -475,7 +483,11 @@ String create_statemachine_json()
         doc_highco2day["name_state_highco2day"] = statehighco2daysettings.name_state_highco2day;
         doc_highco2day["co2_high_state_highco2day"] = statehighco2daysettings.co2_high_state_highco2day;
         doc_highco2day["co2_low_state_highco2day"] = statehighco2daysettings.co2_low_state_highco2day;
-        doc_highco2day["valve0_position_highco2day"] = statehighco2daysettings.valve0_position_highco2day;
+        for (int i = 0; i < 12; i++)
+        {
+            doc_highco2day["valve" + String(i) + "_position_highco2day"] = statehighco2daysettings.valve_position_highco2day[i];
+        }
+        /*doc_highco2day["valve0_position_highco2day"] = statehighco2daysettings.valve0_position_highco2day;
         doc_highco2day["valve1_position_highco2day"] = statehighco2daysettings.valve1_position_highco2day;
         doc_highco2day["valve2_position_highco2day"] = statehighco2daysettings.valve2_position_highco2day;
         doc_highco2day["valve3_position_highco2day"] = statehighco2daysettings.valve3_position_highco2day;
@@ -486,7 +498,7 @@ String create_statemachine_json()
         doc_highco2day["valve8_position_highco2day"] = statehighco2daysettings.valve8_position_highco2day;
         doc_highco2day["valve9_position_highco2day"] = statehighco2daysettings.valve9_position_highco2day;
         doc_highco2day["valve10_position_highco2day"] = statehighco2daysettings.valve10_position_highco2day;
-        doc_highco2day["valve11_position_highco2day"] = statehighco2daysettings.valve11_position_highco2day;
+        doc_highco2day["valve11_position_highco2day"] = statehighco2daysettings.valve11_position_highco2day;*/
         xSemaphoreGive(settings_state_highco2day_mutex);
     }
     doc_highco2day.shrinkToFit();
@@ -510,7 +522,11 @@ String create_statemachine_json()
         doc_highco2night["name_state_highco2night"] = statehighco2nightsettings.name_state_highco2night;
         doc_highco2night["co2_high_state_highco2night"] = statehighco2nightsettings.co2_high_state_highco2night;
         doc_highco2night["co2_low_state_highco2night"] = statehighco2nightsettings.co2_low_state_highco2night;
-        doc_highco2night["valve0_position_highco2night"] = statehighco2nightsettings.valve0_position_highco2night;
+        for (int i = 0; i < 12; i++)
+        {
+            doc_highco2night["valve" + String(i) + "_position_highco2night"] = statehighco2nightsettings.valve_position_highco2night[i];
+        }
+        /*doc_highco2night["valve0_position_highco2night"] = statehighco2nightsettings.valve0_position_highco2night;
         doc_highco2night["valve1_position_highco2night"] = statehighco2nightsettings.valve1_position_highco2night;
         doc_highco2night["valve2_position_highco2night"] = statehighco2nightsettings.valve2_position_highco2night;
         doc_highco2night["valve3_position_highco2night"] = statehighco2nightsettings.valve3_position_highco2night;
@@ -521,7 +537,7 @@ String create_statemachine_json()
         doc_highco2night["valve8_position_highco2night"] = statehighco2nightsettings.valve8_position_highco2night;
         doc_highco2night["valve9_position_highco2night"] = statehighco2nightsettings.valve9_position_highco2night;
         doc_highco2night["valve10_position_highco2night"] = statehighco2nightsettings.valve10_position_highco2night;
-        doc_highco2night["valve11_position_highco2night"] = statehighco2nightsettings.valve11_position_highco2night;
+        doc_highco2night["valve11_position_highco2night"] = statehighco2nightsettings.valve11_position_highco2night;*/
         xSemaphoreGive(settings_state_highco2night_mutex);
     }
     doc_highco2night.shrinkToFit();
@@ -544,7 +560,11 @@ String create_statemachine_json()
         doc_highrhday["name_state_highrhday"] = statehighrhdaysettings.name_state_highrhday;
         doc_highrhday["maximum_state_time_highrhday"] = statehighrhdaysettings.maximum_state_time_highrhday;
         doc_highrhday["rh_low_state_highrhday"] = statehighrhdaysettings.rh_low_state_highrhday;
-        doc_highrhday["valve0_position_highrhday"] = statehighrhdaysettings.valve0_position_highrhday;
+        for (int i = 0; i < 12; i++)
+        {
+            doc_highrhday["valve" + String(i) + "_position_highrhday"] = statehighrhdaysettings.valve_position_highrhday[i];
+        }
+        /*doc_highrhday["valve0_position_highrhday"] = statehighrhdaysettings.valve0_position_highrhday;
         doc_highrhday["valve1_position_highrhday"] = statehighrhdaysettings.valve1_position_highrhday;
         doc_highrhday["valve2_position_highrhday"] = statehighrhdaysettings.valve2_position_highrhday;
         doc_highrhday["valve3_position_highrhday"] = statehighrhdaysettings.valve3_position_highrhday;
@@ -555,7 +575,7 @@ String create_statemachine_json()
         doc_highrhday["valve8_position_highrhday"] = statehighrhdaysettings.valve8_position_highrhday;
         doc_highrhday["valve9_position_highrhday"] = statehighrhdaysettings.valve9_position_highrhday;
         doc_highrhday["valve10_position_highrhday"] = statehighrhdaysettings.valve10_position_highrhday;
-        doc_highrhday["valve11_position_highrhday"] = statehighrhdaysettings.valve11_position_highrhday;
+        doc_highrhday["valve11_position_highrhday"] = statehighrhdaysettings.valve11_position_highrhday;*/
         xSemaphoreGive(settings_state_highrhday_mutex);
     }
     doc_highrhday.shrinkToFit();
@@ -578,7 +598,11 @@ String create_statemachine_json()
         doc_highrhnight["name_state_highrhnight"] = statehighrhnightsettings.name_state_highrhnight;
         doc_highrhnight["maximum_state_time_highrhnight"] = statehighrhnightsettings.maximum_state_time_highrhnight;
         doc_highrhnight["rh_low_state_highrhnight"] = statehighrhnightsettings.rh_low_state_highrhnight;
-        doc_highrhnight["valve0_position_highrhnight"] = statehighrhnightsettings.valve0_position_highrhnight;
+        for (int i = 0; i < 12; i++)
+        {
+            doc_highrhnight["valve" + String(i) + "position_highrhnight"] = statehighrhnightsettings.valve_position_highrhnight[i];
+        }
+        /*doc_highrhnight["valve0_position_highrhnight"] = statehighrhnightsettings.valve0_position_highrhnight;
         doc_highrhnight["valve1_position_highrhnight"] = statehighrhnightsettings.valve1_position_highrhnight;
         doc_highrhnight["valve2_position_highrhnight"] = statehighrhnightsettings.valve2_position_highrhnight;
         doc_highrhnight["valve3_position_highrhnight"] = statehighrhnightsettings.valve3_position_highrhnight;
@@ -589,7 +613,7 @@ String create_statemachine_json()
         doc_highrhnight["valve8_position_highrhnight"] = statehighrhnightsettings.valve8_position_highrhnight;
         doc_highrhnight["valve9_position_highrhnight"] = statehighrhnightsettings.valve9_position_highrhnight;
         doc_highrhnight["valve10_position_highrhnight"] = statehighrhnightsettings.valve10_position_highrhnight;
-        doc_highrhnight["valve11_position_highrhnight"] = statehighrhnightsettings.valve11_position_highrhnight;
+        doc_highrhnight["valve11_position_highrhnight"] = statehighrhnightsettings.valve11_position_highrhnight;*/
         xSemaphoreGive(settings_state_highrhnight_mutex);
     }
     doc_highrhnight.shrinkToFit();
@@ -608,6 +632,7 @@ String create_statemachine_json()
     // Cooking state settings
     if (settings_state_cooking_mutex && xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)10) == pdTRUE)
     {
+
         doc_cooking["enable_state_cooking"] = statecookingsettings.enable_state_cooking;
         doc_cooking["state_cooking_fanspeed"] = statecookingsettings.state_cooking_fanspeed;
         doc_cooking["name_state_cooking"] = statecookingsettings.name_state_cooking;
@@ -615,7 +640,11 @@ String create_statemachine_json()
         doc_cooking["start_minute_state_cooking"] = statecookingsettings.start_minute_state_cooking;
         doc_cooking["stop_hour_state_cooking"] = statecookingsettings.stop_hour_state_cooking;
         doc_cooking["stop_minute_state_cooking"] = statecookingsettings.stop_minute_state_cooking;
-        doc_cooking["valve0_position_cooking"] = statecookingsettings.valve0_position_cooking;
+        for (int i = 0; i < 12; i++)
+        {
+            doc_cooking["valve" + String(i) + "_position_cooking"] = statecookingsettings.valve_position_cooking[i];
+        }
+        /*doc_cooking["valve0_position_cooking"] = statecookingsettings.valve0_position_cooking;
         doc_cooking["valve1_position_cooking"] = statecookingsettings.valve1_position_cooking;
         doc_cooking["valve2_position_cooking"] = statecookingsettings.valve2_position_cooking;
         doc_cooking["valve3_position_cooking"] = statecookingsettings.valve3_position_cooking;
@@ -626,7 +655,7 @@ String create_statemachine_json()
         doc_cooking["valve8_position_cooking"] = statecookingsettings.valve8_position_cooking;
         doc_cooking["valve9_position_cooking"] = statecookingsettings.valve9_position_cooking;
         doc_cooking["valve10_position_cooking"] = statecookingsettings.valve10_position_cooking;
-        doc_cooking["valve11_position_cooking"] = statecookingsettings.valve11_position_cooking;
+        doc_cooking["valve11_position_cooking"] = statecookingsettings.valve11_position_cooking;*/
         xSemaphoreGive(settings_state_cooking_mutex);
     }
     doc_cooking.shrinkToFit();
@@ -648,7 +677,12 @@ String create_statemachine_json()
         doc_cyclingday["enable_state_cyclingday"] = statecyclingdaysettings.enable_state_cyclingday;
         doc_cyclingday["state_cyclingday_fanspeed"] = statecyclingdaysettings.state_cyclingday_fanspeed;
         doc_cyclingday["name_state_cyclingday"] = statecyclingdaysettings.name_state_cyclingday;
-        doc_cyclingday["valve0_position_cyclingday"] = statecyclingdaysettings.valve0_position_cyclingday;
+        for (int i = 0; i < 12; i++)
+        {
+            doc_cyclingday["valve" + String(i) + "_position_cyclingday"] = statecyclingdaysettings.valve_position_cyclingday[i];
+        }
+
+        /*doc_cyclingday["valve0_position_cyclingday"] = statecyclingdaysettings.valve0_position_cyclingday;
         doc_cyclingday["valve1_position_cyclingday"] = statecyclingdaysettings.valve1_position_cyclingday;
         doc_cyclingday["valve2_position_cyclingday"] = statecyclingdaysettings.valve2_position_cyclingday;
         doc_cyclingday["valve3_position_cyclingday"] = statecyclingdaysettings.valve3_position_cyclingday;
@@ -659,7 +693,7 @@ String create_statemachine_json()
         doc_cyclingday["valve8_position_cyclingday"] = statecyclingdaysettings.valve8_position_cyclingday;
         doc_cyclingday["valve9_position_cyclingday"] = statecyclingdaysettings.valve9_position_cyclingday;
         doc_cyclingday["valve10_position_cyclingday"] = statecyclingdaysettings.valve10_position_cyclingday;
-        doc_cyclingday["valve11_position_cyclingday"] = statecyclingdaysettings.valve11_position_cyclingday;
+        doc_cyclingday["valve11_position_cyclingday"] = statecyclingdaysettings.valve11_position_cyclingday;*/
         xSemaphoreGive(settings_state_cyclingday_mutex);
     }
     doc_cyclingday.shrinkToFit();
@@ -681,7 +715,12 @@ String create_statemachine_json()
         doc_cyclingnight["enable_state_cyclingnight"] = statecyclingnightsettings.enable_state_cyclingnight;
         doc_cyclingnight["state_cyclingnight_fanspeed"] = statecyclingnightsettings.state_cyclingnight_fanspeed;
         doc_cyclingnight["name_state_cyclingnight"] = statecyclingnightsettings.name_state_cyclingnight;
-        doc_cyclingnight["valve0_position_cyclingnight"] = statecyclingnightsettings.valve0_position_cyclingnight;
+
+        for (int i = 0; i < 12; i++)
+        {
+            doc_cyclingnight["valve" + String(i) + "_position_cyclingnight"] = statecyclingnightsettings.valve_position_cyclingnight[i];
+        }
+        /*doc_cyclingnight["valve0_position_cyclingnight"] = statecyclingnightsettings.valve0_position_cyclingnight;
         doc_cyclingnight["valve1_position_cyclingnight"] = statecyclingnightsettings.valve1_position_cyclingnight;
         doc_cyclingnight["valve2_position_cyclingnight"] = statecyclingnightsettings.valve2_position_cyclingnight;
         doc_cyclingnight["valve3_position_cyclingnight"] = statecyclingnightsettings.valve3_position_cyclingnight;
@@ -692,23 +731,24 @@ String create_statemachine_json()
         doc_cyclingnight["valve8_position_cyclingnight"] = statecyclingnightsettings.valve8_position_cyclingnight;
         doc_cyclingnight["valve9_position_cyclingnight"] = statecyclingnightsettings.valve9_position_cyclingnight;
         doc_cyclingnight["valve10_position_cyclingnight"] = statecyclingnightsettings.valve10_position_cyclingnight;
-        doc_cyclingnight["valve11_position_cyclingnight"] = statecyclingnightsettings.valve11_position_cyclingnight;
+        doc_cyclingnight["valve11_position_cyclingnight"] = statecyclingnightsettings.valve11_position_cyclingnight;*/
         xSemaphoreGive(settings_state_cyclingnight_mutex);
-    }
-    doc_cyclingnight.shrinkToFit();
-    serializeJson(doc_cyclingnight, settings_state_cyclingnight_str);
-    if (settings_state_cyclingnight_str == "")
-    {
-        message = "[ERROR] String is empty. Failed to read cycling night state settings.";
-        print_message(message);
-        return "";
-    }
-    else
-    {
-        statemachine_json = concatJson(statemachine_json, settings_state_cyclingnight_str);
-    }
 
-    return statemachine_json;
+        doc_cyclingnight.shrinkToFit();
+        serializeJson(doc_cyclingnight, settings_state_cyclingnight_str);
+        if (settings_state_cyclingnight_str == "")
+        {
+            message = "[ERROR] String is empty. Failed to read cycling night state settings.";
+            print_message(message);
+            return "";
+        }
+        else
+        {
+            statemachine_json = concatJson(statemachine_json, settings_state_cyclingnight_str);
+        }
+
+        return statemachine_json;
+    }
 }
 
 String create_valvecontrol_json()

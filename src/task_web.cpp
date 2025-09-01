@@ -625,193 +625,249 @@ void Taskwebcode(void *pvParameters)
 	// Response for POST action in webform valvecontrol manual move valves
 	server.on("/valvecontrol", HTTP_POST, [](AsyncWebServerRequest *request)
 			  {
-		if (valve_control_data_mutex != NULL) {
-			
-			int params = request->params();
-			
-			if(xSemaphoreTake(valve_control_data_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-				for(int i=0;i<params;i++){
-					const AsyncWebParameter* p = request->getParam(i);
-					if(p->isPost()) {
-						if (p->name() == VALVE0_POSITION_MOVE) {
-							valve_control_data["valve0_data"][0] = 0;
-							valve_control_data["valve0_data"][1] =  p->value().toInt();
+
+		int params = request->params();
+		if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
+		{
+			for(int i=0;i<params;i++){
+				const AsyncWebParameter* p = request->getParam(i);
+				if(p->isPost()) {
+					if (p->name() == VALVE0_POSITION_MOVE) {
+						//valve_control_data["valve0_data"][0] = 0;
+						//valve_control_data["valve0_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[0] = 0;
+						valvecontroldata.position_change[0] = p->value().toInt();
+					}
+					if (p->name() == VALVE0_DIRECTION) 
+					{
+						valve0_direction = p->value().c_str();
+						if (valve0_direction == "Close") 
+						{
+							//valve_control_data["valve0_data"][2] = 0;
+							valvecontroldata.direction[0] = 0;
 						}
-						if (p->name() == VALVE0_DIRECTION) {
-							valve0_direction = p->value().c_str();
-							if (valve0_direction == "Close") {
-								valve_control_data["valve0_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve0_data"][2] = 1;
-							}
+						else 
+						{
+							//valve_control_data["valve0_data"][2] = 1;
+							valvecontroldata.direction[0] = 1;
 						}
-						if (p->name() == VALVE1_POSITION_MOVE) {
-							valve_control_data["valve1_data"][0] = 1;
-							valve_control_data["valve1_data"][1] =  p->value().toInt();
+					}
+					if (p->name() == VALVE1_POSITION_MOVE) {
+						//valve_control_data["valve1_data"][0] = 1;
+						//valve_control_data["valve1_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[1] = 1;
+						valvecontroldata.position_change[1] = p->value().toInt();
+					}
+					if (p->name() == VALVE1_DIRECTION) 
+					{
+						valve1_direction = p->value().c_str();
+						if (valve1_direction == "Close") {
+							//valve_control_data["valve1_data"][2] = 0;
+							valvecontroldata.direction[1] = 0;
 						}
-						if (p->name() == VALVE1_DIRECTION) {
-							valve1_direction = p->value().c_str();
-							if (valve1_direction == "Close") {
-								valve_control_data["valve1_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve1_data"][2] = 1;
-							}
+						else {
+							//valve_control_data["valve1_data"][2] = 1;
+							valvecontroldata.direction[1] = 1;
 						}
-						if (p->name() == VALVE2_POSITION_MOVE) {
-							valve_control_data["valve2_data"][0] = 2;
-							valve_control_data["valve2_data"][1] =  p->value().toInt();
-							}
-						if (p->name() == VALVE2_DIRECTION) {
-							valve2_direction = p->value().c_str();
-							if (valve2_direction == "Close") {
-								valve_control_data["valve2_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve2_data"][2] = 1;
-							}
+					}
+					if (p->name() == VALVE2_POSITION_MOVE) 
+					{
+						//valve_control_data["valve2_data"][0] = 2;
+						//valve_control_data["valve2_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[2] = 2;
+						valvecontroldata.position_change[2] = p->value().toInt();
+					}
+					if (p->name() == VALVE2_DIRECTION) {
+						valve2_direction = p->value().c_str();
+						if (valve2_direction == "Close") {
+							//valve_control_data["valve2_data"][2] = 0;
+							valvecontroldata.direction[2] = 0;
 						}
-						if (p->name() == VALVE3_POSITION_MOVE) {
-							valve_control_data["valve3_data"][0] = 3;
-							valve_control_data["valve3_data"][1] =  p->value().toInt();
+						else {
+							//valve_control_data["valve2_data"][2] = 1;
+							valvecontroldata.direction[2] = 1;
 						}
-						if (p->name() == VALVE3_DIRECTION) {
-							valve3_direction = p->value().c_str();
-							if (valve3_direction == "Close") {
-								valve_control_data["valve3_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve3_data"][2] = 1;
-							}
+					}
+					if (p->name() == VALVE3_POSITION_MOVE) {
+						//valve_control_data["valve3_data"][0] = 3;
+						//valve_control_data["valve3_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[3] = 3;
+						valvecontroldata.position_change[3] = p->value().toInt();
+					}
+					if (p->name() == VALVE3_DIRECTION) {
+						valve3_direction = p->value().c_str();
+						if (valve3_direction == "Close") {
+							//valve_control_data["valve3_data"][2] = 0;
+							valvecontroldata.direction[3] = 0;
 						}
-						if (p->name() == VALVE4_POSITION_MOVE) {
-							valve_control_data["valve4_data"][0] = 4;
-							valve_control_data["valve4_data"][1] =  p->value().toInt();
-							}
-							if (p->name() == VALVE4_DIRECTION) {
-							valve4_direction = p->value().c_str();
-							if (valve4_direction == "Close") {
-								valve_control_data["valve4_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve4_data"][2] = 1;
-							}
+						else {
+							//valve_control_data["valve3_data"][2] = 1;
+							valvecontroldata.direction[3] = 1;
 						}
-						if (p->name() == VALVE5_POSITION_MOVE) {
-							valve_control_data["valve5_data"][0] = 5;
-							valve_control_data["valve5_data"][1] =  p->value().toInt();
+					}
+					if (p->name() == VALVE4_POSITION_MOVE) {
+						//valve_control_data["valve4_data"][0] = 4;
+						//valve_control_data["valve4_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[4] = 4;
+						valvecontroldata.position_change[4] = p->value().toInt();
 						}
-						if (p->name() == VALVE5_DIRECTION) {
-							valve5_direction = p->value().c_str();
-							if (valve5_direction == "Close") {
-								valve_control_data["valve5_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve5_data"][2] = 1;
-							}
+						if (p->name() == VALVE4_DIRECTION) {
+						valve4_direction = p->value().c_str();
+						if (valve4_direction == "Close") {
+							//valve_control_data["valve4_data"][2] = 0;
+							valvecontroldata.direction[4] = 0;
 						}
-						if (p->name() == VALVE6_POSITION_MOVE) {
-							valve_control_data["valve6_data"][0] = 6;
-							valve_control_data["valve6_data"][1] =  p->value().toInt();
+						else {
+							//valve_control_data["valve4_data"][2] = 1;
+							valvecontroldata.direction[4] = 1;
 						}
-						if (p->name() == VALVE6_DIRECTION) {
-							valve6_direction = p->value().c_str();
-							if (valve6_direction == "Close") {
-								valve_control_data["valve6_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve6_data"][2] = 1;
-							}
+					}
+					if (p->name() == VALVE5_POSITION_MOVE) {
+						//valve_control_data["valve5_data"][0] = 5;
+						//valve_control_data["valve5_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[5] = 5;
+						valvecontroldata.position_change[5] = p->value().toInt();
+					}
+					if (p->name() == VALVE5_DIRECTION) {
+						valve5_direction = p->value().c_str();
+						if (valve5_direction == "Close") {
+							//valve_control_data["valve5_data"][2] = 0;
+							valvecontroldata.direction[5] = 0;
 						}
-						if (p->name() == VALVE7_POSITION_MOVE) {
-							valve_control_data["valve7_data"][0] = 7;
-							valve_control_data["valve7_data"][1] =  p->value().toInt();
+						else {
+							//valve_control_data["valve5_data"][2] = 1;
+							valvecontroldata.direction[5] = 1;
 						}
-						if (p->name() == VALVE7_DIRECTION) {
-							valve7_direction = p->value().c_str();
-							if (valve7_direction == "Close") {
-								valve_control_data["valve7_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve7_data"][2] = 1;
-							}
+					}
+					if (p->name() == VALVE6_POSITION_MOVE) {
+						//valve_control_data["valve6_data"][0] = 6;
+						//valve_control_data["valve6_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[6] = 6;
+						valvecontroldata.position_change[6] = p->value().toInt();
+					}
+					if (p->name() == VALVE6_DIRECTION) {
+						valve6_direction = p->value().c_str();
+						if (valve6_direction == "Close") {
+							//valve_control_data["valve6_data"][2] = 0;
+							valvecontroldata.direction[6] = 0;
 						}
-						if (p->name() == VALVE8_POSITION_MOVE) {
-							valve_control_data["valve8_data"][0] = 8;
-							valve_control_data["valve8_data"][1] =  p->value().toInt();
-							}
-							if (p->name() == VALVE8_DIRECTION) {
-							valve8_direction = p->value().c_str();
-							if (valve8_direction == "Close") {
-								valve_control_data["valve8_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve8_data"][2] = 1;
-							}
+						else {
+							//valve_control_data["valve6_data"][2] = 1;
+							valvecontroldata.direction[6] = 1;
 						}
-						if (p->name() == VALVE9_POSITION_MOVE) {
-							valve_control_data["valve9_data"][0] = 9;
-							valve_control_data["valve9_data"][1] =  p->value().toInt();
-							}
-							if (p->name() == VALVE9_DIRECTION) {
-							valve9_direction = p->value().c_str();
-							if (valve9_direction == "Close") {
-								valve_control_data["valve9_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve9_data"][2] = 1;
-							}
+					}
+					if (p->name() == VALVE7_POSITION_MOVE) {
+						//valve_control_data["valve7_data"][0] = 7;
+						//valve_control_data["valve7_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[7] = 7;
+						valvecontroldata.position_change[7] = p->value().toInt();
+					}
+					if (p->name() == VALVE7_DIRECTION) {
+						valve7_direction = p->value().c_str();
+						if (valve7_direction == "Close") {
+							//valve_control_data["valve7_data"][2] = 0;
+							valvecontroldata.direction[7] = 0;
 						}
-						if (p->name() == VALVE10_POSITION_MOVE) {
-							valve_control_data["valve10_data"][0] = 10;
-							valve_control_data["valve10_data"][1] =  p->value().toInt();
+						else {
+							//valve_control_data["valve7_data"][2] = 1;
+							valvecontroldata.direction[7] = 1;
 						}
-						if (p->name() == VALVE10_DIRECTION) {
-							valve10_direction = p->value().c_str();
-							if (valve10_direction == "Close") {
-								valve_control_data["valve10_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve10_data"][2] = 1;
-							}
+					}
+					if (p->name() == VALVE8_POSITION_MOVE) {
+						//valve_control_data["valve8_data"][0] = 8;
+						//valve_control_data["valve8_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[8] = 8;
+						valvecontroldata.position_change[8] = p->value().toInt();
 						}
-						if (p->name() == VALVE11_POSITION_MOVE) {
-							valve_control_data["valve11_data"][0] = 11;
-							valve_control_data["valve11_data"][1] =  p->value().toInt();
-							}
-							if (p->name() == VALVE11_DIRECTION) {
-							valve11_direction = p->value().c_str();
-							if (valve11_direction == "Close") {
-								valve_control_data["valve11_data"][2] = 0;
-							}
-							else {
-								valve_control_data["valve11_data"][2] = 1;
-							}
+						if (p->name() == VALVE8_DIRECTION) {
+						valve8_direction = p->value().c_str();
+						if (valve8_direction == "Close") {
+							//valve_control_data["valve8_data"][2] = 0;
+							valvecontroldata.direction[8] = 0;
 						}
-						if (p->name() == STORE_VALVE_POSITION_IN_FILE) {
-							store_valve_position_in_file = p->value().c_str();
-							if (store_valve_position_in_file == "true") {
-								valve_control_data["checks"][0] = 1;
-							}
-							else {
-								valve_control_data["checks"][0] = 0;
-							}
+						else {
+							//valve_control_data["valve8_data"][2] = 1;
+							valvecontroldata.direction[8] = 1;
 						}
-						if (p->name() == CHECK_VALVE_POSITION) {
-							check_valve_position = p->value().c_str();
-							if (check_valve_position == "true") {
-								valve_control_data["checks"][1] = 1;
-							}
-							else {
-								valve_control_data["checks"][1] = 0;
-							}
+					}
+					if (p->name() == VALVE9_POSITION_MOVE) {
+						//valve_control_data["valve9_data"][0] = 9;
+						//valve_control_data["valve9_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[9] = 9;
+						valvecontroldata.position_change[9] = p->value().toInt();
+						}
+						if (p->name() == VALVE9_DIRECTION) {
+						valve9_direction = p->value().c_str();
+						if (valve9_direction == "Close") {
+							//valve_control_data["valve9_data"][2] = 0;
+							valvecontroldata.direction[9] = 0;
+						}
+						else {
+							//valve_control_data["valve9_data"][2] = 1;
+							valvecontroldata.direction[9] = 1;
+						}
+					}
+					if (p->name() == VALVE10_POSITION_MOVE) {
+						//valve_control_data["valve10_data"][0] = 10;
+						//valve_control_data["valve10_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[10] = 10;
+						valvecontroldata.position_change[10] = p->value().toInt();
+					}
+					if (p->name() == VALVE10_DIRECTION) {
+						valve10_direction = p->value().c_str();
+						if (valve10_direction == "Close") {
+							//valve_control_data["valve10_data"][2] = 0;
+							valvecontroldata.direction[10] = 0;
+						}
+						else {
+							//valve_control_data["valve10_data"][2] = 1;
+							valvecontroldata.direction[10] = 1;
+						}
+					}
+					if (p->name() == VALVE11_POSITION_MOVE) {
+						//valve_control_data["valve11_data"][0] = 11;
+						//valve_control_data["valve11_data"][1] =  p->value().toInt();
+						valvecontroldata.valve_number[11] = 11;
+						valvecontroldata.position_change[11] = p->value().toInt();
+						}
+						if (p->name() == VALVE11_DIRECTION) {
+						valve11_direction = p->value().c_str();
+						if (valve11_direction == "Close") {
+							//valve_control_data["valve11_data"][2] = 0;
+							valvecontroldata.direction[11] = 0;
+						}
+						else {
+							//valve_control_data["valve11_data"][2] = 1;
+							valvecontroldata.direction[11] = 1;
+						}
+					}
+					if (p->name() == STORE_VALVE_POSITION_IN_FILE) {
+						store_valve_position_in_file = p->value().c_str();
+						if (store_valve_position_in_file == "true") {
+							//valve_control_data["checks"][0] = 1;
+							valvecontroldata.write_new_position = true;
+						}
+						else {
+							//valve_control_data["checks"][0] = 0;
+							valvecontroldata.write_new_position = false;
+						}
+					}
+					if (p->name() == CHECK_VALVE_POSITION) {
+						check_valve_position = p->value().c_str();
+						if (check_valve_position == "true") {
+							//valve_control_data["checks"][1] = 1;
+							valvecontroldata.check_position = true;
+						}
+						else {
+							//valve_control_data["checks"][1] = 0;
+							valvecontroldata.check_position = false;
 						}
 					}
 				}
-				xSemaphoreGive(valve_control_data_mutex);
 			}
+			xSemaphoreGive(valve_control_data_mutex);
 		}
+	
 		request->send(200, "text/html", valvecontrol_html);
 		
 		// Disable valve moving when valves are already moving
