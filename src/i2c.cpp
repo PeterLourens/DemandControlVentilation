@@ -259,7 +259,6 @@ void display_sensors(void)
         {
             for (int slot = 0; slot < 8; slot++)
             {
-
                 // Only display measurements if sensor is present, i.e. if temperature measurement is not zero
                 if (queue_sensor_data[bus][slot][0] != 0)
                 {
@@ -471,49 +470,22 @@ void display_time_and_date(void)
    */
 
     int64_t uptime = 0;
-    int display_i2c_addr_tmp = 0;
-    String temp_dayOfWeek = "";
-    String temp_dayStr = "";
-    String temp_monthStr = "";
-    String temp_yearStr = "";
-    String temp_hourStr = "";
-    String temp_minuteStr = "";
-    String temp_secondStr = "";
+
+    char date_buffer[20];
+    char time_buffer[20];
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
     lcd.backlight();
 
-    if (date_time_mutex != NULL)
-    {
-        if (xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
-        {
-            temp_dayOfWeek = dayOfWeek;
-            temp_dayStr = dayStr;
-            temp_monthStr = monthStr;
-            temp_yearStr = yearStr;
-            temp_hourStr = hourStr;
-            temp_minuteStr = minuteStr;
-            temp_secondStr = secondStr;
-            xSemaphoreGive(date_time_mutex);
-        }
-    }
+    formatted_date(date_buffer, sizeof(date_buffer));
+    formatted_time(time_buffer, sizeof(time_buffer));
 
     lcd.setCursor(0, 0);
-    lcd.print(temp_dayOfWeek);
-    lcd.print(" ");
-    lcd.print(temp_dayStr);
-    lcd.print("-");
-    lcd.print(temp_monthStr);
-    lcd.print("-");
-    lcd.print(temp_yearStr);
+    lcd.print(String(date_buffer));
 
     lcd.setCursor(0, 1);
-    lcd.print(temp_hourStr);
-    lcd.print(":");
-    lcd.print(temp_minuteStr);
-    lcd.print(":");
-    lcd.print(temp_secondStr);
+    lcd.print(String(time_buffer));
 
     uptime = esp_timer_get_time();
     lcd.setCursor(0, 2);
@@ -595,7 +567,7 @@ void current_time(void)
             minuteStr = (now.minute() < 10 ? "0" : "") + String(now.minute(), DEC);
             secondStr = (now.second() < 10 ? "0" : "") + String(now.second(), DEC);
             dayOfWeek = daysOfTheWeek[now.dayOfTheWeek()];
-            //formattedTime = dayOfWeek + ", " + yearStr + "-" + monthStr + "-" + dayStr + " " + hourStr + ":" + minuteStr + ":" + secondStr;
+            // formattedTime = dayOfWeek + ", " + yearStr + "-" + monthStr + "-" + dayStr + " " + hourStr + ":" + minuteStr + ":" + secondStr;
             rtcdatetime.year = now.year();
             rtcdatetime.month = now.month();
             rtcdatetime.day = now.day();
@@ -607,7 +579,7 @@ void current_time(void)
         }
     }
     Wire.endTransmission();
-    //return formattedTime;
+    // return formattedTime;
 }
 
 void sync_rtc_ntp(void)
@@ -616,7 +588,7 @@ void sync_rtc_ntp(void)
 
     char ntp_server[LARGE_CONFIG_ITEM] = {};
     char timezone[LARGE_CONFIG_ITEM] = {};
-    
+
     String message = "";
 
     RTC_DS3231 rtc;

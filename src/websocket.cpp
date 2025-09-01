@@ -14,13 +14,13 @@ String create_index_json()
 {
     bool status_valve_file_present = 0;
     float temp_sensor_data[2][8][3];
+    char daydatetime_buffer[50];
 
     String json = "";
     String json_valves = "";
     String message = "";
     String state_tmp = "";
     String fanspeed_tmp = "";
-    String date_time = "";
 
     JsonDocument doc;
 
@@ -64,12 +64,12 @@ String create_index_json()
         xSemaphoreGive(fanspeed_mutex);
     }
 
-    date_time = formatted_datetime();
+    formatted_daydatetime(daydatetime_buffer, sizeof(daydatetime_buffer));
 
     doc["statemachine_state"] = state_tmp;
     doc["fanspeed"] = fanspeed_tmp;
     doc["uptime"] = formatted_uptime();
-    doc["date_time"] = date_time;
+    doc["date_time"] = daydatetime_buffer;
 
     for (int i = 0; i < 8; i++)
     {

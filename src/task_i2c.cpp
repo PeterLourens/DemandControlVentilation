@@ -15,7 +15,7 @@ void task_i2c_code(void *pvParameters)
 
     const TickType_t timedelay = 10; // main time delay im ms
 
-    char date_time_buffer[40];
+    char date_time_buffer[50];
 
     String message = "";
 
@@ -54,12 +54,12 @@ void task_i2c_code(void *pvParameters)
         if (rtc_time_multiplier == 2000)
         { // Every 20 seconds
 
-            message = "Local time (1) is: " + formatted_datetime();
-            print_message(message);
+            //message = "Local time (1) is: " + formatted_datetime();
+            //print_message(message);
             
-            datetime(date_time_buffer, sizeof(date_time_buffer));
-            message = "Local time (2) is: " + String(date_time_buffer);
-            print_message(message);
+            //formatted_daydatetime(date_time_buffer, sizeof(date_time_buffer));
+            //message = "Local time is: " + String(date_time_buffer);
+            //print_message(message);
 
             message = "System uptime: " + formatted_uptime();
             print_message(message);

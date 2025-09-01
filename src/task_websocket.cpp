@@ -13,8 +13,8 @@ void task_websocket_code(void *pvParameters)
 {
 
     char rxBuffer[400];
-    String datetime = "";
-    String rxString = "";
+    char datetime_buffer[40];
+
     String message = "";
 
     // webSerial.onMessage([](const std::string &msg){ Serial.println(msg.c_str()); });
@@ -24,14 +24,15 @@ void task_websocket_code(void *pvParameters)
     ws_server.addHandler(&ws);
     ws_server.begin();
 
+    
+
     // Loop code for the task
     for (;;)
     {
         if (xQueueReceive(webserial_queue, rxBuffer, 50) == pdPASS)
         {
-            rxString = String(rxBuffer);
-            datetime = formatted_datetime();
-            message = datetime + " - " + rxString;
+            formatted_datetime(datetime_buffer, sizeof(datetime_buffer));
+            message = String(datetime_buffer) + " " + String(rxBuffer);
             Serial.print("\n" + message);
             webSerial.print("\n" + message);
         }
@@ -100,10 +101,10 @@ void onEvent(AsyncWebSocket *ws_server, AsyncWebSocketClient *client, AwsEventTy
     switch (type)
     {
     case WS_EVT_CONNECT:
-        //Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
+        // Serial.printf("WebSocket client #%u connected from %s\n", client->id(), client->remoteIP().toString().c_str());
         break;
     case WS_EVT_DISCONNECT:
-        //Serial.printf("WebSocket client #%u disconnected\n", client->id());
+        // Serial.printf("WebSocket client #%u disconnected\n", client->id());
         break;
     case WS_EVT_DATA:
         handleWebSocketMessage(arg, data, len);
