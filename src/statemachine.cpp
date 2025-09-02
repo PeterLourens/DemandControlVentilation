@@ -567,20 +567,38 @@ void high_co2_day_transitions(void)
     // or only one valve needs to open (when high reading is in a room)
     for (int i = 0; i < co2_sensor_counter; i++)
     {
-        if (co2_sensors[i].co2_reading > co2highlevel && co2_sensors[i].valve != "Fan inlet")
+        valve = co2_sensors[i].valve;
+        valve.replace("valve", "");
+        valve_nr = valve.toInt();
+        reading = co2_sensors[i].co2_reading;
+
+        if (valve != "Fan inlet")
         {
-            // Set new valve settings for the room with high CO2 reading
-            settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 20;
+            if (reading >= co2highlevel)
+            {
+                state_valve_position[valve_nr] = 20;
+                message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has a CO2 reading higher than highco2level.";
+                print_message(message);
+            }
+            else if (reading >= co2lowlevel && reading < co2highlevel)
+            {
+                // The sensor value is between 900 and 1000 ppm so the valve position should remain at 20 until low co2 level is reached. The valve was set at 4 by default in above statements
+                // This logic corrects the default setting of 4 to 20 and to make sure a deadband of the difference between highco2level and lowc02level is achieved
+                // settings_state_temp[valve + "_position_state_temp"] = 20;
+                state_valve_position[valve_nr] = 20;
+                message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has CO2 reading between low and high CO2 level. Valve remain at 20 until CO2 reduces to the CO2 low level";
+                print_message(message);
+            }
+            else
+            {
+                // Do nothing because valve is already back to default position according to sate
+                message = "No sensor has high CO2 reading. Valve set to default state position";
+                print_message(message);
+            }
         }
-        if (co2_sensors[i].co2_reading < co2lowlevel && co2_sensors[i].valve != "Fan inlet")
+
+        if (reading > co2highlevel)
         {
-            // Set new valve settings for the room with high CO2 reading
-            settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 4;
-        }
-        if (co2_sensors[i].co2_reading > co2highlevel)
-        {
-            message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading.";
-            print_message(message);
             co2_sensors_high++;
         }
     }
@@ -719,21 +737,41 @@ void high_co2_night_transitions(void)
     }
 
     // High CO2 has been detected to come into this state. Iterate through CO2 sensors to see which sensor detects high CO2. Valves with CO2 sensors are default
-    // set to 24 for this state. Valves with a CO2 value lower than 900 ppm will be closed to 4 to direct airflow to the rooms with high CO2 reading.
+    // set to 20 for this state. Valves with a CO2 value lower than 900 ppm will be closed to 4 to direct airflow to the rooms with high CO2 reading.
     for (int i = 0; i < co2_sensor_counter; i++)
     {
-        if (co2_sensors[i].co2_reading <= co2lowlevel && co2_sensors[i].valve != "Fan inlet")
+        valve = co2_sensors[i].valve;
+        valve.replace("valve", "");
+        valve_nr = valve.toInt();
+        reading = co2_sensors[i].co2_reading;
+
+        if (valve != "Fan inlet")
         {
-            settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 4; // Set new valve settings for the room without high CO2 reading to 4
+            if (reading <= co2lowlevel)
+            {
+                // CO2 is low so close the valve re-route the air to valves with high CO2
+                state_valve_position[valve_nr] = 4;
+                message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has CO2 reading low than CO2lowlevel. Valve remain at 4 until CO2 exceeds the CO2lowlevel";
+            }
+            else if (reading > co2lowlevel && reading < co2highlevel)
+            {
+                // The sensor value is between 900 and 1000 ppm so the valve position should remain at 4 until low co2 level is reached. The valve was set at 20 by default.
+                // This logic corrects the default setting of 4 to 20 and to make sure a deadband of the difference between highco2level and lowc02level is achieved
+                state_valve_position[valve_nr] = 4;
+                message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has CO2 reading between low and high CO2 level. Valve remain at 20 until CO2 reduces to the CO2 low level";
+                print_message(message);
+            }
+            else
+            {
+                // The sensor value is above co2highlevel so default valve setting applies
+                message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has CO2 reading higher than co2highlevel. Default valve setting applies";
+                print_message(message);
+            }
         }
-        if (co2_sensors[i].co2_reading > co2highlevel && co2_sensors[i].valve != "Fan inlet")
+
+        if (reading > co2highlevel)
         {
-            settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 20; // Set new valve settings for the room with high CO2 reading to 24
-            Serial.print("\nSensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading.");
-        }
-        if (co2_sensors[i].co2_reading > co2highlevel)
-        {
-            co2_sensors_high++; // No need to move valve but remains in highco2night
+            co2_sensors_high++;
         }
     }
 
@@ -761,7 +799,8 @@ void high_co2_night_transitions(void)
     }
 
     // Conditions for transition
-    if (co2_sensors_high == 0 && elapsed_time >= min_state_time)
+    // This state always transits back to night first or to highco2day if day time.
+    if (co2_sensors_high == 0 && elapsed_time >= minimum_state_time) // Night with no high CO2 readings
     {
         message = "It is night, no high co2 levels. Transit to night.";
         print_message(message);
