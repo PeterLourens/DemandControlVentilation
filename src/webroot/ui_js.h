@@ -1,3 +1,6 @@
+const char ui_js[] = R"rawliteral(
+
+//Original ui.js
 (function (window, document) {
 
     // we fetch the elements each time because docusaurus removes the previous
@@ -52,3 +55,6 @@
     document.addEventListener('click', handleEvent);
 
 }(this, this.document));
+//End orignal ui.js
+
+)rawliteral";

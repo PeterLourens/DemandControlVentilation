@@ -1,10 +1,10 @@
 {
     "enable_dhcp": "Off",
-    "ssid":"",
-    "wifi_password":"",
-    "ip_address":"",
-    "subnet_mask":"",
-    "gateway":"",
-    "primary_dns":"",
-    "secondary_dns":""
+    "ssid": "",
+    "wifi_password": "",
+    "ip_address": "",
+    "subnet_mask": "",
+    "gateway": "",
+    "primary_dns": "",
+    "secondary_dns": ""
 }

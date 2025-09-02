@@ -1,4 +1,4 @@
-#ifndef TASK_WEB_H    // To make sure you don't declare the function more than once by including the header multiple times.
+#ifndef TASK_WEB_H // To make sure you don't declare the function more than once by including the header multiple times.
 #define TASK_WEB_H
 
 #include <Arduino.h>
@@ -15,10 +15,22 @@
 #include "globals.h"
 #include "general.h"
 
+#include "webroot/index_html.h"
+#include "webroot/sensor_config_html.h"
+#include "webroot/settings_html.h"
+#include "webroot/statemachine_html.h"
+#include "webroot/styles_css.h"
+#include "webroot/pure-min_css.h"
+#include "webroot/ui_js.h"
+#include "webroot/websocket_js.h"
+#include "webroot/valvecontrol_html.h"
+#include "webroot/web_serial_html.h"
+#include "webroot/test2_html.h"
+#include "webroot/jquery_min_js.h"
+#include "webroot/favicon_ico.h"
+
 // function declarations
 void startTaskwebcode(void);
 void Taskwebcode(void *pvParameters);
 
 #endif
-
-

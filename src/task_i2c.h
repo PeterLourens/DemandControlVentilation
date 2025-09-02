@@ -7,7 +7,7 @@
 
 #include "i2c.h"
 #include "globals.h"
-#include "signalprocessor.h"
+//#include "signalprocessor.h"
 #include "LiquidCrystal_I2C.h" 
 #include "general.h"
 

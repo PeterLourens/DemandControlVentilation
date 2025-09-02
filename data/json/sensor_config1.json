@@ -1,66 +1,42 @@
 {
-    "wire_sensor0":
-        {
-            "type":"DHT20",
-            "valve":"valve6",
-            "location":"Bathroom",
-            "rh":"On",
-            "co2":"Off"
-        },
-    "wire_sensor1":
-        {
-            "type":"None",
-            "valve":"None",
-            "location":"",
-            "rh":"Off",
-            "co2":"Off"
-        },
-    "wire_sensor2":
-            {
-            "type":"SCD41",
-            "valve":"valve8",
-            "location":"Bedroom1",
-            "rh":"Off",
-            "co2":"On"
-        },
-    "wire_sensor3":
-        {
-            "type":"SCD41",
-            "valve":"valve9",
-            "location":"Bedroom2",
-            "rh":"Off",
-            "co2":"On"
-        },
-    "wire_sensor4":
-        {
-            "type":"SCD40",
-            "valve":"Fan inlet",
-            "location":"Fan inlet",
-            "rh":"Off",
-            "co2":"On"
-        },
-    "wire_sensor5":
-        {
-            "type":"None",
-            "valve":"None",
-            "location":"",
-            "rh":"Off",
-            "co2":"Off"
-        },
-    "wire_sensor6":
-        {
-            "type":"None",
-            "valve":"None",
-            "location":"",
-            "rh":"Off",
-            "co2":"Off"
-        },
-    "wire_sensor7":
-        {
-            "type":"None",
-            "valve":"None",
-            "location":"",
-            "rh":"Off",
-            "co2":"Off"
-        }   
-    }
+    "wire_sensor0_type": "DHT20",
+    "wire_sensor0_valve": "valve6",
+    "wire_sensor0_location": "Bathroom",
+    "wire_sensor0_rh": "On",
+    "wire_sensor0_co2": "Off",
+    "wire_sensor1_type": "DHT20",
+    "wire_sensor1_valve": "valve2",
+    "wire_sensor1_location": "Toilet",
+    "wire_sensor1_rh": "On",
+    "wire_sensor1_co2": "Off",
+    "wire_sensor2_type": "DHT20",
+    "wire_sensor2_valve": "valve8",
+    "wire_sensor2_location": "Bedroom1",
+    "wire_sensor2_rh": "Off",
+    "wire_sensor2_co2": "Off",
+    "wire_sensor3_type": "SCD41",
+    "wire_sensor3_valve": "valve9",
+    "wire_sensor3_location": "Bedroom2",
+    "wire_sensor3_rh": "Off",
+    "wire_sensor3_co2": "On",
+    "wire_sensor4_type": "None",
+    "wire_sensor4_valve": "None",
+    "wire_sensor4_location": "",
+    "wire_sensor4_rh": "Off",
+    "wire_sensor4_co2": "On",
+    "wire_sensor5_type": "None",
+    "wire_sensor5_valve": "None",
+    "wire_sensor5_location": "",
+    "wire_sensor5_rh": "Off",
+    "wire_sensor5_co2": "Off",
+    "wire_sensor6_type": "None",
+    "wire_sensor6_valve": "None",
+    "wire_sensor6_location": "",
+    "wire_sensor6_rh": "Off",
+    "wire_sensor6_co2": "Off",
+    "wire_sensor7_type": "SCD40",
+    "wire_sensor7_valve": "Fan inlet",
+    "wire_sensor7_location": "Fan inlet",
+    "wire_sensor7_rh": "Off",
+    "wire_sensor7_co2": "On"
+}

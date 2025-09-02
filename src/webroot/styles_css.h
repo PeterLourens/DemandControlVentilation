@@ -1,3 +1,4 @@
+const char styles_css[] = R"rawliteral(
 body {
     color: #777;
 }
@@ -255,4 +256,4 @@ Hides the menu at `48em`, but modify this based on your app's needs.
         left: 160px;
     }
 }
-
+)rawliteral";

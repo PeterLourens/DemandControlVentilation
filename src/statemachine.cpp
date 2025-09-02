@@ -2,8 +2,8 @@
 
 #include "statemachine.h"
 
-float statemachine_sensor_data[2][8][3];
-float statemachine_avg_sensor_data[2][8][3];
+float statemachine_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+float statemachine_avg_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
 
 int co2_sensor_counter = 0;
 int rh_sensor_counter = 0;
@@ -14,252 +14,247 @@ long elapsed_time = 0;
 String new_state = "";
 String temp_fanspeed = "Low";
 
-struct CO2_Sensors {
-        String valve;
-        float co2_reading;
+struct CO2_Sensors
+{
+    char *valve;
+    float co2_reading;
 };
-struct RH_Sensors {
-    String valve;
+struct RH_Sensors
+{
+    char *valve;
     float rh_reading;
 };
 
-CO2_Sensors co2_sensors[16];
-RH_Sensors rh_sensors[16];
+CO2_Sensors co2_sensors[MAX_SENSORS];
+RH_Sensors rh_sensors[MAX_SENSORS];
 
-void init_statemachine(void) {
-    
+void init_statemachine(void)
+{
     String temp_fanspeed = "";
 
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = "init";
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = "init";
+        xSemaphoreGive(statemachine_state_mutex);
     }
-    
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = temp_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
+
     set_fanspeed(temp_fanspeed);
 }
 
-void run_statemachine(void) {
-
+void run_statemachine(void)
+{
     String message = "";
+    String temp_state = "";
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        temp_state = state;
+        xSemaphoreGive(statemachine_state_mutex);
+    }
 
     message = "Read sensor data from queue for statemachine.";
     print_message(message);
-    if (xQueuePeek(sensor_queue, &statemachine_sensor_data, 0 ) == pdTRUE) { }
-    
+
+    if (xQueuePeek(sensor_queue, &statemachine_sensor_data, 0) != pdTRUE)
+    {
+        message = "Faild to read from sensor_queue in function: " + String(__FUNCTION__);
+        print_message(message);
+        return;
+    }
+
     message = "Read average sensor data from queue for statemachine.";
     print_message(message);
-    if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0 ) == pdTRUE) { }
-    
-    if (state == "init") {
+
+    if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) != pdTRUE)
+    {
+        message = "Faild to read from sensor_avg_queue in function: " + String(__FUNCTION__);
+        print_message(message);
+        return;
+    }
+
+    if (temp_state == "init")
+    {
         init_transitions();
     }
-    else if (state == "stopped") {
+    else if (temp_state == "stopped")
+    {
         stopped_transitions();
     }
-    else if (state == "day") {
+    else if (temp_state == "day")
+    {
         day_transitions();
     }
-    else if (state == "night") {
+    else if (temp_state == "night")
+    {
         night_transitions();
     }
-    else if (state == "highco2day"){
+    else if (temp_state == "highco2day")
+    {
         high_co2_day_transitions();
     }
-    else if (state == "highco2night"){
+    else if (temp_state == "highco2night")
+    {
         high_co2_night_transitions();
     }
-    else if (state == "highrhday") {
+    else if (temp_state == "highrhday")
+    {
         high_rh_day_transitions();
     }
-    else if (state == "highrhnight") {
+    else if (temp_state == "highrhnight")
+    {
         high_rh_night_transitions();
     }
-    else if (state == "cooking") {
+    else if (temp_state == "cooking")
+    {
         cooking_transitions();
     }
-    else if (state == "cyclingday") {
+    else if (temp_state == "cyclingday")
+    {
         valve_cycle_day_transitions();
     }
-    else if (state == "cyclingnight") {
+    else if (temp_state == "cyclingnight")
+    {
         valve_cycle_night_transitions();
     }
-    else if (state == "fanhighspeed") {
+    else if (temp_state == "fanhighspeed")
+    {
         manual_high_speed_transitions();
     }
-    else {
-         //This state should normally never be entered. Back to init of statemachine to keep it running
-         init_transitions();
+    else
+    {
+        // This state should normally never be entered. Back to init of statemachine to keep it running
+        message = "Error in state number, back to init state";
+        print_message(message);
+        init_transitions();
     }
 }
 
-void stopped_transitions(void) {
-
+void stopped_transitions(void)
+{
     String message = "";
 
     // Actions for this state
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
+    if (statemachine_state_mutex != NULL)
+    {
+        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+        {
             state = "stopped";
             xSemaphoreGive(statemachine_state_mutex);
         }
     }
 
-    //No further logic required because when start statemachine button is pushed the statemachine will go back to init state
+    // No further logic required because when start statemachine button is pushed the statemachine will go back to init state
     message = "Statemachine in stopped state. Push start statemachine button on the Valve Control web page to continue.";
     print_message(message);
 }
 
-void init_transitions(void) {
-
-    int temp_hour = 0;
-    int temp_minute = 0;
-    
+void init_transitions(void)
+{
     String statemachine_state = "init";
-    String temp_fanspeed = "Low";
-    String temp_day_of_week = "";
+    String state_fanspeed = "Low";
     String message = "";
 
     // Actions for this state
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = state_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
-    }
-
-    message = "Statemachine in state " + statemachine_state + "It is " + temp_hour + ":" + temp_minute + " and day of week is " + temp_day_of_week + ", fanspeed is " + temp_fanspeed;
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed;
     print_message(message);
-    set_fanspeed(temp_fanspeed);
-    
-    // Conditions to transit to other state, only evalaution based on time and day of week
-    if (temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")  {
-        message = "It is after 8, before 21 and a weekday. Transit to day.";
-        print_message(message);        
-        new_state = "day";
-    }
-    else if (temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday")) {
-        message = "It is after 9 and before 21 and weekend. Transit to day.";
+
+    set_fanspeed(state_fanspeed);
+
+    if (is_day() == true)
+    {
+        message = "It is day. Transit to day.";
         print_message(message);
         new_state = "day";
     }
-    else {
-        message = "No conditions met for day, so transit to night.";
+    else
+    {
+        message = "It is night. Transit to night.";
         print_message(message);
         new_state = "night";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
-    } 
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
+    }
 }
 
-void day_transitions(void) {
-
-    int temp_hour = 0;
-    int temp_minute = 0;
+void day_transitions(void)
+{
     int co2_sensors_high = 0;
     int rh_sensors_high = 0;
     int rhhighlevel = 0;
     int co2highlevel = 0;
-    int min_state_time = 600;       //minimum time in seconds the statemachine should stay in this state
+    int minimum_state_time = 0;
     long new_time = 0;
     bool valve_move_locked = 0;
-    
-    String temp_fanspeed = "";
-    String statemachine_state = "day";  
-    String temp_day_of_week = "";
-    String message = "";  
+
+    String state_fanspeed = "";
+    String statemachine_state = "day";
+    String message = "";
 
     // Actions for this state
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    if (settings_state_day_mutex && xSemaphoreTake(settings_state_day_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = String(statedaysettings.state_day_fanspeed);
+        co2highlevel = statedaysettings.state_day_highco2;
+        rhhighlevel = statedaysettings.state_day_highrh;
+        xSemaphoreGive(settings_state_day_mutex);
     }
 
-    if (settings_state_day_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_day_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_day[String("state_day_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_day_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = state_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
-    }   
-
-    //Read CO2 levels for transition to highCO2day state from global jsonDocument
-    if (settings_state_highco2day_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2day_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            co2highlevel = settings_state_highco2day["co2_high_state_highco2day"];
-            xSemaphoreGive(settings_state_highco2day_mutex);
-        }
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
+    {
+        minimum_state_time = statemachinesettings.minimum_state_time;
+        xSemaphoreGive(settings_statemachine_mutex);
     }
 
-    //Read RH levels for transition to highrhday state from global jsonDocument
-    if (settings_state_highrhday_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highrhday_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            rhhighlevel = settings_state_highrhday["rh_high_state_highrhday"];
-            xSemaphoreGive(settings_state_highrhday_mutex);
-        }
-    }
-
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
-    
-    set_fanspeed(temp_fanspeed);
+
+    set_fanspeed(state_fanspeed);
     select_sensors();
 
-    new_time = (esp_timer_get_time())/1000000;
-    if (new_time > old_time) {          //Just in case that a reboot happened and old_time is not set
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    {
         elapsed_time += new_time - old_time;
         old_time = new_time;
     }
@@ -267,689 +262,614 @@ void day_transitions(void) {
     message = "High CO2 detection level: " + String(co2highlevel) + ". High RH detection level: " + String(rhhighlevel);
     print_message(message);
 
-    if (valve_move_locked == 0) {
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine(statemachine_state);
     }
-    else {
+    else
+    {
         message = "Valves are locked for moving, will try again later";
         print_message(message);
     }
 
-    for (int i = 0; i < co2_sensor_counter; i++) {
-        if (co2_sensors[i].co2_reading > co2highlevel) {
+    for (int i = 0; i < co2_sensor_counter; i++)
+    {
+        if (co2_sensors[i].co2_reading > co2highlevel)
+        {
             message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading. Transit to highco2day state";
             print_message(message);
             co2_sensors_high++;
         }
     }
 
-    for (int i = 0; i < rh_sensor_counter; i++) {
-        if (rh_sensors[i].rh_reading > rhhighlevel) {
+    for (int i = 0; i < rh_sensor_counter; i++)
+    {
+        if (rh_sensors[i].rh_reading > rhhighlevel)
+        {
             message = "Sensor" + String(i) + " which is located at " + String(rh_sensors[i].valve) + " has high RH reading. Transit to highrhday state";
-            print_message(message); 
+            print_message(message);
             rh_sensors_high++;
         }
     }
 
-    message = "Number of sensors measure high CO2: " + String(co2_sensors_high) + ". Number of sensors measure high RH: " + String(rh_sensors_high);
+    message = "Number of sensors measure high CO2: " + String(co2_sensors_high);
+    print_message(message);
+    message = "Number of sensors measure high RH: " + String(rh_sensors_high);
     print_message(message);
 
-    if (co2_sensors_high > 0 && elapsed_time >= min_state_time) {
+    if (co2_sensors_high > 0 && elapsed_time >= minimum_state_time)
+    {
         new_state = "highco2day";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (rh_sensors_high > 0 && elapsed_time >= min_state_time) {
+    else if (rh_sensors_high > 0 && elapsed_time >= minimum_state_time)
+    {
         new_state = "highrhday";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (temp_hour >= 21) {
-        message = "It's night. Transit to night."; 
-        print_message(message);       
+    else if (is_day() == false)
+    {
+        message = "It is night time. Transit to night.";
+        print_message(message);
         new_state = "night";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (cooking_times() == true) {
+    else if (cooking_times() == true)
+    {
         message = "It's day and cooking time. Transit to cooking state.";
         print_message(message);
         new_state = "cooking";
     }
-    else if (valve_cycle_times_day() == true) {
+    else if (valve_cycle_times_day() == true)
+    {
         message = "It's day and valve_cycle_time_day. Transit to valvecycleday state";
         print_message(message);
         new_state = "cyclingday";
     }
-    //Manual high speed mode is ignored for now
-    else {
+    // Manual high speed mode is ignored for now
+    else
+    {
         message = "Conditions have not changed, it's still day";
         print_message(message);
         new_state = "day";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
-    } 
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
+    }
 }
 
-void night_transitions(void) {
-
-    int temp_hour = 0;
-    int temp_minute = 0;
+void night_transitions(void)
+{
     int co2_sensors_high = 0;
     int rh_sensors_high = 0;
     int co2highlevel = 0;
     int rhhighlevel = 0;
-    int min_state_time = 600;       //minimum time in seconds the statemachine should stay in this state
+    int minimum_state_time = 0;
     long new_time = 0;
     bool valve_move_locked = 0;
 
     String statemachine_state = "night";
-    String temp_fanspeed = "";
-    String temp_day_of_week = "";
+    String state_fanspeed = "";
     String message = "";
-    
-    // Actions for this sate
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    if (settings_state_night_mutex && xSemaphoreTake(settings_state_night_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = String(statenightsettings.state_night_fanspeed);
+        co2highlevel = statenightsettings.state_night_highco2;
+        rhhighlevel = statenightsettings.state_night_highrh;
+        xSemaphoreGive(settings_state_night_mutex);
     }
 
-    if (settings_state_night_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_night_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_night[String("state_night_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_night_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = state_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
-    }
-
-    //Read CO2 levels for transition to highCO2day state from global jsonDocument
-    if (settings_state_highco2night_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2night_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            co2highlevel = settings_state_highco2night["co2_high_state_highco2night"];
-            xSemaphoreGive(settings_state_highco2night_mutex);
-        }
-    }
-
-    //Read RH levels for transition to highrhday state from global jsonDocument
-    if (settings_state_highrhnight_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highrhnight_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            rhhighlevel = settings_state_highrhnight["rh_high_state_highrhnight"];
-            xSemaphoreGive(settings_state_highrhnight_mutex);
-        }
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
+    {
+        minimum_state_time = statemachinesettings.minimum_state_time;
+        xSemaphoreGive(settings_statemachine_mutex);
     }
 
     message = "High CO2 detection level: " + String(co2highlevel) + ". High RH detection level: " + String(rhhighlevel);
     print_message(message);
 
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
-    set_fanspeed(temp_fanspeed);
+    set_fanspeed(state_fanspeed);
     select_sensors();
 
-    new_time = (esp_timer_get_time())/1000000;
-    if (new_time > old_time) {          //Just in case that a reboot happened and old_time is not set
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    {
         elapsed_time += new_time - old_time;
         old_time = new_time;
     }
 
     message = "High CO2 detection level: " + String(co2highlevel);
     print_message(message);
-    
+
     message = "High RH detection level: " + String(rhhighlevel);
     print_message(message);
 
-    if (valve_move_locked == 0) {
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine(statemachine_state);
     }
-    else {
+    else
+    {
         message = "Valves are locked for moving, will try again later";
         print_message(message);
     }
-    
-    for (int i = 0; i < co2_sensor_counter; i++) {
-        if (co2_sensors[i].co2_reading > co2highlevel) {
+
+    for (int i = 0; i < co2_sensor_counter; i++)
+    {
+        if (co2_sensors[i].co2_reading > co2highlevel)
+        {
             message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading. Transit to highco2night state";
             print_message(message);
             co2_sensors_high++;
         }
     }
 
-    for (int i = 0; i < rh_sensor_counter; i++) {
-        if (rh_sensors[i].rh_reading > rhhighlevel) {
+    for (int i = 0; i < rh_sensor_counter; i++)
+    {
+        if (rh_sensors[i].rh_reading > rhhighlevel)
+        {
             message = "Sensor" + String(i) + " which is located at " + String(rh_sensors[i].valve) + " has high RH reading. Transit to highrhnight state";
             print_message(message);
             rh_sensors_high++;
         }
     }
 
-    message = "Number of sensors measure high CO2: " + String(co2_sensors_high) +  ". Number of sensors measure high RH: " + String(rh_sensors_high);
+    message = "Number of sensors measure high CO2: " + String(co2_sensors_high);
+    print_message(message);
+    message = "Number of sensors measure high RH: " + String(rh_sensors_high);
     print_message(message);
 
     // Conditions to transit to other state
-    if (co2_sensors_high > 0 && elapsed_time >= min_state_time) {
+    if (co2_sensors_high > 0 && elapsed_time >= minimum_state_time)
+    {
         new_state = "highco2night";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (rh_sensors_high > 0 && elapsed_time >= min_state_time) {
+    else if (rh_sensors_high > 0 && elapsed_time >= minimum_state_time)
+    {
         new_state = "highrhnight";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")  {
-        message = "It is after 8, before 21 and a weekday. Transit to day.";
+    else if (is_day() == true)
+    {
+        message = "It is day. Transit to day.";
         print_message(message);
         new_state = "day";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
     }
-    else if (temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday")) {
-        message = "It is after 9, before 21 and weekend. Transit to day";
-        print_message(message);
-        new_state = "day";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else if (valve_cycle_times_night() == true) {
+    else if (valve_cycle_times_night() == true)
+    {
         message = "It's night and valve_cycle time. Transit to valve_cycle_night.";
         print_message(message);
         new_state = "cyclingnight";
     }
-    //Manual high speed mode is ignored for now
-    else {
+    // Manual high speed mode is ignored for now
+    else
+    {
         message = "Conditions have not changed, it's still night.";
         print_message(message);
         new_state = "night";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 }
 
-void high_co2_day_transitions(void) {
-
-    int temp_hour = 0;
-    int temp_minute = 0;
+void high_co2_day_transitions(void)
+{
     int co2_sensors_high = 0;
     int co2highlevel = 0;
     int co2lowlevel = 0;
-    int min_state_time = 600;       //minimum time in seconds the statemachine should stay in this state
+    int reading = 0;
+    int valve_nr = 0;
     long new_time = 0;
     bool valve_move_locked = 0;
-    bool state_valve_pos_file_present = 0;
-    
+    int minimum_state_time = 0;
+
+    int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
+
     String statemachine_state = "highco2day";
-    String temp_fanspeed = "";
-    String temp_day_of_week = "";
-    String state_valve_pos_path = "";
-    String state_valve_pos_str = "";
+    String state_fanspeed = "";
     String message = "";
+    String valve = "";
 
-    JsonDocument state_valve_pos_doc;
-
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    if (settings_state_highco2day_mutex && xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = String(statehighco2daysettings.state_highco2day_fanspeed);
+        co2highlevel = statehighco2daysettings.co2_low_state_highco2day;
+        co2lowlevel = statehighco2daysettings.co2_high_state_highco2day;
+        xSemaphoreGive(settings_state_highco2day_mutex);
     }
 
-    if (settings_state_highco2day_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2day_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_highco2day[String("state_highco2day_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_highco2day_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = state_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
-    }
-
-    //Read CO2 levels for transition to highCO2day state from global jsonDocument
-    if (settings_state_highco2day_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2day_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            co2highlevel = settings_state_highco2day["co2_high_state_highco2day"];
-            co2lowlevel = settings_state_highco2day["co2_low_state_highco2day"];
-            xSemaphoreGive(settings_state_highco2day_mutex);
-        }
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
+    {
+        minimum_state_time = statemachinesettings.minimum_state_time;
+        xSemaphoreGive(settings_statemachine_mutex);
     }
 
     message = "High CO2 detection level: " + String(co2highlevel) + ". Low CO2 detection level: " + String(co2lowlevel);
-    print_message(message);  
-
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
-    set_fanspeed(temp_fanspeed);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
+    print_message(message);
+
+    set_fanspeed(state_fanspeed);
     select_sensors();
 
-    new_time = (esp_timer_get_time())/1000000;
-    if (new_time > old_time) {          //Just in case that a reboot happened and old_time is not set
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    {
         elapsed_time += new_time - old_time;
         old_time = new_time;
     }
 
-    
-    
-    //Temp valve settings for individual valves starting with default settings for this state. Should read these from file and not hardcode them
-    state_valve_pos_path = ("/json/settings_state_" + statemachine_state + ".json");
-    state_valve_pos_file_present = check_file_exists(state_valve_pos_path.c_str());
-    
-    if (settings_state_highco2day_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2day_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            if (state_valve_pos_file_present == 1) {
-                File file = LittleFS.open(state_valve_pos_path, "r");
-                while(file.available()) {
-                    state_valve_pos_str = file.readString();
-                }
-                file.close();
-            }
-            xSemaphoreGive(settings_state_highco2day_mutex);
+    // Temp valve settings for individual valves starting with default settings for this state. Should read these from file and not hardcode them
+    if (settings_state_highco2day_mutex && xSemaphoreTake(settings_state_highco2day_mutex, (TickType_t)10) == pdTRUE)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            state_valve_position[i] = statehighco2daysettings.valve_position_highco2day[i];
         }
+        xSemaphoreGive(settings_state_highco2day_mutex);
     }
-
-    deserializeJson(state_valve_pos_doc, state_valve_pos_str);
-
-    settings_state_temp["valve0_position_state_temp"] = state_valve_pos_doc["valve0_position_highco2day"].as<int>();
-    settings_state_temp["valve1_position_state_temp"] = state_valve_pos_doc["valve1_position_highco2day"].as<int>();
-    settings_state_temp["valve2_position_state_temp"] = state_valve_pos_doc["valve2_position_highco2day"].as<int>();
-    settings_state_temp["valve3_position_state_temp"] = state_valve_pos_doc["valve3_position_highco2day"].as<int>();
-    settings_state_temp["valve4_position_state_temp"] = state_valve_pos_doc["valve4_position_highco2day"].as<int>();
-    settings_state_temp["valve5_position_state_temp"] = state_valve_pos_doc["valve5_position_highco2day"].as<int>();
-    settings_state_temp["valve6_position_state_temp"] = state_valve_pos_doc["valve6_position_highco2day"].as<int>();
-    settings_state_temp["valve7_position_state_temp"] = state_valve_pos_doc["valve7_position_highco2day"].as<int>();
-    settings_state_temp["valve8_position_state_temp"] = state_valve_pos_doc["valve8_position_highco2day"].as<int>();
-    settings_state_temp["valve9_position_state_temp"] = state_valve_pos_doc["valve9_position_highco2day"].as<int>();
-    settings_state_temp["valve10_position_state_temp"] = state_valve_pos_doc["valve10_position_highco2day"].as<int>();
-    settings_state_temp["valve11_position_state_temp"] = state_valve_pos_doc["valve11_position_highco2day"].as<int>();
 
     // Iterate through CO2 sensors to see which one has high CO2 reading to see if default settings apply when high reading is at fan inlet
     // or only one valve needs to open (when high reading is in a room)
-    for (int i = 0; i < co2_sensor_counter; i++) {
-        if (co2_sensors[i].co2_reading > co2highlevel && co2_sensors[i].valve != "Fan inlet") {
-            //Set new valve settings for the room with high CO2 reading
+    for (int i = 0; i < co2_sensor_counter; i++)
+    {
+        if (co2_sensors[i].co2_reading > co2highlevel && co2_sensors[i].valve != "Fan inlet")
+        {
+            // Set new valve settings for the room with high CO2 reading
             settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 20;
         }
-        if (co2_sensors[i].co2_reading < co2lowlevel && co2_sensors[i].valve != "Fan inlet") {
-            //Set new valve settings for the room with high CO2 reading
+        if (co2_sensors[i].co2_reading < co2lowlevel && co2_sensors[i].valve != "Fan inlet")
+        {
+            // Set new valve settings for the room with high CO2 reading
             settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 4;
         }
-        if (co2_sensors[i].co2_reading > co2lowlevel) {
+        if (co2_sensors[i].co2_reading > co2highlevel)
+        {
             message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading.";
             print_message(message);
-            co2_sensors_high++; 
+            co2_sensors_high++;
         }
     }
 
     message = "Number of sensors measure high CO2: " + String(co2_sensors_high);
     print_message(message);
 
-    if (valve_move_locked == 0) {    
+    // Copy values to temp settings
+    if (settings_state_temp_mutex && xSemaphoreTake(settings_state_temp_mutex, (TickType_t)10) == pdTRUE)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            statetempsettings.valve_position_temp[i] = state_valve_position[i];
+        }
+        xSemaphoreGive(settings_state_temp_mutex);
+    }
+
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine("state_temp");
     }
-    else {
+    else
+    {
         message = "Valves are locked for moving, will try again later";
         print_message(message);
     }
-    
-    // Conditions for transition
-    if (co2_sensors_high > 0 && temp_hour >= 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")  {
-        message = "It is before 8, after 21 and a weekday. Transit to high_co2_night.";
-        print_message(message);
-        new_state = "highco2night";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else if (co2_sensors_high > 0 && temp_hour >= 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday")) {
-        message = "It is after 9, before 21 and weekend. Transit to high_co2_night.";
-        print_message(message);
-        new_state = "highco2night";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else if (co2_sensors_high == 0  && elapsed_time >= min_state_time) {
+
+    // Conditions for transition.
+    // This state always transits back to day first or to highco2night if night time.
+    if (is_day() == true && co2_sensors_high == 0 && elapsed_time >= minimum_state_time) // Day with no high CO2 readings
+    {
         message = "It is day, no high co2 levels. Transit to day.";
         print_message(message);
         new_state = "day";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else {
-        message = "It is day with high CO2 levels. Remain in highco2day state";
+    else if (is_day() == false && co2_sensors_high > 0) // Night with high CO2 readings
+    {
+        message = "It is night with high co2 levels. Transit to highco2night.";
+        print_message(message);
+        new_state = "highco2night";
+        elapsed_time = 0;
+        old_time = (esp_timer_get_time()) / 1000000;
+    }
+    else
+    {
+        message = "It is still day with high CO2 levels. Remain in highco2day state";
         print_message(message);
         new_state = "highco2day";
     }
-   
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
-    }    
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
+    }
 }
 
-void high_co2_night_transitions(void) {
-
-    int temp_hour = 0;
-    int temp_minute = 0;
+void high_co2_night_transitions(void)
+{
     int co2_sensors_high = 0;
     int co2highlevel = 0;
     int co2lowlevel = 0;
-    int min_state_time = 600;       //minimum time in seconds the statemachine should stay in this state
+    int reading = 0;
     long new_time = 0;
     bool valve_move_locked = 0;
     bool state_valve_pos_file_present = 0;
+    int minimum_state_time = 0;
+    int valve_nr = 0;
+
+    int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
 
     String statemachine_state = "highco2night";
-    String temp_fanspeed = "";
-    String temp_day_of_week = "";
-    String state_valve_pos_path = "";
-    String state_valve_pos_str = "";
+    String state_fanspeed = "";
     String message = "";
+    String valve = "";
 
-    JsonDocument state_valve_pos_doc;
-    
     // Actions for this state
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    if (settings_state_highco2night_mutex && xSemaphoreTake(settings_state_highco2night_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = String(statehighco2nightsettings.state_highco2night_fanspeed);
+        co2highlevel = statehighco2nightsettings.co2_low_state_highco2night;
+        co2lowlevel = statehighco2nightsettings.co2_high_state_highco2night;
+        xSemaphoreGive(settings_state_highco2night_mutex);
     }
 
-    if (settings_state_highco2night_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2night_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_highco2night[String("state_highco2night_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_highco2night_mutex);
-        }
-    }
-
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = temp_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     // Disable valve moving when valves are already moving
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    //Read CO2 levels for transition to highCO2day state from global jsonDocument
-    if (settings_state_highco2night_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2night_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            co2highlevel = settings_state_highco2night["co2_high_state_highco2night"];
-            co2lowlevel = settings_state_highco2night["co2_low_state_highco2night"];
-            xSemaphoreGive(settings_state_highco2night_mutex);
-        }
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
+    {
+        minimum_state_time = statemachinesettings.minimum_state_time;
+        xSemaphoreGive(settings_statemachine_mutex);
     }
-    
+
     message = "High CO2 detection level: " + String(co2highlevel) + ". Low CO2 detection level: " + String(co2lowlevel);
     print_message(message);
 
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
     set_fanspeed(temp_fanspeed);
     select_sensors();
 
-    new_time = (esp_timer_get_time())/1000000;
-    if (new_time > old_time) {          //Just in case that a reboot happened and old_time is not set
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    { // Just in case that a reboot happened and old_time is not set
         elapsed_time += new_time - old_time;
         old_time = new_time;
     }
 
-    //Temp valve settings for individual valves starting with default settings for this state. Should read these from file and not hardcode them
-    state_valve_pos_path = ("/json/settings_state_" + statemachine_state + ".json");
-    state_valve_pos_file_present = check_file_exists(state_valve_pos_path.c_str());
-    
-    if (settings_state_highco2night_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2night_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            if (state_valve_pos_file_present == 1) {
-                File file = LittleFS.open(state_valve_pos_path, "r");
-                while(file.available()) {
-                    state_valve_pos_str = file.readString();
-                }
-                file.close();    
-            }
-            xSemaphoreGive(settings_state_highco2night_mutex);
+    if (settings_state_highco2night_mutex && xSemaphoreTake(settings_state_highco2night_mutex, (TickType_t)10) == pdTRUE)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            state_valve_position[i] = statehighco2nightsettings.valve_position_highco2night[i];
         }
+        xSemaphoreGive(settings_state_highco2night_mutex);
     }
 
-    deserializeJson(state_valve_pos_doc, state_valve_pos_str);
-
-    settings_state_temp["valve0_position_state_temp"] = state_valve_pos_doc["valve0_position_highco2night"].as<int>();
-    settings_state_temp["valve1_position_state_temp"] = state_valve_pos_doc["valve1_position_highco2night"].as<int>();
-    settings_state_temp["valve2_position_state_temp"] = state_valve_pos_doc["valve2_position_highco2night"].as<int>();
-    settings_state_temp["valve3_position_state_temp"] = state_valve_pos_doc["valve3_position_highco2night"].as<int>();
-    settings_state_temp["valve4_position_state_temp"] = state_valve_pos_doc["valve4_position_highco2night"].as<int>();
-    settings_state_temp["valve5_position_state_temp"] = state_valve_pos_doc["valve5_position_highco2night"].as<int>();
-    settings_state_temp["valve6_position_state_temp"] = state_valve_pos_doc["valve6_position_highco2night"].as<int>();
-    settings_state_temp["valve7_position_state_temp"] = state_valve_pos_doc["valve7_position_highco2night"].as<int>();
-    settings_state_temp["valve8_position_state_temp"] = state_valve_pos_doc["valve8_position_highco2night"].as<int>();
-    settings_state_temp["valve9_position_state_temp"] = state_valve_pos_doc["valve9_position_highco2night"].as<int>();
-    settings_state_temp["valve10_position_state_temp"] = state_valve_pos_doc["valve10_position_highco2night"].as<int>();
-    settings_state_temp["valve11_position_state_temp"] = state_valve_pos_doc["valve11_position_highco2night"].as<int>();
-
-    // High CO2 has been detected to come into this state. Iterate through CO2 sensors to see which sensor detects high CO2. Valves with CO2 sensors are default 
+    // High CO2 has been detected to come into this state. Iterate through CO2 sensors to see which sensor detects high CO2. Valves with CO2 sensors are default
     // set to 24 for this state. Valves with a CO2 value lower than 900 ppm will be closed to 4 to direct airflow to the rooms with high CO2 reading.
-    for (int i = 0; i < co2_sensor_counter; i++) {
-        if (co2_sensors[i].co2_reading <= co2lowlevel && co2_sensors[i].valve != "Fan inlet") {
-            settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 4;         //Set new valve settings for the room without high CO2 reading to 4
+    for (int i = 0; i < co2_sensor_counter; i++)
+    {
+        if (co2_sensors[i].co2_reading <= co2lowlevel && co2_sensors[i].valve != "Fan inlet")
+        {
+            settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 4; // Set new valve settings for the room without high CO2 reading to 4
         }
-        if (co2_sensors[i].co2_reading > co2highlevel && co2_sensors[i].valve != "Fan inlet") {
-            settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 20;         //Set new valve settings for the room with high CO2 reading to 24
+        if (co2_sensors[i].co2_reading > co2highlevel && co2_sensors[i].valve != "Fan inlet")
+        {
+            settings_state_temp[co2_sensors[i].valve + "_position_state_temp"] = 20; // Set new valve settings for the room with high CO2 reading to 24
             Serial.print("\nSensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading.");
         }
-        if (co2_sensors[i].co2_reading > co2lowlevel) {
-            co2_sensors_high++;                                                              //No need to move valve but remains in highco2night
+        if (co2_sensors[i].co2_reading > co2highlevel)
+        {
+            co2_sensors_high++; // No need to move valve but remains in highco2night
         }
     }
 
     message = "Number of sensors measure high CO2: " + String(co2_sensors_high);
     print_message(message);
 
-    if (valve_move_locked == 0) {    
+    // Copy values to temp settings
+    if (settings_state_temp_mutex && xSemaphoreTake(settings_state_temp_mutex, (TickType_t)10) == pdTRUE)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            statetempsettings.valve_position_temp[i] = state_valve_position[i];
+        }
+        xSemaphoreGive(settings_state_temp_mutex);
+    }
+
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine("state_temp");
     }
-    else {
+    else
+    {
         message = "Valves are locked for moving.";
         print_message(message);
     }
-    
+
     // Conditions for transition
-    if (co2_sensors_high == 0  && elapsed_time >= min_state_time) {
-        message = "No high co2 levels. Transit to night.";
+    if (co2_sensors_high == 0 && elapsed_time >= min_state_time)
+    {
+        message = "It is night, no high co2 levels. Transit to night.";
         print_message(message);
         new_state = "night";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (co2_sensors_high > 0 && temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")  {
-        message = "It is after 8, before 21 and a weekday. Transit to high_co2_day.";
+    else if (is_day() == true && co2_sensors_high > 0) // Day with high CO2 readings, no need to wait for minimum_state_time
+    {
+        message = "It is day with high co2 levels. Transit to highco2day.";
         print_message(message);
         new_state = "highco2day";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (co2_sensors_high > 0 && temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday")) {
-        message = "It is after 9, before 21 and weekend. Transit to high_co2_day.";
-        print_message(message);
-        new_state = "highco2day";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else {
+    else
+    {
         message = "It is night with high CO2 levels. Remain in highco2night state";
         print_message(message);
         new_state = "highco2night";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
+
+    if (statemachine_state_mutex != NULL)
+    {
+        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+        {
             state = new_state;
             xSemaphoreGive(statemachine_state_mutex);
         }
     }
 }
 
-void high_rh_day_transitions(void) {
-
-    int temp_hour = 0;
-    int temp_minute = 0;
+void high_rh_day_transitions(void)
+{
     int rh_sensors_high = 0;
     int rhlowlevel = 0;
-    int min_state_time = 600;       //minimum time in seconds the statemachine should stay in this state
-    int max_state_time = 1800;      //maximum time in seconds the statemachine should stay in this state (high RH cannot always be solved with ventilation)
     long new_time = 0;
     bool valve_move_locked = 0;
+    int minimum_state_time = 0;
+    int maximum_state_time = 0;
 
     String statemachine_state = "highrhday";
-    String temp_fanspeed = "";
-    String temp_day_of_week = "";
+    String state_fanspeed = "";
     String message = "";
-   
+
     // Actions for this sate
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    if (settings_state_highrhday_mutex && xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = String(statehighrhdaysettings.state_highrhday_fanspeed);
+        rhlowlevel = statehighrhdaysettings.rh_low_state_highrhday;
+        maximum_state_time = statehighrhdaysettings.maximum_state_time_highrhday;
+        xSemaphoreGive(settings_state_highrhday_mutex);
     }
 
-    if (settings_state_highrhday_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highrhday_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_highrhday[String("state_highrhday_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_highrhday_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = temp_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
-    }
-
-    //Read RH levels for transition to highrhday state from global jsonDocument
-    if (settings_state_highrhday_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highrhday_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            rhlowlevel = settings_state_highrhday["rh_low_state_highrhday"];
-            xSemaphoreGive(settings_state_highrhday_mutex);
-        }
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
+    {
+        minimum_state_time = statemachinesettings.minimum_state_time;
+        xSemaphoreGive(settings_statemachine_mutex);
     }
 
     message = "Low RH detection level: " + String(rhlowlevel);
-    print_message(message);  
+    print_message(message);
 
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
     set_fanspeed(temp_fanspeed);
     select_sensors();
 
-    new_time = (esp_timer_get_time())/1000000;
-    if (new_time > old_time) {          //Just in case that a reboot happened and old_time is not set
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    {
         elapsed_time += new_time - old_time;
         old_time = new_time;
     }
-    
-    if (valve_move_locked == 0) {
+
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine(statemachine_state);
     }
-    else {
+    else
+    {
         Serial.print("\nValves are locked for moving, will try again later");
     }
 
     // High RH has been detected to come into this state. Iterate through RH sensors to see which sensor detects high RH. This state does not change valve positions
-    for (int i = 0; i < rh_sensor_counter; i++) {
-        if (rh_sensors[i].rh_reading > rhlowlevel) {
+    for (int i = 0; i < rh_sensor_counter; i++)
+    {
+        if (rh_sensors[i].rh_reading > rhlowlevel)
+        {
             rh_sensors_high++;
             message = "Sensor" + String(i) + " which is located at " + String(rh_sensors[i].valve) + " has high RH reading.";
             print_message(message);
@@ -960,125 +880,115 @@ void high_rh_day_transitions(void) {
     print_message(message);
 
     // Conditions for transition
-    if ((rh_sensors_high == 0  && elapsed_time >= min_state_time) || elapsed_time >= max_state_time) {
+    if ((rh_sensors_high == 0 && elapsed_time >= minimum_state_time) || elapsed_time >= maximum_state_time)
+    {
         message = "It's day with no high RH or time expired. Transit to day";
         print_message(message);
         new_state = "day";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (temp_hour >= 21) {
+    else if (is_day() == false)
+    {
         message = "It's night but RH levels are still high and time is not expired. Transit to high_rh_night";
-        print_message(message);   
+        print_message(message);
         new_state = "highrhnight";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else {
+    else
+    {
         message = "Conditions have not changed, RH is still high, so remain in high_rh_day state";
         print_message(message);
         new_state = "highrhday";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
-    } 
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
+    }
 }
 
-void high_rh_night_transitions(void) {
-
-    int temp_hour = 0;
-    int temp_minute = 0;
+void high_rh_night_transitions(void)
+{
     int rh_sensors_high = 0;
     int rhlowlevel = 0;
-    int min_state_time = 600;       //minimum time in seconds the statemachine should stay in this state
-    int max_state_time = 1800;      //maximum time in seconds the statemachine should stay in this state (high RH cannot always be solved with ventilation)
+    int minimum_state_time = 0;
+    int maximum_state_time = 0;
     long new_time = 0;
     bool valve_move_locked = 0;
 
     String statemachine_state = "highrhnight";
-    String temp_fanspeed = "";
-    String temp_day_of_week = "";
+    String state_fanspeed = "";
     String message = "";
 
     // Actions for this state
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    if (settings_state_highrhnight_mutex && xSemaphoreTake(settings_state_highrhnight_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = String(statehighrhnightsettings.state_highrhnight_fanspeed);
+        rhlowlevel = statehighrhnightsettings.rh_low_state_highrhnight;
+        maximum_state_time = statehighrhnightsettings.maximum_state_time_highrhnight;
+        xSemaphoreGive(settings_state_highrhnight_mutex);
     }
 
-    if (settings_state_highrhnight_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highrhnight_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_highrhnight[String("state_highrhnight_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_highrhnight_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = temp_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
+    {
+        minimum_state_time = statemachinesettings.minimum_state_time;
+        xSemaphoreGive(settings_statemachine_mutex);
     }
 
-    //Read RH levels for transition to highrhday state from global jsonDocument
-    if (settings_state_highrhnight_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highrhnight_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            rhlowlevel = settings_state_highrhnight["rh_low_state_highrhnight"];
-            xSemaphoreGive(settings_state_highrhnight_mutex);
-        }
-    }
-    
     message = "Low RH detection level: " + String(rhlowlevel);
     print_message(message);
 
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
     set_fanspeed(temp_fanspeed);
     select_sensors();
 
-    //If the statemachine is till in this state after 30 mins then RH cannot be lowered with ventilation
-    //No mutex is required as only statemachine uses this variable
-    new_time = (esp_timer_get_time())/1000000;
-    if (new_time > old_time) {
+    // If the statemachine is till in this state after 30 mins then RH cannot be lowered with ventilation
+    // No mutex is required as only statemachine uses this variable
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    {
         elapsed_time += new_time - old_time;
         old_time = new_time;
     }
-    
-    if (valve_move_locked == 0) {
+
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine(statemachine_state);
     }
-    else {
+    else
+    {
         message = "Valves are locked for moving, will try again later";
         print_message(message);
     }
 
     // High RH has been detected to come into this state. Iterate through RH sensors to see which sensor detects high RH. This state does not change valve positions
-    for (int i = 0; i < rh_sensor_counter; i++) {
-        if (rh_sensors[i].rh_reading > rhlowlevel) {
+    for (int i = 0; i < rh_sensor_counter; i++)
+    {
+        if (rh_sensors[i].rh_reading > rhlowlevel)
+        {
             rh_sensors_high++;
             message = "Sensor" + String(i) + " which is located at " + String(rh_sensors[i].valve) + " has high RH reading.";
             print_message(message);
@@ -1089,593 +999,392 @@ void high_rh_night_transitions(void) {
     print_message(message);
 
     // Conditions for transition
-    if (rh_sensors_high == 0  && elapsed_time >= min_state_time || elapsed_time >= max_state_time) {
+    if (rh_sensors_high == 0 && elapsed_time >= minimum_state_time || elapsed_time >= maximum_state_time)
+    {
         message = "It's night and RH is low enough. Transit to night.";
         print_message(message);
         new_state = "night";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (temp_hour >= 8 && temp_hour < 21 && temp_day_of_week != "Saturday" && temp_day_of_week != "Sunday")  {
+    else if (is_day() == true)
+    {
         message = "It is after 8, before 21 and a weekday but RH is still high. Transit to high_rh_day.";
         print_message(message);
         new_state = "highrhday";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (temp_hour >= 9 && temp_hour < 21 && (temp_day_of_week == "Saturday" || temp_day_of_week == "Sunday")) {
-        message = "It is after 9, before 21 and weekend but RH is still high. Transit to high_rh_day ";
-        print_message(message);
-        new_state = "highrhday";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else {
+    else
+    {
         message = "Conditions have not changed, RH is still high, so remain in high_rh_night state";
         print_message(message);
         new_state = "highrhnight";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
-    } 
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
+    }
 }
 
-void cooking_transitions(void) {
-
-    int temp_hour;
-    int temp_minute;
+void cooking_transitions(void)
+{
     bool valve_move_locked = 0;
 
     String statemachine_state = "cooking";
-    String temp_fanspeed = "";
-    String temp_day_of_week = "";
+    String state_fanspeed = "";
     String message = "";
 
     // Actions for this sate
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    // read fanspeed from config of this state
+    if (settings_state_cooking_mutex && xSemaphoreTake(settings_state_cooking_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = statecookingsettings.state_cooking_fanspeed;
+        xSemaphoreGive(settings_state_cooking_mutex);
     }
 
-    //read fanspeed from config of this state
-    if (settings_state_cooking_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_cooking_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_cooking[String("state_cooking_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_cooking_mutex);
-        }
-    }
-
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = state_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     // Disable valve moving when valves are already moving
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
-   
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
     set_fanspeed(temp_fanspeed);
-    
-    if (valve_move_locked == 0) {
+
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine(statemachine_state);
     }
-    else {
+    else
+    {
         message = "Valves are locked for moving, will try again later";
     }
 
     // Conditions for transition
-    if (cooking_times() == false) {
+    if (cooking_times() == false && is_day() == true)
+    {
         message = "It's day and not cooking time. Transit to day";
         print_message(message);
         new_state = "day";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else {
-        message = "Conditions have not changed, cooking time is not over so remain in cooking state";
+    if (cooking_times() == false && is_day() == false)
+    {
+        message = "It's night and not cooking time. Transit to night";
+        print_message(message);
+        new_state = "night";
+        elapsed_time = 0;
+        old_time = (esp_timer_get_time()) / 1000000;
+    }
+    else
+    {
+        message = "Conditions have not changed, remain in cooking state";
         print_message(message);
         new_state = "cooking";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
-    } 
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
+    }
 }
 
-void valve_cycle_day_transitions(void) {
-
+void valve_cycle_day_transitions(void)
+{
     int co2_sensors_high = 0;
     int rh_sensors_high = 0;
     int temp_hour = 0;
     int temp_minute = 0;
-    int co2highlevel = 0;
-    int rhhighlevel = 0;
-    int min_state_time = 600;       //minimum time in seconds the statemachine should stay in this state
     long new_time = 0;
     bool valve_move_locked = 0;
 
     String statemachine_state = "cyclingday";
-    String temp_fanspeed = "";
-    String temp_day_of_week = "";
+    String state_fanspeed = "";
     String message = "";
 
     // Actions for this state
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+    // read fanspeed from config of this state
+    if (settings_state_cyclingday_mutex && xSemaphoreTake(settings_state_cyclingday_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = statecyclingdaysettings.state_cyclingday_fanspeed;
+        xSemaphoreGive(settings_state_cyclingday_mutex);
     }
 
-    //read fanspeed from config of this state
-    if (settings_state_cyclingday_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_cyclingday_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_cyclingday[String("state_cyclingday_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_cyclingday_mutex);
-        }
-    }
-
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = state_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     // Disable valve moving when valves are already moving
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    //Read CO2 levels for transition to highCO2day state from global jsonDocument
-    if (settings_state_highco2day_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2day_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            co2highlevel = settings_state_highco2day["co2_high_state_highco2day"];
-            xSemaphoreGive(settings_state_highco2day_mutex);
-        }
-    }
-
-    //Read RH levels for transition to highrhday state from global jsonDocument
-    if (settings_state_highrhday_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highrhday_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            rhhighlevel = settings_state_highrhday["rh_high_state_highrhday"];
-            xSemaphoreGive(settings_state_highrhday_mutex);
-        }
-    }
-
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
     set_fanspeed(temp_fanspeed);
-    select_sensors();
 
-    new_time = (esp_timer_get_time())/1000000;
-    if (new_time > old_time) {
-        elapsed_time += new_time - old_time;
-        old_time = new_time;
-    }
-    
-    if (valve_move_locked == 0) {
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine(statemachine_state);
     }
-    else {
+    else
+    {
         Serial.print("\nValves are locked for moving, will try again later");
     }
 
-    for (int i = 0; i < co2_sensor_counter; i++) {
-        if (co2_sensors[i].co2_reading > co2highlevel) {
-            message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading. Transit to highco2day state";
-            print_message(message);
-            co2_sensors_high++;
-        }
-    }
-
-    for (int i = 0; i < rh_sensor_counter; i++) {
-        if (rh_sensors[i].rh_reading > rhhighlevel) {
-            message = "Sensor" + String(i) + " which is located at " + String(rh_sensors[i].valve) + " has high RH reading. Transit to highrhday state";
-            print_message(message);
-            rh_sensors_high++;
-        }
-    }
-
-    message = "Number of RH sensor with high reading: " + String(rh_sensors_high) + ". Number of CO2 sensor with high reading: " + String(co2_sensors_high);
-    print_message(message);
-
     // Conditions for transition
-    if (valve_cycle_times_day() == false) {
+    if (valve_cycle_times_day() == false)
+    {
         message = "It's not valve cycle time. Transit to day";
         print_message(message);
         new_state = "day";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (rh_sensors_high > 0 && elapsed_time >= min_state_time) {
-        message = "It's valve_cycle_day and high RH is measured. Transit to high_rh_day state.";
-        print_message(message);
-        new_state = "highrhday";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else if (co2_sensors_high > 0 && elapsed_time >= min_state_time) {
-        message = "It is valve_cycle_day and high CO2 levels are measured. Transit to high_co2_day.";
-        print_message(message);
-        new_state = "highco2day";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else {
+    else
+    {
         message = "Conditions have not changed, valve_cycle_day is still active.";
         print_message(message);
         new_state = "cyclingday";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
-    } 
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
+    }
 }
 
-void valve_cycle_night_transitions(void) {
-
-    int temp_hour = 0;
-    int temp_minute = 0;
-    int co2_sensors_high = 0;
-    int rh_sensors_high = 0;
-    int co2highlevel = 0;
-    int rhhighlevel = 0;
-    int min_state_time = 600;       //minimum time in seconds the statemachine should stay in this state
+void valve_cycle_night_transitions(void)
+{
     long new_time = 0;
     bool valve_move_locked = 0;
 
     String statemachine_state = "cyclingnight";
-    String temp_fanspeed = "";
-    String temp_day_of_week = "";
+    String state_fanspeed = "";
     String message = "";
 
     // Actions for this state
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
-    }
-    
-    if (date_time_mutex != NULL) {
-        if(xSemaphoreTake(date_time_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            temp_hour = hourStr.toInt();
-            temp_minute = minuteStr.toInt();
-            temp_day_of_week = dayOfWeek;
-            xSemaphoreGive(date_time_mutex);
-        }
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
-    //read fanspeed from config of this state
-    if (settings_state_cyclingnight_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_cyclingnight_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            String state_fanspeed = settings_state_cyclingnight[String("state_cyclingnight_fanspeed")];
-            temp_fanspeed = state_fanspeed;
-            xSemaphoreGive(settings_state_cyclingnight_mutex);
-        }
+    // read fanspeed from config of this state
+    if (settings_state_cyclingnight_mutex && xSemaphoreTake(settings_state_cyclingnight_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state_fanspeed = statecyclingnightsettings.state_cyclingnight_fanspeed;
+        xSemaphoreGive(settings_state_cyclingnight_mutex);
     }
 
-    if (fanspeed_mutex != NULL) {
-        if(xSemaphoreTake(fanspeed_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            fanspeed = temp_fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        fanspeed = state_fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     // Disable valve moving when valves are already moving
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
+    if (lock_valve_move_mutex != NULL)
+    {
+        if (xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+        {
             valve_move_locked = lock_valve_move;
             xSemaphoreGive(lock_valve_move_mutex);
         }
     }
 
-    //Read CO2 levels for transition to highCO2day state from global jsonDocument
-    if (settings_state_highco2night_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highco2night_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            co2highlevel = settings_state_highco2night["co2_high_state_highco2night"];
-            xSemaphoreGive(settings_state_highco2night_mutex);
-        }
-    }
-
-    //Read RH levels for transition to highrhday state from global jsonDocument
-    if (settings_state_highrhnight_mutex != NULL) {
-        if(xSemaphoreTake(settings_state_highrhnight_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            rhhighlevel = settings_state_highrhnight["rh_high_state_highrhnight"];
-            xSemaphoreGive(settings_state_highrhnight_mutex);
-        }
-    }
-
-    message = "Statemachine in state " + statemachine_state + ", it is " + temp_day_of_week + " " + temp_hour + ":" + temp_minute + " and fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
-    set_fanspeed(temp_fanspeed);
-    select_sensors();
+    set_fanspeed(state_fanspeed);
 
-    new_time = (esp_timer_get_time())/1000000;
-    if (new_time > old_time) {
-        elapsed_time += new_time - old_time;
-        old_time = new_time;
-    }
-    
-    if (valve_move_locked == 0) {
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine(statemachine_state);
     }
-    else {
+    else
+    {
         message = "Valves are locked for moving, will try again later";
         print_message(message);
     }
 
-    for (int i = 0; i < co2_sensor_counter; i++) {
-        if (co2_sensors[i].co2_reading > co2highlevel) {
-            message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading. Transit to highco2day state";
-            print_message(message);
-            co2_sensors_high++;
-        }
-    }
-
-    for (int i = 0; i < rh_sensor_counter; i++) {
-        if (rh_sensors[i].rh_reading > rhhighlevel) {
-            message = "Sensor" + String(i) + " which is located at " + String(rh_sensors[i].valve) + " has high RH reading. Transit to highrhday state";
-            print_message(message);
-            rh_sensors_high++;
-        }
-    }
-
-    message = "Number of RH sensor with high reading: " + String(rh_sensors_high) + ". Number of CO2 sensor with high reading: " + String(co2_sensors_high);
-    print_message(message);
-
     // Conditions for transition
-    if (valve_cycle_times_night() == false) {
+    if (valve_cycle_times_night() == false)
+    {
         message = "It's not valve_cycle time. Transit to night";
         print_message(message);
         new_state = "night";
         elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
+        old_time = (esp_timer_get_time()) / 1000000;
     }
-    else if (rh_sensors_high > 0 && elapsed_time >= min_state_time) {
-        message = "It's valve_cycle_night and high RH. Transit to high_rh_night state.";
-        print_message(message);
-        new_state = "highrhnight";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else if (co2_sensors_high > 0 && elapsed_time >= min_state_time) {
-        message = "It is valve_cycle_night and CO2 level is high. Transit to high_co2_night";
-        print_message(message);
-        new_state = "highco2night";
-        elapsed_time = 0;
-        old_time = (esp_timer_get_time())/1000000;
-    }
-    else {
+    else
+    {
         message = "Conditions have not changed, valve_cycle_day is still active.";
         print_message(message);
         new_state = "cyclingnight";
     }
-    
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 }
 
-//This state is for later
-void manual_high_speed_transitions(void) {
-
+// This state is for later
+void manual_high_speed_transitions(void)
+{
     String statemachine_state = "manual_high_speed";
     String fanspeed = "high";
     String message = "";
 
     bool valve_move_locked = 0;
 
+    // Example:
+    // char msg[128];
+    // snprintf(msg, sizeof(msg), "valve: %s, CO2 reading: %.2f", valve_1, co2_sensors[co2_index].co2_reading);
+    // print_message(msg);
+
     // Actions for this state
-    if (statemachine_state_mutex != NULL) {
-        if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-            state = statemachine_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
+    {
+        state = statemachine_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
     // Disable valve moving when valves are already moving
-    if (lock_valve_move_mutex != NULL) {
-        if(xSemaphoreTake(lock_valve_move_mutex, ( TickType_t ) 10 ) == pdTRUE) { 
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
+    {
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
     set_fanspeed(fanspeed);
-    
-    if (valve_move_locked == 0) {
+
+    if (valve_move_locked == 0)
+    {
         valve_position_statemachine(statemachine_state);
     }
-    else {
+    else
+    {
         message = "Valves are locked for moving, will try again later";
         print_message(message);
     }
 }
 
-void select_sensors(void) {
+void select_sensors(void)
+{
+    char *co2_sensor_wire = NULL;
+    char *co2_sensor_wire1 = NULL;
+    char *rh_sensor_wire = NULL;
+    char *rh_sensor_wire1 = NULL;
+    char *valve_wire = NULL;
+    char *valve_wire1 = NULL;
 
-    const char* path1 = "/json/sensor_config1.json";
-    const char* path2 = "/json/sensor_config2.json";
-    
-    String sensor_config1_string = "";
-    String sensor_config2_string = "";
-    String co2_sensor_wire = "";
-    String co2_sensor_wire1 = "";
-    String rh_sensor_wire = "";
-    String rh_sensor_wire1 = "";
-    String valve = "";
     String message = "";
-
-    bool sensor_config1_file_present = 0;
-    bool sensor_config2_file_present = 0;
 
     co2_sensor_counter = 0;
     rh_sensor_counter = 0;
 
-    int j=0;        //counter for struct
-    int k=0;        //counter for struct
+    int j = 0; // counter for struct
+    int k = 0; // counter for struct
 
-    float sensor_data[2][8][3];
-    
-    if (sensor_config_file_mutex != NULL) {
-        if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            sensor_config1_file_present = check_file_exists(path1);
-            if (sensor_config1_file_present == 1) {
-                File file = LittleFS.open(path1, "r");
-                while(file.available()) {
-                    sensor_config1_string = file.readString();
-                }
-                file.close();
-                deserializeJson(wire_sensor_data, sensor_config1_string);
-            }
-            xSemaphoreGive(sensor_config_file_mutex);
-        }
+    float sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+
+    // Copy sensor readings from global
+    if (xQueuePeek(sensor_avg_queue, &sensor_data, 0) != pdTRUE)
+    {
+        message = "Faild to read from sensor_avg_queue in function: " + String(__FUNCTION__);
+        return;
     }
 
-    if (sensor_config_file_mutex != NULL) {
-        if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-            sensor_config2_file_present = check_file_exists(path2);
-            if (sensor_config2_file_present == 1) {
-                File file = LittleFS.open(path2, "r");
-                while(file.available()) {
-                    sensor_config2_string = file.readString();
-                }
-                file.close();
-                deserializeJson(wire1_sensor_data, sensor_config2_string);
-            }
-            xSemaphoreGive(sensor_config_file_mutex);
+    for (int i = 0; i < SENSOR_COUNT; i++)
+    {
+
+        if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
+        {
+            co2_sensor_wire = sensor1settings[i].wire_sensor_co2;
+            rh_sensor_wire = sensor1settings[i].wire_sensor_rh;
+            valve_wire = sensor1settings[i].wire_sensor_valve;
+            xSemaphoreGive(settings_sensor1_mutex);
         }
-    }
 
-    //Copy sensor readings from global
-    xQueuePeek(sensor_avg_queue, &sensor_data, 0);
-
-    for (int i = 0; i < 16; i++) {
-        if (sensor_config_file_mutex != NULL) {
-            if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-                String co2_sensor_wire_temp = wire_sensor_data["wire_sensor"+String(i)]["co2"];
-                String co2_sensor_wire1_temp = wire1_sensor_data["wire1_sensor"+String(i)]["co2"];
-                String rh_sensor_wire_temp = wire_sensor_data["wire_sensor"+String(i)]["rh"];
-                String rh_sensor_wire1_temp = wire1_sensor_data["wire1_sensor"+String(i)]["rh"];
-                co2_sensor_wire = co2_sensor_wire_temp;
-                co2_sensor_wire1 = co2_sensor_wire1_temp;
-                rh_sensor_wire = rh_sensor_wire_temp;
-                rh_sensor_wire1 = rh_sensor_wire1_temp;
-                xSemaphoreGive(sensor_config_file_mutex);
-
-            }
+        if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
+        {
+            co2_sensor_wire1 = sensor2settings[i].wire1_sensor_co2;
+            rh_sensor_wire1 = sensor2settings[i].wire1_sensor_rh;
+            valve_wire1 = sensor2settings[i].wire1_sensor_valve;
+            xSemaphoreGive(settings_sensor2_mutex);
         }
-        if (co2_sensor_wire == "On") {
-            if (sensor_config_file_mutex != NULL) {
-                if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-                    String valve_temp = wire_sensor_data["wire_sensor"+String(i)]["valve"];
-                    valve = valve_temp;
-                    xSemaphoreGive(sensor_config_file_mutex);
-                }
-            }
-                    
-            co2_sensors[j].valve = valve;
+
+        if (co2_sensor_wire && strcmp(co2_sensor_wire, "On") == 0)
+        {
+            co2_sensors[j].valve = valve_wire;
             co2_sensors[j].co2_reading = sensor_data[0][i][2];
-            
+
             message = "valve: " + String(co2_sensors[j].valve) + ", CO2 reading: " + String(co2_sensors[j].co2_reading);
             print_message(message);
             j++;
         }
-        
-        if (co2_sensor_wire1 == "On") {
-            if (sensor_config_file_mutex != NULL) {
-                if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-                    String valve_temp = wire1_sensor_data["wire1_sensor"+String(i)]["valve"];
-                    valve = valve_temp;
-                    xSemaphoreGive(sensor_config_file_mutex);
-                }
-            }
-            co2_sensors[j].valve = valve;
+
+        if (co2_sensor_wire1 && strcmp(co2_sensor_wire1, "On") == 0)
+        {
+            co2_sensors[j].valve = valve_wire1;
             co2_sensors[j].co2_reading = sensor_data[1][i][2];
-            
+
             message = "valve: " + String(co2_sensors[j].valve) + ", CO2 reading: " + String(co2_sensors[j].co2_reading);
             print_message(message);
             j++;
         }
-        
-        if (rh_sensor_wire == "On") {
-            if (sensor_config_file_mutex != NULL) {
-                if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-                    String valve_temp = wire_sensor_data["wire_sensor"+String(i)]["valve"];
-                    valve = valve_temp;
-                    xSemaphoreGive(sensor_config_file_mutex);
-                }
-            }
-            rh_sensors[k].valve = valve;
+
+        if (rh_sensor_wire && strcmp(rh_sensor_wire, "On") == 0)
+        {
+            rh_sensors[k].valve = valve_wire;
             rh_sensors[k].rh_reading = sensor_data[0][i][1];
-            
+
             message = "valve: " + String(rh_sensors[k].valve) + ", RH reading: " + String(rh_sensors[k].rh_reading);
             print_message(message);
             k++;
         }
-        
-        if (rh_sensor_wire1 == "On") {
-            if (sensor_config_file_mutex != NULL) {
-                if(xSemaphoreTake(sensor_config_file_mutex, ( TickType_t ) 100 ) == pdTRUE) {
-                    String valve_temp = wire1_sensor_data["wire1_sensor"+String(i)]["valve"];
-                    valve = valve_temp;
-                    xSemaphoreGive(sensor_config_file_mutex);
-                }
-            }
-            rh_sensors[k].valve = valve;
+
+        if (rh_sensor_wire1 && strcmp(rh_sensor_wire1, "On") == 0)
+        {
+            rh_sensors[k].valve = valve_wire1;
             rh_sensors[k].rh_reading = sensor_data[1][i][1];
-            
+
             message = "valve: " + String(rh_sensors[k].valve) + ", RH reading: " + String(rh_sensors[k].rh_reading);
             print_message(message);
             k++;

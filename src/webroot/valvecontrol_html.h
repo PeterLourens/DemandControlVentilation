@@ -1,3 +1,4 @@
+const char valvecontrol_html[] = R"rawliteral(
 <!doctype html>
 <html lang="en">
 <head>
@@ -5,9 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The front-end for configuration of the open source demand controlled ventilation system">
     <title>Open Source demand driven ventilation system &ndash; Configuration and Monitoring</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/grids-responsive-min.css" />
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="pure-min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -40,7 +40,7 @@
 
         <div class="content">
             <h2 class="content-subhead">Status valve positions file.</h2>
-            <p>Status valve position valve: %STATUS_VALVE_POSITION_FILE%</p>
+            <p>Status valve position valve: <span id="status_valve_position_file"></span></p>
             <p>If the valve position file is not present, the valves will not move if the "store valve positions" or "check valve position" checkbox is ticked.</p>        
             <h2 class="content-subhead">Create file with positions of the valves</h2>
             <p>
@@ -49,12 +49,12 @@
             </p>
             <p>
                 <form method ="POST" action="/create_config_file">
-                    <input type="submit" value="Create new config file">
+                    <input type="submit" value="Create new config file" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
             <p>
                 <form method ="POST" action="/delete_config_file">
-                    <input type="submit" value="Delete config file">
+                    <input type="submit" value="Delete config file" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
 
@@ -64,15 +64,15 @@
             </p>
             <p>
                 <form method ="POST" action="/stop_statemachine">
-                    <input type="submit" value="Stop statemachine">
+                    <input type="submit" value="Stop statemachine" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
             <p>
                 <form method ="POST" action="/start_statemachine">
-                    <input type="submit" value="Start statemachine">
+                    <input type="submit" value="Start statemachine" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
-            <p>State statemachine: <font color="green"> %STATEMACHINE_STATE% </font></p>
+            <p>State statemachine: <font color="green"><span id="statemachine_state"></span></font></p>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/valvecontrol">
                     <fieldset>
@@ -214,20 +214,23 @@
                                 <input type="hidden" name="store_valve_position_in_file" id="store_valve_position_in_file" value="false" />
                                 <input type="checkbox" name="store_valve_position_in_file" id="store_valve_position_in_file" value="true" />
                                 <label for="check_valve_position">Check valve position:</label>
-                                <input type="hidden"   name="check_valve_position" id="check_valve_position" value="false" />
+                                <input type="hidden" name="check_valve_position" id="check_valve_position" value="false" />
                                 <input type="checkbox" name="check_valve_position" id="check_valve_position" value="true" />
                             </div>
                         </div>
                         <br><br>
-                        <input type="submit" value="Update valve position">
+                        <input type="submit" value="Update valve position" class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
                 </form>
             </p>
 
         </div>
     </div>
+    <div id="page_name">valvecontrol</div>
 
-    <script src="js/ui.js"></script>
+    <script src="ui.js"></script>
+    <script src="websocket.js"></script>
 
   </body>
   </html>
+)rawliteral";
