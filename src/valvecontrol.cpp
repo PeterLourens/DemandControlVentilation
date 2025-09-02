@@ -1,6 +1,6 @@
 #include "valvecontrol.h"
 
-// Control valves from web interface
+// Control valves from web interface and from statemachine
 void move_valve(void)
 {
     // Temporary variables used after selection of I/O
@@ -23,6 +23,7 @@ void move_valve(void)
     bool write_valve_position_file = false;
 
     char new_valve_positions[512] = {};
+    char buffer[512];
 
     String message = "";
     String temp_state = "";
@@ -40,6 +41,18 @@ void move_valve(void)
     {
         temp_state = state;
         xSemaphoreGive(statemachine_state_mutex);
+    }
+
+    // Read actual valve positions
+    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+        }
     }
 
     // Debug
@@ -320,7 +333,7 @@ void valve_position_statemachine(String statemachine_state)
     }
     */
 
-    String actual_valve_pos_json = "";
+    // String actual_valve_pos_json = "";
     String message = "";
 
     JsonDocument actual_valve_pos_doc;
@@ -329,6 +342,8 @@ void valve_position_statemachine(String statemachine_state)
     int move = 0;
     int direction = 0;
     int valve_number = 0;
+    int actual_valve_pos = 0;
+    int state_valve_pos = 0;
     int sum_move = 0; // Variable for decision on writing config file (sum>0) or not (sum=0)
 
     if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
@@ -342,12 +357,9 @@ void valve_position_statemachine(String statemachine_state)
         }
     }
 
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < MAX_VALVES; i++)
     {
-        valve_number = i;
-
-        int actual_valve_pos = actual_valve_pos_doc["valve" + String(i)];
-        int state_valve_pos = 0;
+        actual_valve_pos = actual_valve_pos_doc["valve" + String(i)];
 
         if (statemachine_state == "day")
         {
