@@ -560,18 +560,6 @@ void high_co2_day_transitions(void)
         {
             state_valve_position[i] = statehighco2daysettings.valve_position_highco2day[i];
         }
-        /*state_valve_position[0] = statehighco2daysettings.valve0_position_highco2day;
-        state_valve_position[1] = statehighco2daysettings.valve1_position_highco2day;
-        state_valve_position[2] = statehighco2daysettings.valve2_position_highco2day;
-        state_valve_position[3] = statehighco2daysettings.valve3_position_highco2day;
-        state_valve_position[4] = statehighco2daysettings.valve4_position_highco2day;
-        state_valve_position[5] = statehighco2daysettings.valve5_position_highco2day;
-        state_valve_position[6] = statehighco2daysettings.valve6_position_highco2day;
-        state_valve_position[7] = statehighco2daysettings.valve7_position_highco2day;
-        state_valve_position[8] = statehighco2daysettings.valve8_position_highco2day;
-        state_valve_position[9] = statehighco2daysettings.valve9_position_highco2day;
-        state_valve_position[10] = statehighco2daysettings.valve10_position_highco2day;
-        state_valve_position[11] = statehighco2daysettings.valve11_position_highco2day;*/
         xSemaphoreGive(settings_state_highco2day_mutex);
     }
 
@@ -625,18 +613,6 @@ void high_co2_day_transitions(void)
         {
             statetempsettings.valve_position_temp[i] = state_valve_position[i];
         }
-        /*statetempsettings.valve0_position_temp = state_valve_position[0];
-        statetempsettings.valve1_position_temp = state_valve_position[1];
-        statetempsettings.valve2_position_temp = state_valve_position[2];
-        statetempsettings.valve3_position_temp = state_valve_position[3];
-        statetempsettings.valve4_position_temp = state_valve_position[4];
-        statetempsettings.valve5_position_temp = state_valve_position[5];
-        statetempsettings.valve6_position_temp = state_valve_position[6];
-        statetempsettings.valve7_position_temp = state_valve_position[7];
-        statetempsettings.valve8_position_temp = state_valve_position[8];
-        statetempsettings.valve9_position_temp = state_valve_position[9];
-        statetempsettings.valve10_position_temp = state_valve_position[10];
-        statetempsettings.valve11_position_temp = state_valve_position[11];*/
         xSemaphoreGive(settings_state_temp_mutex);
     }
 
@@ -757,18 +733,6 @@ void high_co2_night_transitions(void)
         {
             state_valve_position[i] = statehighco2nightsettings.valve_position_highco2night[i];
         }
-        /*state_valve_position[0] = statehighco2nightsettings.valve0_position_highco2night;
-        state_valve_position[1] = statehighco2nightsettings.valve1_position_highco2night;
-        state_valve_position[2] = statehighco2nightsettings.valve2_position_highco2night;
-        state_valve_position[3] = statehighco2nightsettings.valve3_position_highco2night;
-        state_valve_position[4] = statehighco2nightsettings.valve4_position_highco2night;
-        state_valve_position[5] = statehighco2nightsettings.valve5_position_highco2night;
-        state_valve_position[6] = statehighco2nightsettings.valve6_position_highco2night;
-        state_valve_position[7] = statehighco2nightsettings.valve7_position_highco2night;
-        state_valve_position[8] = statehighco2nightsettings.valve8_position_highco2night;
-        state_valve_position[9] = statehighco2nightsettings.valve9_position_highco2night;
-        state_valve_position[10] = statehighco2nightsettings.valve10_position_highco2night;
-        state_valve_position[11] = statehighco2nightsettings.valve11_position_highco2night;*/
         xSemaphoreGive(settings_state_highco2night_mutex);
     }
 
@@ -821,19 +785,6 @@ void high_co2_night_transitions(void)
         {
             statetempsettings.valve_position_temp[i] = state_valve_position[i];
         }
-
-        /*statetempsettings.valve0_position_temp = state_valve_position[0];
-        statetempsettings.valve1_position_temp = state_valve_position[1];
-        statetempsettings.valve2_position_temp = state_valve_position[2];
-        statetempsettings.valve3_position_temp = state_valve_position[3];
-        statetempsettings.valve4_position_temp = state_valve_position[4];
-        statetempsettings.valve5_position_temp = state_valve_position[5];
-        statetempsettings.valve6_position_temp = state_valve_position[6];
-        statetempsettings.valve7_position_temp = state_valve_position[7];
-        statetempsettings.valve8_position_temp = state_valve_position[8];
-        statetempsettings.valve9_position_temp = state_valve_position[9];
-        statetempsettings.valve10_position_temp = state_valve_position[10];
-        statetempsettings.valve11_position_temp = state_valve_position[11];*/
         xSemaphoreGive(settings_state_temp_mutex);
     }
 

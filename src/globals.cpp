@@ -83,17 +83,6 @@ RTC_date_time rtcdatetime;
 Sensor1_settings sensor1settings[SENSOR_COUNT];
 Sensor2_settings sensor2settings[SENSOR_COUNT];
 
-// To be removed once struct implemented
-JsonDocument valve_control_data; // Global for valve control data
-
-//String yearStr = "";
-//String monthStr = "";
-//String dayStr = "";
-//String hourStr = "";
-//String minuteStr = "";
-//String secondStr = "";
-//String dayOfWeek = "";
-
 // Statemachine globals
 String state = "";
 String fanspeed = "";

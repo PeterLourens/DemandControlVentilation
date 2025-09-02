@@ -348,7 +348,6 @@ void display_sensors(void)
 
 void display_valve_positions(void)
 {
-
     /* Display layout
 
             0 	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15  16  17  18  19  20
@@ -357,109 +356,89 @@ void display_valve_positions(void)
     1   |	v   3	:	i	i		    v	4	:	i	i			v   5	:	i	i
     2   |	v   6	:	i   i		    v	7	:	i	i			v   8	:	i	i
     3   |	v   9	:	i   i		v   1	0	:	i	i		v   1   1	:	i	i
-
     */
 
     bool status_file_present = 0;
     String json = "";
     String message = "";
     JsonDocument doc;
+    char buffer[512];
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
     lcd.backlight();
 
-    status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
+    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
 
-    if (valve_position_file_mutex != NULL)
-    {
-        if (xSemaphoreTake(valve_position_file_mutex, (TickType_t)100) == pdTRUE)
+        if (error)
         {
-            if (status_file_present == 1)
-            {
-                json = read_config_file(VALVE_POSITIONS_PATH);
-            }
-            xSemaphoreGive(valve_position_file_mutex);
-        }
-    }
-
-    if (json == "")
-    {
-        message = "[ERROR] String is empty or failed to read file";
-        print_message(message);
-        return;
-    }
-    else
-    {
-        DeserializationError err = deserializeJson(doc, json);
-        if (err)
-        {
-            message = "[ERROR] Failed to parse valvepositions.json: " + String(VALVE_POSITIONS_PATH) + ": " + String(err.c_str());
+            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
             print_message(message);
-            return;
         }
-
-        String valve0_pos = doc[String("valve0")];
-        String valve1_pos = doc[String("valve1")];
-        String valve2_pos = doc[String("valve2")];
-        String valve3_pos = doc[String("valve3")];
-        String valve4_pos = doc[String("valve4")];
-        String valve5_pos = doc[String("valve5")];
-        String valve6_pos = doc[String("valve6")];
-        String valve7_pos = doc[String("valve7")];
-        String valve8_pos = doc[String("valve8")];
-        String valve9_pos = doc[String("valve9")];
-        String valve10_pos = doc[String("valve10")];
-        String valve11_pos = doc[String("valve11")];
-
-        lcd.setCursor(0, 0);
-        lcd.print("v0:");
-        lcd.print(valve0_pos);
-        lcd.setCursor(7, 0);
-        lcd.print("v1:");
-        lcd.print(valve1_pos);
-        lcd.setCursor(14, 0);
-        lcd.print("v2:");
-        lcd.print(valve2_pos);
-
-        lcd.setCursor(0, 1);
-        lcd.print("v3:");
-        lcd.print(valve3_pos);
-        lcd.setCursor(7, 1);
-        lcd.print("v4:");
-        lcd.print(valve4_pos);
-        lcd.setCursor(14, 1);
-        lcd.print("v5:");
-        lcd.print(valve5_pos);
-
-        lcd.setCursor(0, 2);
-        lcd.print("v6:");
-        lcd.print(valve6_pos);
-        lcd.setCursor(7, 2);
-        lcd.print("v7:");
-        lcd.print(valve7_pos);
-        lcd.setCursor(14, 2);
-        lcd.print("v8:");
-        lcd.print(valve8_pos);
-
-        lcd.setCursor(0, 3);
-        lcd.print("v9:");
-        lcd.print(valve9_pos);
-        lcd.setCursor(6, 3);
-        lcd.print("v10:");
-        lcd.print(valve10_pos);
-        lcd.setCursor(13, 3);
-        lcd.print("v11:");
-        lcd.print(valve11_pos);
-        vTaskDelay(5000);
-        lcd.clear();
     }
+
+    String valve0_pos = doc[String("valve0")];
+    String valve1_pos = doc[String("valve1")];
+    String valve2_pos = doc[String("valve2")];
+    String valve3_pos = doc[String("valve3")];
+    String valve4_pos = doc[String("valve4")];
+    String valve5_pos = doc[String("valve5")];
+    String valve6_pos = doc[String("valve6")];
+    String valve7_pos = doc[String("valve7")];
+    String valve8_pos = doc[String("valve8")];
+    String valve9_pos = doc[String("valve9")];
+    String valve10_pos = doc[String("valve10")];
+    String valve11_pos = doc[String("valve11")];
+
+    lcd.setCursor(0, 0);
+    lcd.print("v0:");
+    lcd.print(valve0_pos);
+    lcd.setCursor(7, 0);
+    lcd.print("v1:");
+    lcd.print(valve1_pos);
+    lcd.setCursor(14, 0);
+    lcd.print("v2:");
+    lcd.print(valve2_pos);
+
+    lcd.setCursor(0, 1);
+    lcd.print("v3:");
+    lcd.print(valve3_pos);
+    lcd.setCursor(7, 1);
+    lcd.print("v4:");
+    lcd.print(valve4_pos);
+    lcd.setCursor(14, 1);
+    lcd.print("v5:");
+    lcd.print(valve5_pos);
+
+    lcd.setCursor(0, 2);
+    lcd.print("v6:");
+    lcd.print(valve6_pos);
+    lcd.setCursor(7, 2);
+    lcd.print("v7:");
+    lcd.print(valve7_pos);
+    lcd.setCursor(14, 2);
+    lcd.print("v8:");
+    lcd.print(valve8_pos);
+
+    lcd.setCursor(0, 3);
+    lcd.print("v9:");
+    lcd.print(valve9_pos);
+    lcd.setCursor(6, 3);
+    lcd.print("v10:");
+    lcd.print(valve10_pos);
+    lcd.setCursor(13, 3);
+    lcd.print("v11:");
+    lcd.print(valve11_pos);
+    vTaskDelay(5000);
+    lcd.clear();
+
     Wire1.endTransmission();
 }
 
 void display_time_and_date(void)
 {
-
     /*
            0 	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15  16  17  18  19
           -------------------------------------------------------------------------------
@@ -518,14 +497,12 @@ void display_state_fan(void)
     lcd.setCursor(0, 0);
     lcd.print("State: ");
 
-    if (statemachine_state_mutex != NULL)
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-        {
-            temp_state = state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+        temp_state = state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
+
     lcd.print(state);
     lcd.setCursor(0, 1);
     lcd.print("Fan speed: ");

@@ -51,15 +51,12 @@ void task_i2c_code(void *pvParameters)
             current_time_multiplier = 0;
         }
 
-        if (rtc_time_multiplier == 2000)
-        { // Every 20 seconds
+        if (rtc_time_multiplier == 6000)
+        { // Every 60 seconds
 
-            //message = "Local time (1) is: " + formatted_datetime();
-            //print_message(message);
-            
-            //formatted_daydatetime(date_time_buffer, sizeof(date_time_buffer));
-            //message = "Local time is: " + String(date_time_buffer);
-            //print_message(message);
+            // formatted_daydatetime(date_time_buffer, sizeof(date_time_buffer));
+            // message = "Local time is: " + String(date_time_buffer);
+            // print_message(message);
 
             message = "System uptime: " + formatted_uptime();
             print_message(message);

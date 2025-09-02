@@ -69,8 +69,6 @@ void write_sensor_data(void)
                                 xSemaphoreGive(settings_sensor1_mutex);
                             }
 
-                            // String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j) + "_valve"];
-                            // String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty())
                             {
                                 sensor.addTag("valve", sensor_valve);
@@ -91,8 +89,6 @@ void write_sensor_data(void)
                                     xSemaphoreGive(settings_sensor2_mutex);
                                 }
                             }
-                            // String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_valve"];
-                            // String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty())
                             {
                                 sensor.addTag("valve", sensor_valve);
@@ -199,8 +195,6 @@ void write_avg_sensor_data(void)
                                     xSemaphoreGive(settings_sensor1_mutex);
                                 }
                             }
-                            // String sensor_valve = wire_sensor_data_temp["wire_sensor" + String(j) + "_valve"];
-                            // String sensor_location = wire_sensor_data_temp["wire_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty())
                             {
                                 sensor.addTag("valve", sensor_valve);
@@ -221,8 +215,6 @@ void write_avg_sensor_data(void)
                                     xSemaphoreGive(settings_sensor2_mutex);
                                 }
                             }
-                            // String sensor_valve = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_valve"];
-                            // String sensor_location = wire1_sensor_data_temp["wire1_sensor" + String(j) + "_location"];
                             if (!sensor_valve.isEmpty())
                             {
                                 sensor.addTag("valve", sensor_valve);
@@ -270,6 +262,8 @@ void write_valve_position_data(void)
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
 
+    char buffer[512];
+
     String json = "";
     String message = "";
 
@@ -297,58 +291,47 @@ void write_valve_position_data(void)
     InfluxDBClient client(influxdb_url, influxdb_org, influxdb_bucket, influxdb_token);
     Point sensor("Valves");
 
-    status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
-
-    if (status_file_present == 1)
+    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
     {
-        if (valve_position_file_mutex != NULL)
-        {
-            if (xSemaphoreTake(valve_position_file_mutex, (TickType_t)10) == pdTRUE)
-            {
-                json = read_config_file(VALVE_POSITIONS_PATH);
-                xSemaphoreGive(valve_position_file_mutex);
-            }
-        }
+        DeserializationError error = deserializeJson(doc, buffer);
 
-        DeserializationError err = deserializeJson(doc, json);
-        if (err)
+        if (error)
         {
-            message = "[ERROR] Failed to parse valvepositions.json: " + String(VALVE_POSITIONS_PATH) + ": " + String(err.c_str());
+            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
             print_message(message);
-            return;
         }
+    }
 
-        if (client.validateConnection())
+    if (client.validateConnection())
+    {
+        for (int i = 0; i < 12; i++)
         {
-            for (int i = 0; i < 12; i++)
+
+            valve_pos_temp = doc["valve" + String(i)];
+            valve_pos_sum = valve_pos_sum + valve_pos_temp;
+
+            if (valve_pos_sum != 0)
             {
+                sensor.clearFields();
+                sensor.clearTags();
+                String tag = "valve" + String(i);
+                sensor.addTag("device", tag);
+                sensor.addField("position", valve_pos_temp);
 
-                valve_pos_temp = doc["valve" + String(i)];
-                valve_pos_sum = valve_pos_sum + valve_pos_temp;
+                client.pointToLineProtocol(sensor);
 
-                if (valve_pos_sum != 0)
+                if (!client.writePoint(sensor))
                 {
-                    sensor.clearFields();
-                    sensor.clearTags();
-                    String tag = "valve" + String(i);
-                    sensor.addTag("device", tag);
-                    sensor.addField("position", valve_pos_temp);
-
-                    client.pointToLineProtocol(sensor);
-
-                    if (!client.writePoint(sensor))
-                    {
-                        message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
-                        print_message(message);
-                    }
+                    message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
+                    print_message(message);
                 }
             }
         }
-        else
-        {
-            message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
-            print_message(message);
-        }
+    }
+    else
+    {
+        message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
+        print_message(message);
     }
 }
 

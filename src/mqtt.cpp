@@ -173,12 +173,14 @@ void publish_valve_positions(void)
     char valve_pos[4];
     char valve_nr[10];
     char topic[100];
+    char buffer[512];
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
     const char *mqtt_server;
 
     String json = "";
     JsonDocument doc;
+    String message = "";
 
     if (settings_mqtt_mutex != NULL)
     {
@@ -207,18 +209,15 @@ void publish_valve_positions(void)
 
     client.setServer(mqtt_server, mqtt_port);
 
-    if (valve_position_file_mutex && xSemaphoreTake(valve_position_file_mutex, (TickType_t)100) == pdTRUE)
+    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
     {
-        status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
+        DeserializationError error = deserializeJson(doc, buffer);
 
-        if (status_file_present == 1)
+        if (error)
         {
-
-            json = read_config_file(VALVE_POSITIONS_PATH);
-            deserializeJson(doc, json);
+            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
         }
-        xSemaphoreGive(valve_position_file_mutex);
-        vTaskDelay(50);
     }
 
     if (client.connect("OSventilation"))
