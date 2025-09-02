@@ -70,8 +70,8 @@ void move_valve(void)
         }
 
         valve_pos = doc["valve" + String(i)];
-        message = "valve_number: " + String(valve_number) + ", position_change: " + String(valve_position_change) + ", direction: " + direction;
-        print_message(message);
+        // message = "valve_number: " + String(valve_number) + ", position_change: " + String(valve_position_change) + ", direction: " + direction;
+        // print_message(message);
 
         // Assign the correct IO based on valve number
         if (valve_number < 6)
@@ -120,7 +120,7 @@ void move_valve(void)
         }
     }
 
-    // Convert from JsonDocument to String
+    // Convert from JsonDocument to char for writing
     serializeJson(doc, new_valve_positions);
 
     // Write status file only if required
@@ -142,19 +142,25 @@ void move_valve(void)
             }
             else
             {
+                // Update actual valve position struct with new valve positions after succesful write of valve positions to file
+                if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
+                {
+                    for (int i = 0; i < MAX_VALVES; i++)
+                    {
+                        valvecontroldata.actual_valve_position[i] = doc["valve" + String(i)];
+                    }
+                    xSemaphoreGive(valve_control_data_mutex);
+                }
                 message = "Valve positions stored successfully in valvepositions.json";
                 print_message(message);
             }
         }
     }
 
-    if (statemachine_state_mutex != NULL)
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-        {
-            state = temp_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+        state = temp_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 }
 
@@ -346,7 +352,7 @@ void valve_position_statemachine(String statemachine_state)
     int state_valve_pos = 0;
     int sum_move = 0; // Variable for decision on writing config file (sum>0) or not (sum=0)
 
-    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
+    /*if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
     {
         DeserializationError error = deserializeJson(actual_valve_pos_doc, buffer);
 
@@ -355,11 +361,16 @@ void valve_position_statemachine(String statemachine_state)
             message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
             print_message(message);
         }
-    }
+    }*/
 
     for (int i = 0; i < MAX_VALVES; i++)
     {
-        actual_valve_pos = actual_valve_pos_doc["valve" + String(i)];
+        // actual_valve_pos = actual_valve_pos_doc["valve" + String(i)];
+        if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
+        {
+            actual_valve_pos = valvecontroldata.actual_valve_position[i];
+            xSemaphoreGive(valve_control_data_mutex);
+        }
 
         if (statemachine_state == "day")
         {

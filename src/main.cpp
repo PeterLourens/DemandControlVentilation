@@ -78,7 +78,7 @@ void setup()
 	// setup_wifi();
 
 	// New config
-	// vTaskDelay(10000); // So can lauch serial monitor
+	vTaskDelay(10000); // So can lauch serial monitor
 	if (!parse_i2c_settings())
 	{
 		message = "Failed to parse I2C settings";
@@ -274,6 +274,18 @@ void setup()
 		message = "Successfully parsed state_cyclingnight settings";
 		print_message(message);
 	}
+
+	if (!parse_actual_valve_positions())
+	{
+		message = "failed to parse actual valve positions";
+		print_message(message);
+	}
+	else
+	{
+		message = "Successfully parsed actual valve positions ";
+		print_message(message);
+	}
+
 	// parse_state_temp_settings();
 	vTaskDelay(100);
 	start_task_wifi();

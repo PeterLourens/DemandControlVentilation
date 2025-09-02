@@ -31,6 +31,8 @@ bool parse_state_cooking_settings(void);
 bool parse_state_cyclingday_settings(void);
 bool parse_state_cyclingnight_settings(void);
 
+bool parse_actual_valve_positions(void);
+
 void valve_status_file_create(void);
 void delete_file(const char *);
 bool check_file_exists(const char *);

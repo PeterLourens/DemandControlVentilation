@@ -290,11 +290,13 @@ typedef struct
     int valve_position_cyclingnight[MAX_VALVES];
 } State_cyclingnight_settings;
 
+//To store temporary valve positions settings defined in statemachine
 typedef struct
 {
     int valve_position_temp[MAX_VALVES];
 } State_temp_settings;
 
+//To store valve control data from web page and from statemachine and actual valvel data
 typedef struct
 {
     int valve_number[MAX_VALVES];

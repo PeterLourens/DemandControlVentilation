@@ -1071,6 +1071,35 @@ bool parse_state_cyclingnight_settings(void)
     return false;
 }
 
+bool parse_actual_valve_positions(void)
+{
+    char buffer[700];
+    JsonDocument doc;
+    String message = "";
+
+    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
+    {
+        DeserializationError error = deserializeJson(doc, buffer);
+
+        if (error)
+        {
+            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
+            print_message(message);
+            return false;
+        }
+    }
+
+    if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
+    {
+        for (int i = 0; i < MAX_VALVES; i++)
+        {
+            valvecontroldata.actual_valve_position[i] = doc["valve" + String(i)];
+        }
+        xSemaphoreGive(valve_control_data_mutex);
+    }
+    return true;
+}
+
 // Write valve status file with all valve positions 0
 void valve_status_file_create()
 {
