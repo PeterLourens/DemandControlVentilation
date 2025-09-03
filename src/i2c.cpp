@@ -293,14 +293,14 @@ void display_sensors(void)
 
                     // row0
                     lcd.setCursor(0, 0);
-                    lcd.print("B:");
+                    lcd.print("B");
                     lcd.print(bus);
-                    lcd.print(" ");
-                    lcd.print("S:");
+                    lcd.print("-");
+                    lcd.print("S");
                     lcd.print(slot);
-                    lcd.print(" ");
+                    lcd.print(" RH:");
                     lcd.print(rh);
-                    lcd.print(" ");
+                    lcd.print(" CO2:");
                     lcd.print(co2);
 
                     // row1
@@ -450,27 +450,35 @@ void display_time_and_date(void)
 
     int64_t uptime = 0;
 
+    char day_buffer[10];
     char date_buffer[20];
     char time_buffer[20];
+    char uptime_buffer[50];
+    char ip_buffer[20];
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
     lcd.backlight();
 
+    formatted_day(day_buffer, sizeof(day_buffer));
     formatted_date(date_buffer, sizeof(date_buffer));
     formatted_time(time_buffer, sizeof(time_buffer));
+    formatted_uptime(uptime_buffer, sizeof(uptime_buffer));
+    ip_address(ip_buffer, sizeof(ip_buffer));
 
     lcd.setCursor(0, 0);
-    lcd.print(String(date_buffer));
+    lcd.print(String(day_buffer) + " " + String(date_buffer));
 
     lcd.setCursor(0, 1);
     lcd.print(String(time_buffer));
 
     uptime = esp_timer_get_time();
     lcd.setCursor(0, 2);
-    lcd.print("Uptime: ");
-    lcd.print(uptime / 1000000 / 60); // in minutes
-    lcd.print(" min");
+    lcd.print("Up: " + String(uptime_buffer));
+
+    lcd.setCursor(0, 3);
+    lcd.print("IP: " + String(ip_buffer));
+
     vTaskDelay(5000);
     lcd.clear();
 

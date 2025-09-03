@@ -243,13 +243,16 @@ void publish_uptime(void)
     int mqtt_port = 0;
 
     char topic[100];
-    char uptime[300];
+    char uptime_str[64];
+    //char uptime[300];
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     const char *mqtt_server;
-
+    
     String json;
-    String uptime_str;
+    //String uptime_str;
+
+    formatted_uptime(uptime_str, sizeof(uptime_str));
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -280,9 +283,9 @@ void publish_uptime(void)
     if (client.connect("OSventilation"))
     {
         (String(mqtt_base_topic) + "/system/uptime").toCharArray(topic, 100);
-        uptime_str = formatted_uptime();
-        uptime_str.toCharArray(uptime, 300);
-        client.publish(topic, uptime);
+        //uptime_str = formatted_uptime();
+        //uptime_str.toCharArray(uptime, 300);
+        client.publish(topic, uptime_str);
     }
     else
     {

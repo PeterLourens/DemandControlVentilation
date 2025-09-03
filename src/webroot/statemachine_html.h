@@ -40,7 +40,7 @@ const char statemachine_html[] = R"rawliteral(
         </div>
 
         <div class="content">  
-            <h4 class="content-subhead">General settings statemachine - <span id="status_statemachine_config"></span></h4>
+            <h4 class="content-subhead">General settings statemachine"></span></h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_statemachine">
                     <fieldset>
@@ -111,7 +111,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">Day state valve settings - <span id="status_state_day_config"></span></h4>
+            <h4 class="content-subhead">Day state valve settings.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_day">
                     <fieldset>
@@ -197,7 +197,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">Night state valve settings - <span id="status_state_night_config"></span></h4>
+            <h4 class="content-subhead">Night state valve settings."</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_night">
                     <fieldset>
@@ -283,7 +283,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">High CO2 day state valve settings - <span id="status_state_highco2day_config"></span></h4>
+            <h4 class="content-subhead">High CO2 day state valve settings.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_highco2day">
                     <fieldset>
@@ -369,7 +369,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">High CO2 night state valve settings - <span id="status_state_highco2night_config"></span></h4>
+            <h4 class="content-subhead">High CO2 night state valve settings.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_highco2night">
                     <fieldset>
@@ -455,7 +455,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">High humidity day state valve settings - <span id="status_state_highrhday_config"></span></h4>
+            <h4 class="content-subhead">High humidity day state valve settings.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_highrhday">
                     <fieldset>
@@ -485,7 +485,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="maximum state_time">Maximum state time (sec):</label>
-                                <input type="number" max="1800" min="0" name="maximum_state_time_highrhday" id="maximum_state_time_highrhday" class="pure-input-1-3" />
+                                <input type="number" max="3600" min="0" name="maximum_state_time_highrhday" id="maximum_state_time_highrhday" class="pure-input-1-3" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_highrhday">Valve0:</label>
@@ -541,7 +541,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">High humidity night state valve settings - <span id="status_state_highrhnight_config"></span></h4>
+            <h4 class="content-subhead">High humidity night state valve settings.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_highrhnight">
                     <fieldset>
@@ -571,7 +571,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-2">
                                 <label for="maximum_state_time_highrhnight">Maximum state time (sec):</label>
-                                <input type="number" max="100" min="0" name="maximum_state_time_highrhnight" id="maximum_state_time_highrhnight" class="pure-input-1-3" />
+                                <input type="number" max="3600" min="0" name="maximum_state_time_highrhnight" id="maximum_state_time_highrhnight" class="pure-input-1-3" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve0_position_highrhnight">Valve0:</label>
@@ -627,7 +627,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">Cooking valve settings - <span id="status_state_cooking_config"></span></h4>
+            <h4 class="content-subhead">Cooking valve settings</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_cooking">
                     <fieldset>
@@ -721,7 +721,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">Valve cycling day state valve settings - <span id="status_state_cyclingday_config"></span></h4>
+            <h4 class="content-subhead">Valve cycling day state valve settings.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_cyclingday">
                     <fieldset>
@@ -799,7 +799,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">Valve cycling night state valve settings - <span id="status_state_cyclingnight_config"></span></h4>
+            <h4 class="content-subhead">Valve cycling night state valve settings.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_cyclingnight">
                     <fieldset>

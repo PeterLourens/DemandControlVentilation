@@ -16,6 +16,7 @@ String create_index_json()
     float temp_sensor_data[2][8][3];
     char daydatetime_buffer[50];
     char buffer[512];
+    char uptime_str[64];
 
     String json = "";
     String json_valves = "";
@@ -58,10 +59,12 @@ String create_index_json()
     }
 
     formatted_daydatetime(daydatetime_buffer, sizeof(daydatetime_buffer));
+    formatted_uptime(uptime_str, sizeof(uptime_str));
 
     doc["statemachine_state"] = state_tmp;
     doc["fanspeed"] = fanspeed_tmp;
-    doc["uptime"] = formatted_uptime();
+    // doc["uptime"] = formatted_uptime();
+    doc["uptime"] = uptime_str;
     doc["date_time"] = daydatetime_buffer;
 
     for (int i = 0; i < 8; i++)
@@ -533,7 +536,7 @@ String create_statemachine_json()
 
         for (int i = 0; i < 12; i++)
         {
-            doc_highrhnight["valve" + String(i) + "position_highrhnight"] = statehighrhnightsettings.valve_position_highrhnight[i];
+            doc_highrhnight["valve" + String(i) + "_position_highrhnight"] = statehighrhnightsettings.valve_position_highrhnight[i];
         }
         xSemaphoreGive(settings_state_highrhnight_mutex);
     }

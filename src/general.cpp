@@ -132,6 +132,13 @@ void formatted_day(char *buf, size_t bufsize)
     snprintf(buf, bufsize, "%s", day_names[dayofweek]);
 }
 
+void ip_address(char *buf, size_t bufsize)
+{
+    IPAddress ip = WiFi.localIP();
+
+    snprintf(buf, bufsize, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+}
+
 String concatJson(String json1, String json2)
 {
     // Remove the closing brace from json1
@@ -152,26 +159,16 @@ String concatJson(String json1, String json2)
     return result;
 }
 
-String formatted_uptime(void)
+void formatted_uptime(char *buf, size_t bufsize)
 {
-    int uptime_day;
-    int uptime_hour;
-    int uptime_minute;
-    int uptime_second;
+    uint64_t uptime = esp_timer_get_time() / 1000000; // uptime in seconds
 
-    char formatted_uptime[64];
+    int uptime_day = uptime / (60 * 60 * 24);
+    int uptime_hour = (uptime / (60 * 60)) % 24;
+    int uptime_minute = (uptime / 60) % 60;
+    int uptime_second = uptime % 60;
 
-    uint64_t uptime = esp_timer_get_time() / 1000000; // in sec
-
-    uptime_day = uptime / (60 * 60 * 24);    // in full days
-    uptime_hour = (uptime / (60 * 60)) % 24; // in full hours
-    uptime_minute = (uptime / 60) % 60;      // in full minutes
-    uptime_second = uptime % 60;             // in full seconds
-
-    snprintf(formatted_uptime, sizeof(formatted_uptime), "%d d, %d h, %02d m, %02d s",
-             uptime_day, uptime_hour, uptime_minute, uptime_second);
-
-    return String(formatted_uptime);
+    snprintf(buf, bufsize, "%dd %dh %02dm %02ds", uptime_day, uptime_hour, uptime_minute, uptime_second);
 }
 
 /*

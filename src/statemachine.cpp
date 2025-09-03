@@ -63,7 +63,7 @@ void run_statemachine(void)
 
     if (xQueuePeek(sensor_queue, &statemachine_sensor_data, 0) != pdTRUE)
     {
-        message = "Faild to read from sensor_queue in function: " + String(__FUNCTION__);
+        message = "Failed to read from sensor_queue in function: " + String(__FUNCTION__);
         print_message(message);
         return;
     }
@@ -73,7 +73,7 @@ void run_statemachine(void)
 
     if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) != pdTRUE)
     {
-        message = "Faild to read from sensor_avg_queue in function: " + String(__FUNCTION__);
+        message = "Failed to read from sensor_avg_queue in function: " + String(__FUNCTION__);
         print_message(message);
         return;
     }
@@ -1103,7 +1103,7 @@ void cooking_transitions(void)
         xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + temp_fanspeed;
     print_message(message);
 
     set_fanspeed(temp_fanspeed);
@@ -1126,7 +1126,7 @@ void cooking_transitions(void)
         elapsed_time = 0;
         old_time = (esp_timer_get_time()) / 1000000;
     }
-    if (cooking_times() == false && is_day() == false)
+    else if (cooking_times() == false && is_day() == false)
     {
         message = "It's night and not cooking time. Transit to night";
         print_message(message);

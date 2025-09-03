@@ -16,6 +16,7 @@ void task_i2c_code(void *pvParameters)
     const TickType_t timedelay = 10; // main time delay im ms
 
     char date_time_buffer[50];
+    char uptime_str[64];
 
     String message = "";
 
@@ -24,6 +25,9 @@ void task_i2c_code(void *pvParameters)
 
     // start with display clear and no backlight
     init_display_off();
+
+    // Sync time
+    sync_rtc_ntp();
 
     if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -58,7 +62,8 @@ void task_i2c_code(void *pvParameters)
             // message = "Local time is: " + String(date_time_buffer);
             // print_message(message);
 
-            message = "System uptime: " + formatted_uptime();
+            formatted_uptime(uptime_str, sizeof(uptime_str));
+            message = "System uptime: " + String(uptime_str);
             print_message(message);
 
             rtc_time_multiplier = 0;
