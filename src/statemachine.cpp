@@ -259,7 +259,10 @@ void day_transitions(void)
         old_time = new_time;
     }
 
-    message = "High CO2 detection level: " + String(co2highlevel) + ". High RH detection level: " + String(rhhighlevel);
+    message = "High CO2 detection level: " + String(co2highlevel);
+    print_message(message);
+
+    message = "High RH detection level: " + String(rhhighlevel);
     print_message(message);
 
     if (valve_move_locked == 0)
@@ -390,7 +393,10 @@ void night_transitions(void)
         xSemaphoreGive(settings_statemachine_mutex);
     }
 
-    message = "High CO2 detection level: " + String(co2highlevel) + ". High RH detection level: " + String(rhhighlevel);
+    message = "High CO2 detection level: " + String(co2highlevel);
+    print_message(message);
+
+    message = "High RH detection level: " + String(rhhighlevel);
     print_message(message);
 
     message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
@@ -405,12 +411,6 @@ void night_transitions(void)
         elapsed_time += new_time - old_time;
         old_time = new_time;
     }
-
-    message = "High CO2 detection level: " + String(co2highlevel);
-    print_message(message);
-
-    message = "High RH detection level: " + String(rhhighlevel);
-    print_message(message);
 
     if (valve_move_locked == 0)
     {
@@ -444,6 +444,7 @@ void night_transitions(void)
 
     message = "Number of sensors measure high CO2: " + String(co2_sensors_high);
     print_message(message);
+
     message = "Number of sensors measure high RH: " + String(rh_sensors_high);
     print_message(message);
 
@@ -537,7 +538,10 @@ void high_co2_day_transitions(void)
         xSemaphoreGive(settings_statemachine_mutex);
     }
 
-    message = "High CO2 detection level: " + String(co2highlevel) + ". Low CO2 detection level: " + String(co2lowlevel);
+    message = "High CO2 detection level: " + String(co2highlevel);
+    print_message(message);
+
+    message = "Low CO2 detection level: " + String(co2lowlevel);
     print_message(message);
 
     message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
@@ -711,7 +715,10 @@ void high_co2_night_transitions(void)
         xSemaphoreGive(settings_statemachine_mutex);
     }
 
-    message = "High CO2 detection level: " + String(co2highlevel) + ". Low CO2 detection level: " + String(co2lowlevel);
+    message = "High CO2 detection level: " + String(co2highlevel);
+    print_message(message);
+
+    message = "Low CO2 detection level: " + String(co2lowlevel);
     print_message(message);
 
     message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
