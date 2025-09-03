@@ -76,15 +76,15 @@ void move_valve(void)
         // Assign the correct IO based on valve number
         if (valve_number < 6)
         {
-            latchPin = latchPin1;
-            clockPin = clockPin1;
-            dataPin = dataPin1;
+            latchPin = LATCHPIN1;
+            clockPin = CLOCKPIN1;
+            dataPin = DATAPIN1;
         }
         else
         {
-            latchPin = latchPin2;
-            clockPin = clockPin2;
-            dataPin = dataPin2;
+            latchPin = LATCHPIN2;
+            clockPin = CLOCKPIN2;
+            dataPin = DATAPIN2;
         }
 
         if (check_valve_position == 1)

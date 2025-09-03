@@ -6,16 +6,15 @@
 
 void setup()
 {
-
 	Serial.begin(115200);
 
-	pinMode(latchPin1, OUTPUT);
-	pinMode(clockPin1, OUTPUT);
-	pinMode(dataPin1, OUTPUT);
+	pinMode(LATCHPIN1, OUTPUT);
+	pinMode(CLOCKPIN1, OUTPUT);
+	pinMode(DATAPIN1, OUTPUT);
 
-	pinMode(latchPin2, OUTPUT);
-	pinMode(clockPin2, OUTPUT);
-	pinMode(dataPin2, OUTPUT);
+	pinMode(LATCHPIN2, OUTPUT);
+	pinMode(CLOCKPIN2, OUTPUT);
+	pinMode(DATAPIN2, OUTPUT);
 
 	// File mutexes
 	sensor_config_file_mutex = xSemaphoreCreateMutex();
@@ -307,8 +306,8 @@ void loop() {}
 
 void init_registers(void)
 {
-	all_outputs_off(dataPin1, clockPin1, latchPin1);
-	all_outputs_off(dataPin2, clockPin2, latchPin2);
+	all_outputs_off(DATAPIN1, CLOCKPIN1, LATCHPIN1);
+	all_outputs_off(DATAPIN2, CLOCKPIN2, LATCHPIN2);
 }
 
 /*

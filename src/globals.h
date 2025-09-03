@@ -15,12 +15,28 @@
 #define I2C_SCL2 40 // Wire1 I/O settings (SDA2/SCL2)
 #define I2C_SDA2 41
 
+#define CLOCKPIN1 11
+#define LATCHPIN1 12
+#define DATAPIN1 13
+
+#define CLOCKPIN2 15
+#define LATCHPIN2 16
+#define DATAPIN2 14
+
 #elif defined(DEVICE_ESP32)
 
 #define I2C_SCL1 17 // Wire I/O settings (SDA1/SCL1) and
 #define I2C_SDA1 16
 #define I2C_SCL2 18 // Wire1 I/O settings (SDA2/SCL2)
 #define I2C_SDA2 19
+
+#define CLOCKPIN1 13
+#define LATCHPIN1 12
+#define DATAPIN1 14
+
+#define CLOCKPIN2 26
+#define LATCHPIN2 25
+#define DATAPIN2 27
 
 #else
 #error "No device type defined! Please define DEVICE_ESP32S3 or DEVICE_ESP32."
@@ -356,14 +372,14 @@ extern bool ap_active;
 extern bool debug_mode;
 
 // Data pins for 74HC595
-extern int clockPin1;
-extern int latchPin1;
-extern int dataPin1;
+//extern int clockPin1;
+//extern int latchPin1;
+//extern int dataPin1;
 
 // Data pins for 74HC595
-extern int clockPin2;
-extern int latchPin2;
-extern int dataPin2;
+//extern int clockPin2;
+//extern int latchPin2;
+//extern int dataPin2;
 
 // Function definitions
 #endif
