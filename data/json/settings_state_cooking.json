@@ -1,17 +1,1 @@
-{
-    "enable_state_cooking": "On",
-    "state_cooking_fanspeed": "High",
-    "name_state_cooking": "cooking",
-    "valve0_position_cooking": 20,
-    "valve1_position_cooking": 20,
-    "valve2_position_cooking": 4,
-    "valve3_position_cooking": 0,
-    "valve4_position_cooking": 4,
-    "valve5_position_cooking": 4,
-    "valve6_position_cooking": 4,
-    "valve7_position_cooking": 0,
-    "valve8_position_cooking": 4,
-    "valve9_position_cooking": 4,
-    "valve10_position_cooking": 4,
-    "valve11_position_cooking": 4
-}
+{"enable_state_cooking":"On","state_cooking_fanspeed":"High","name_state_cooking":"cooking","start_hour_state_cooking":"17","start_minute_state_cooking":"20","stop_hour_state_cooking":"17","stop_minute_state_cooking":"50","valve0_position_cooking":"20","valve1_position_cooking":"20","valve2_position_cooking":"4","valve3_position_cooking":"0","valve4_position_cooking":"4","valve5_position_cooking":"4","valve6_position_cooking":"4","valve7_position_cooking":"0","valve8_position_cooking":"4","valve9_position_cooking":"4","valve10_position_cooking":"4","valve11_position_cooking":"4"}
