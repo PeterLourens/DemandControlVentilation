@@ -526,13 +526,13 @@ void display_state_fan(void)
 
     lcd.print(fanspeed);
 
-    //lcd.setCursor(0, 2);
-    //lcd.print("CO2 sensors high:");
-    //lcd.print(parse_co2_sensors_high());
+    lcd.setCursor(0, 2);
+    lcd.print("CO2 sensors high:");
+    lcd.print(parse_co2_sensors_high());
 
-    //lcd.setCursor(0, 3);
-    //lcd.print("RH sensors high:");
-    //lcd.print(parse_rh_sensors_high());
+    lcd.setCursor(0, 3);
+    lcd.print("RH sensors high:");
+    lcd.print(parse_rh_sensors_high());
 
     vTaskDelay(5000);
     lcd.clear();

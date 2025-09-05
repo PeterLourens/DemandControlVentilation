@@ -70,8 +70,6 @@ void move_valve(void)
         }
 
         valve_pos = doc["valve" + String(i)];
-        // message = "valve_number: " + String(valve_number) + ", position_change: " + String(valve_position_change) + ", direction: " + direction;
-        // print_message(message);
 
         // Assign the correct IO based on valve number
         if (valve_number < 6)
@@ -99,7 +97,7 @@ void move_valve(void)
                 new_valve_position_change = min(valve_position_change, 24 - valve_pos);
                 new_valve_position = valve_pos + new_valve_position_change;
             }
-            message = "Request move: " + String(valve_position_change) + ", Current position: " + String(valve_pos) + ", Valve will move: " + String(new_valve_position_change) + ", Direction: " + (direction == 0 ? "close" : "open");
+            message = "Valve: " + String(i) + ", request: " + String(valve_position_change) + ", current: " + String(valve_pos) + ", move: " + String(new_valve_position_change) + ", direction: " + (direction == 0 ? "close" : "open");
             print_message(message);
             valvecontrol(direction, new_valve_position_change, valve_number, dataPin, clockPin, latchPin);
         }
@@ -151,7 +149,7 @@ void move_valve(void)
                     }
                     xSemaphoreGive(valve_control_data_mutex);
                 }
-                message = "Valve positions stored successfully in valvepositions.json";
+                message = "Valve positions stored successfully in: " + String(VALVE_POSITIONS_PATH);
                 print_message(message);
             }
         }
@@ -166,7 +164,6 @@ void move_valve(void)
 
 void valvecontrol(int direction, int position_change, int valve_number, int dataPin, int clockPin, int latchPin)
 {
-
     // This function moves one valve based on 3 inputs. If multiple valves need to move, this function is called multiple
     // times. This function does not check if the valves are controlled outside their operating window so all requests for
     // valve movement should be checked by another function before calling this function. The reason why not to put the
@@ -351,17 +348,6 @@ void valve_position_statemachine(String statemachine_state)
     int actual_valve_pos = 0;
     int state_valve_pos = 0;
     int sum_move = 0; // Variable for decision on writing config file (sum>0) or not (sum=0)
-
-    /*if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
-    {
-        DeserializationError error = deserializeJson(actual_valve_pos_doc, buffer);
-
-        if (error)
-        {
-            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
-        }
-    }*/
 
     for (int i = 0; i < MAX_VALVES; i++)
     {

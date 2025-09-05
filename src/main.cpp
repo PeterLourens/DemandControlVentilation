@@ -293,13 +293,23 @@ void setup()
 	start_task_valvecontrol();
 	start_task_mqtt();
 	start_task_neopixel();
-	// start_task_system();
+	start_task_system();
 	startTaskwebcode();
 	start_task_websocket();
 
 	vTaskDelay(60000); // Only write to influxDB when all tasks are running
 	// start_task_espnow();
 	start_task_influxdb();
+
+	eTaskState wifi_state = eTaskGetState(task_wifi);
+	eTaskState i2c_state = eTaskGetState(task_i2c);
+	eTaskState statemachine_state = eTaskGetState(task_statemach);
+
+	if (wifi_state != eDeleted && wifi_state != eInvalid)
+	{
+		message = "Task WIFI has started or is running.";
+		print_message(message);
+	}
 }
 
 void loop() {}

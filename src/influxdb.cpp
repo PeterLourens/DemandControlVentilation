@@ -623,13 +623,15 @@ void write_heap_info(void)
         xSemaphoreGive(settings_influxdb_mutex);
     }
 
-    free_heap_size = xPortGetFreeHeapSize();
-    message = "Free heap size: " + String(free_heap_size);
-    print_message(message);
+    //free_heap_size = xPortGetFreeHeapSize();
+    free_heap_size = get_free_heap_size();
+    //message = "Free heap size: " + String(free_heap_size);
+    //print_message(message);
 
-    minimum_ever_free_heap_size = xPortGetMinimumEverFreeHeapSize();
-    message = "Minimum ever free heap size: " + String(minimum_ever_free_heap_size);
-    print_message(message);
+    //minimum_ever_free_heap_size = xPortGetMinimumEverFreeHeapSize();
+    minimum_ever_free_heap_size = get_min_ever_heap_size();
+    //message = "Minimum ever free heap size: " + String(minimum_ever_free_heap_size);
+    //print_message(message);
 
     InfluxDBClient client(influxdb_url, influxdb_org, influxdb_bucket, influxdb_token);
     Point sensor("System_stats");

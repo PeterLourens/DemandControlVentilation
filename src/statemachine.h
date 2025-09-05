@@ -32,4 +32,7 @@ void valve_cycle_night_transitions(void);
 void manual_high_speed_transitions(void);
 void select_sensors(void);
 
+int parse_co2_sensors_high(void);
+int parse_rh_sensors_high(void);
+
 #endif

@@ -56,7 +56,7 @@ void task_wifi_code(void *pvParameters)
             message = "Failed to read MAC address";
             print_message(message);
         }
-        vTaskDelay(30000);
+        vTaskDelay(120000);
     }
 }
 

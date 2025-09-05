@@ -259,3 +259,13 @@ float roundToTwoDecimals(float value)
 {
     return roundf(value * 100) / 100;
 }
+
+int get_free_heap_size(void)
+{
+    return xPortGetFreeHeapSize();
+}
+
+int get_min_ever_heap_size(void)
+{
+    return xPortGetMinimumEverFreeHeapSize();
+}

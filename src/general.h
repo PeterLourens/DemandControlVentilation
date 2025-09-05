@@ -22,5 +22,7 @@ void ip_address(char *, size_t);
 void sensor_data_average(void);
 void fifoPush(int, int, int, float, int);
 float roundToTwoDecimals(float);
+int get_free_heap_size(void);
+int get_min_ever_heap_size(void);
 
 #endif
