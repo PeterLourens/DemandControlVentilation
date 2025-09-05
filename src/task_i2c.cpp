@@ -69,7 +69,7 @@ void task_i2c_code(void *pvParameters)
             rtc_time_multiplier = 0;
         }
 
-        if (sync_time_multiplier == 180000)
+        if (sync_time_multiplier == 30000)
         { // Every 30 mins
             message = "Sync RTC with NTP server...";
             print_message(message);

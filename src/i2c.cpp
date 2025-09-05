@@ -467,10 +467,10 @@ void display_time_and_date(void)
     ip_address(ip_buffer, sizeof(ip_buffer));
 
     lcd.setCursor(0, 0);
-    lcd.print(String(day_buffer) + " " + String(date_buffer));
+    lcd.print(String(day_buffer) + " " + String(time_buffer));
 
     lcd.setCursor(0, 1);
-    lcd.print(String(time_buffer));
+    lcd.print(String(date_buffer));
 
     uptime = esp_timer_get_time();
     lcd.setCursor(0, 2);
@@ -525,6 +525,15 @@ void display_state_fan(void)
     }
 
     lcd.print(fanspeed);
+
+    //lcd.setCursor(0, 2);
+    //lcd.print("CO2 sensors high:");
+    //lcd.print(parse_co2_sensors_high());
+
+    //lcd.setCursor(0, 3);
+    //lcd.print("RH sensors high:");
+    //lcd.print(parse_rh_sensors_high());
+
     vTaskDelay(5000);
     lcd.clear();
     Wire1.endTransmission();
@@ -534,7 +543,6 @@ void current_time(void)
 {
 
     char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    String formattedTime;
 
     Wire.begin(I2C_SDA1, I2C_SCL1, 100000);
     rtc.begin(&Wire);
@@ -599,6 +607,7 @@ void sync_rtc_ntp(void)
 
     // Sync the RTC with the NTP time
     rtc.adjust(DateTime(timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec));
+
     Wire.endTransmission();
 }
 

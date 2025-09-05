@@ -15,6 +15,7 @@
 #include "config_files.h"
 #include "LiquidCrystal_I2C.h"          //Not library version but adjusted for using Wire1
 #include "general.h"
+#include "statemachine.h"
 
 #define pushButton_pin 7
 

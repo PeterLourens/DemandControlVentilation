@@ -1078,6 +1078,7 @@ void high_rh_night_transitions(void)
 void cooking_transitions(void)
 {
     bool valve_move_locked = 0;
+    long new_time = 0;
 
     String statemachine_state = "cooking";
     String state_fanspeed = "";
@@ -1114,6 +1115,13 @@ void cooking_transitions(void)
     print_message(message);
 
     set_fanspeed(temp_fanspeed);
+
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    {
+        elapsed_time += new_time - old_time;
+        old_time = new_time;
+    }
 
     if (valve_move_locked == 0)
     {
@@ -1195,10 +1203,17 @@ void valve_cycle_day_transitions(void)
         xSemaphoreGive(lock_valve_move_mutex);
     }
 
-    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + temp_fanspeed + ", elapsed time: " + String(elapsed_time);
+    message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
     print_message(message);
 
     set_fanspeed(temp_fanspeed);
+
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    {
+        elapsed_time += new_time - old_time;
+        old_time = new_time;
+    }
 
     if (valve_move_locked == 0)
     {
@@ -1276,6 +1291,13 @@ void valve_cycle_night_transitions(void)
     print_message(message);
 
     set_fanspeed(state_fanspeed);
+
+    new_time = (esp_timer_get_time()) / 1000000;
+    if (new_time > old_time)
+    {
+        elapsed_time += new_time - old_time;
+        old_time = new_time;
+    }
 
     if (valve_move_locked == 0)
     {
