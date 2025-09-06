@@ -21,6 +21,25 @@ void print_message(String message)
     }
 }
 
+void printmessage(const char *message)
+{
+    char txBuffer[400];
+
+    if (debug_mode)
+    {
+        strncpy(txBuffer, message, sizeof(txBuffer) - 1);
+        txBuffer[sizeof(txBuffer) - 1] = '\0'; // Ensure null termination
+
+        if (webserial_queue != 0)
+        {
+            if (!xQueueSend(webserial_queue, txBuffer, 50))
+            {
+                Serial.println("Failed to send message to webserial queue.");
+            }
+        }
+    }
+}
+
 void formatted_daydatetime(char *buf, size_t bufsize)
 {
     int year = 0;

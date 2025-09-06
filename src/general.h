@@ -11,6 +11,7 @@
 
 // Function definitions
 void print_message(String);
+void printmessage(const char *);
 String concatJson(String, String);
 void formatted_uptime(char *, size_t);
 void formatted_daydatetime(char *, size_t);
