@@ -83,6 +83,8 @@
 #define MAX_SENSORS 16 // Maximum number of sensors supported by the hardware
 #define MAX_VALVES 12  // Maximum number of valves
 
+#define MSG_SIZE 150 // Message size
+
 extern TaskHandle_t task_influxdb;
 extern TaskHandle_t task_i2c;
 extern TaskHandle_t task_mqtt;

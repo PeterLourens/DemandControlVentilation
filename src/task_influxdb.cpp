@@ -10,7 +10,7 @@ void task_influxdb_code(void *pvParameters)
 {
     bool ap_active_temp = 0;
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
-    String message = "";
+    char msg[MSG_SIZE] = {};
 
     for (;;)
     {
@@ -29,10 +29,10 @@ void task_influxdb_code(void *pvParameters)
             xSemaphoreGive(settings_influxdb_mutex);
         }
 
-        if (WiFi.waitForConnectResult() == WL_CONNECTED && ap_active_temp == 0 && strcmp(enable_influxdb,"On") == 0)
+        if (WiFi.waitForConnectResult() == WL_CONNECTED && ap_active_temp == 0 && strcmp(enable_influxdb, "On") == 0)
         {
-            message = "Writing to InfluxDB...";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[INFO] Writing to InfluxDB.");
+            printmessage(msg);
 
             write_sensor_data();
             write_avg_sensor_data();

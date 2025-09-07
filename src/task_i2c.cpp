@@ -12,13 +12,10 @@ void task_i2c_code(void *pvParameters)
     int rtc_time_multiplier = 0;
     int sync_time_multiplier = 0;
     int lcd_i2c_address = 0;
-
+    char date_time_buffer[50] = {};
+    char uptime_str[64] = {};
+    char msg[MSG_SIZE] = {};
     const TickType_t timedelay = 10; // main time delay im ms
-
-    char date_time_buffer[50];
-    char uptime_str[64];
-
-    String message = "";
 
     pinMode(pushButton_pin, INPUT);
     attachInterrupt(pushButton_pin, lcd_baclight_pb_isr, RISING);
@@ -63,16 +60,18 @@ void task_i2c_code(void *pvParameters)
             // print_message(message);
 
             formatted_uptime(uptime_str, sizeof(uptime_str));
-            message = "System uptime: " + String(uptime_str);
-            print_message(message);
+            //message = "System uptime: " + String(uptime_str);
+            
+            snprintf(msg, sizeof(msg), "[INFO] System uptime: %s.", uptime_str);
+            printmessage(msg);
 
             rtc_time_multiplier = 0;
         }
 
         if (sync_time_multiplier == 30000)
         { // Every 30 mins
-            message = "Sync RTC with NTP server...";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[INFO] Sync RTC with NTP server.");
+            printmessage(msg);
             sync_rtc_ntp();
             sync_time_multiplier = 0;
         }
@@ -80,8 +79,8 @@ void task_i2c_code(void *pvParameters)
         // When pushbutton is pushed, toggle will be true and function to display status is started
         if (pb_toggle == true)
         {
-            message = "Pushbutton pressed. Start task display....";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[INFO] Pushbutton pressed. Start task display.");
+            printmessage(msg);
             pb_start_display();
         }
 

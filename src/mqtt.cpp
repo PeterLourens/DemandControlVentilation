@@ -5,33 +5,25 @@ PubSubClient client(OSventilation);
 
 void publish_sensor_data(void)
 {
-    float queue_sensor_data[2][8][3];
+    float queue_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
     int mqtt_port = 0;
-
-    char topic[200];
-    char sensor_value[8];
+    char topic[200] = {};
+    char sensor_value[8] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
     const char *mqtt_server = {};
+    String measurement = "";
 
-    String measurement;
-
-    if (settings_mqtt_mutex != NULL)
+    if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
-        {
-            strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
-            enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
-
-            mqtt_server = mqttsettings.mqtt_server; // Because defined as pointer
-
-            strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
-            mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
-
-            mqtt_port = mqttsettings.mqtt_port;
-
-            xSemaphoreGive(settings_mqtt_mutex);
-        }
+        strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
+        enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
+        mqtt_server = mqttsettings.mqtt_server; // Because defined as pointer
+        strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
+        mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
+        mqtt_port = mqttsettings.mqtt_port;
+        xSemaphoreGive(settings_mqtt_mutex);
     }
 
     // Assign default MQTT base topic when setting is empty to prevent writing to MQTT root
@@ -45,7 +37,6 @@ void publish_sensor_data(void)
     if (xQueuePeek(sensor_queue, &queue_sensor_data, 0) == pdTRUE)
     {
         client.setServer(mqtt_server, mqtt_port);
-
         if (client.connect("OSventilation"))
         {
             for (int bus = 0; bus < 2; bus++)
@@ -81,23 +72,23 @@ void publish_sensor_data(void)
         }
         else
         {
-            Serial.print("Could not connect to MQTT server");
+            snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
+            printmessage(msg);
         }
     }
 }
 
 void publish_avg_sensor_data(void)
 {
-    float queue_sensor_avg_data[2][8][3];
+    float queue_sensor_avg_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
     int mqtt_port = 0;
-
-    char topic[200];
-    char sensor_avg_value[8];
+    char topic[200] = {};
+    char sensor_avg_value[8] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
     const char *mqtt_server;
-
-    String measurement;
+    String measurement = "";
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -124,7 +115,6 @@ void publish_avg_sensor_data(void)
     if (xQueuePeek(sensor_avg_queue, &queue_sensor_avg_data, 0) == pdTRUE)
     {
         client.setServer(mqtt_server, mqtt_port);
-
         if (client.connect("OSventilation"))
         {
             for (int bus = 0; bus < 2; bus++)
@@ -160,7 +150,8 @@ void publish_avg_sensor_data(void)
         }
         else
         {
-            Serial.print("Could not connect to MQTT server");
+            snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
+            printmessage(msg);
         }
     }
 }
@@ -168,19 +159,17 @@ void publish_avg_sensor_data(void)
 void publish_valve_positions(void)
 {
     int mqtt_port = 0;
-    bool status_file_present;
-
-    char valve_pos[4];
-    char valve_nr[10];
-    char topic[100];
-    char buffer[512];
+    bool status_file_present = false;
+    char valve_pos[4] = {};
+    char valve_nr[10] = {};
+    char topic[100] = {};
+    char buffer[512] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
     const char *mqtt_server;
-
     String json = "";
     JsonDocument doc;
-    String message = "";
 
     if (settings_mqtt_mutex != NULL)
     {
@@ -212,11 +201,10 @@ void publish_valve_positions(void)
     if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error: %s", VALVE_POSITIONS_PATH, error);
+            printmessage(msg);
         }
     }
 
@@ -234,23 +222,21 @@ void publish_valve_positions(void)
     }
     else
     {
-        Serial.println("Could not connect to MQTT server");
+        snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
+        printmessage(msg);
     }
 }
 
 void publish_uptime(void)
 {
     int mqtt_port = 0;
-
-    char topic[100];
-    char uptime_str[64];
-    //char uptime[300];
+    char topic[100] = {};
+    char uptime_str[64] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
     const char *mqtt_server;
-    
-    String json;
-    //String uptime_str;
+    String json = "";
 
     formatted_uptime(uptime_str, sizeof(uptime_str));
 
@@ -260,14 +246,11 @@ void publish_uptime(void)
         enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
 
         mqtt_server = mqttsettings.mqtt_server;
-        // strncpy(mqtt_server, mqttsettings.mqtt_server, sizeof(mqtt_server) - 1);
-        // mqtt_server[sizeof(enable_mqtt) - 1] = '\0';
 
         strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
         mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
 
         mqtt_port = mqttsettings.mqtt_port;
-
         xSemaphoreGive(settings_mqtt_mutex);
     }
 
@@ -283,26 +266,24 @@ void publish_uptime(void)
     if (client.connect("OSventilation"))
     {
         (String(mqtt_base_topic) + "/system/uptime").toCharArray(topic, 100);
-        //uptime_str = formatted_uptime();
-        //uptime_str.toCharArray(uptime, 300);
         client.publish(topic, uptime_str);
     }
     else
     {
-        Serial.print("\nCould not connect to MQTT server");
+        snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
+        printmessage(msg);
     }
 }
 
 void publish_fanspeed(void)
 {
     int mqtt_port = 0;
-
     char topic[100];
     char fan[20];
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
     const char *mqtt_server;
-
     String json;
     String temp_fanspeed;
 
@@ -330,13 +311,10 @@ void publish_fanspeed(void)
 
     client.setServer(mqtt_server, mqtt_port);
 
-    if (fanspeed_mutex != NULL)
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
-        {
-            temp_fanspeed = fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+        temp_fanspeed = fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     if (client.connect("OSventilation"))
@@ -347,32 +325,29 @@ void publish_fanspeed(void)
     }
     else
     {
-        Serial.println("Could not connect to MQTT server");
+        snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
+        printmessage(msg);
     }
 }
 
 void publish_state(void)
 {
     int mqtt_port = 0;
-
-    char topic[100];
-    char temp_state[20];
+    char topic[100] = {};
+    char temp_state[20] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
     const char *mqtt_server;
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
         strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
         enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
-
         mqtt_server = mqttsettings.mqtt_server;
-
         strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
         mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
-
         mqtt_port = mqttsettings.mqtt_port;
-
         xSemaphoreGive(settings_mqtt_mutex);
     }
 
@@ -383,13 +358,10 @@ void publish_state(void)
         mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
     }
 
-    if (statemachine_state_mutex != NULL)
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-        {
-            state.toCharArray(temp_state, 20);
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+        state.toCharArray(temp_state, 20);
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
     client.setServer(mqtt_server, mqtt_port);
@@ -401,6 +373,7 @@ void publish_state(void)
     }
     else
     {
-        Serial.println("Could not connect to MQTT server");
+        snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
+        printmessage(msg);
     }
 }

@@ -8,19 +8,14 @@ void start_task_mqtt(void)
 
 void task_mqtt_code(void *pvParameters)
 {
-
     bool ap_active_temp = 0;
-    // int mqtt_port_tmp = 0;
-
-    // String mqtt_enable_str = "";
-    // String mqtt_server_str = "";
-    // String mqtt_base_topic_str = "";
-    String message = "";
 
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_server[XLARGE_CONFIG_ITEM] = {};
     int mqtt_port = 0;
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+
+    char msg[MSG_SIZE] = {};
 
     for (;;)
     {
@@ -53,20 +48,13 @@ void task_mqtt_code(void *pvParameters)
             }
         }
 
-        // If MQTT connection settings are changed then re-read config file
-        //if (strcmp(mqtt_server, "") == 0 || mqtt_port == 0)
-        //{
-            //read_mqtt_config();
-        //}
-
         // Check if MQTT functions can run
         if (WiFi.waitForConnectResult() == WL_CONNECTED && ap_active_temp == 0 && strcmp(enable_mqtt, "On") == 0 && strcmp(mqtt_server, "") != 0 && mqtt_port != 0)
         {
+            snprintf(msg, sizeof(msg), "Update MQTT");
+            printmessage(msg);
 
-            message = "Update MQTT....";
-            print_message(message);
-
-            //read_mqtt_config();
+            // read_mqtt_config();
             publish_sensor_data();
             publish_avg_sensor_data();
             publish_valve_positions();
@@ -76,8 +64,8 @@ void task_mqtt_code(void *pvParameters)
         }
         else
         {
-            message = "No WIFI connection, MQTT disabled or MQTT settings incomplete";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "No WIFI connection, MQTT disabled or MQTT settings incomplete");
+            printmessage(msg);
         }
         vTaskDelay(10000);
     }

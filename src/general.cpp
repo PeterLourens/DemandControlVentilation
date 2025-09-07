@@ -1,9 +1,9 @@
 #include "general.h"
 
-void print_message(String message)
+/*void print_message(String message)
 {
-
     char txBuffer[400];
+    char msg[MSG_SIZE] = {};
 
     if (debug_mode == true)
     {
@@ -15,15 +15,17 @@ void print_message(String message)
             }
             else
             {
-                Serial.println("Failed to send message to webserial queue.");
+                snprintf(msg, sizeof(msg), "[ERROR] Failed to send message to webserial queue.");
+                printmessage(msg);
             }
         }
     }
-}
+}*/
 
 void printmessage(const char *message)
 {
-    char txBuffer[400];
+    char txBuffer[400] = {};
+    char msg[MSG_SIZE] = {};
 
     if (debug_mode)
     {
@@ -34,7 +36,8 @@ void printmessage(const char *message)
         {
             if (!xQueueSend(webserial_queue, txBuffer, 50))
             {
-                Serial.println("Failed to send message to webserial queue.");
+                snprintf(msg, sizeof(msg), "[ERROR] Failed to send message to webserial queue.");
+                printmessage(msg);
             }
         }
     }
@@ -92,7 +95,6 @@ void formatted_datetime(char *buf, size_t bufsize)
         second = rtcdatetime.second;
         xSemaphoreGive(date_time_mutex);
     }
-
     snprintf(buf, bufsize, "%04d/%02d/%02d - %02d:%02d:%02d", year, month, day, hour, minute, second);
 }
 
@@ -109,7 +111,6 @@ void formatted_date(char *buf, size_t bufsize)
         day = rtcdatetime.day;
         xSemaphoreGive(date_time_mutex);
     }
-
     snprintf(buf, bufsize, "%04d/%02d/%02d", year, month, day);
 }
 
@@ -126,14 +127,12 @@ void formatted_time(char *buf, size_t bufsize)
         second = rtcdatetime.second;
         xSemaphoreGive(date_time_mutex);
     }
-
     snprintf(buf, bufsize, "%02d:%02d:%02d", hour, minute, second);
 }
 
 void formatted_day(char *buf, size_t bufsize)
 {
     int dayofweek = 0;
-
     static const char *day_names[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
     if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
@@ -209,10 +208,10 @@ int fifoHead[48] = {0}; // Index of the oldest element in the FIFO.
 
 void sensor_data_average(void)
 {
-
-    float sensor_data[2][8][3];     // actual sensor data from queque
-    float sensor_avg_data[2][8][3]; // Average sensor data to queque
     int pos;
+    float sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];     // actual sensor data from queque
+    float sensor_avg_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS]; // Average sensor data to queque
+    char msg[MSG_SIZE] = {};
 
     if (xQueuePeek(sensor_queue, &sensor_data, 0) == pdTRUE)
     {
@@ -224,7 +223,6 @@ void sensor_data_average(void)
                 for (int measurement = 0; measurement < 3; measurement++)
                 {
                     fifoPush(bus, slot, measurement, sensor_data[bus][slot][measurement], pos);
-                    // sensor_avg_data[bus][slot][measurement] = fifoAverage(bus, slot, measurement, pos);
                     sensor_avg_data[bus][slot][measurement] = avg[pos];
                     pos++; // counter for fifoSize and fifoHead
                 }
@@ -236,14 +234,14 @@ void sensor_data_average(void)
         }
         else
         {
-            Serial.print("Send - Average sensor data queue handle is NULL");
+            snprintf(msg, sizeof(msg), "Send - Average sensor data queue handle is NULL.");
+            printmessage(msg);
         }
     }
 }
 
 void fifoPush(int bus, int slot, int measurement, float value, int pos)
 {
-
     if (fifoSize[pos] < MAX_FIFO_SIZE)
     {
         // Add the value to the next available position.
@@ -259,19 +257,7 @@ void fifoPush(int bus, int slot, int measurement, float value, int pos)
         sum[pos] += value;
         fifoHead[pos] = (fifoHead[pos] + 1) % MAX_FIFO_SIZE;
     }
-
     avg[pos] = sum[pos] / fifoSize[pos];
-
-    /*Serial.print("\n");
-    Serial.print(fifoHead[pos]);
-    Serial.print("\t\t");
-    Serial.print(fifoSize[pos]);
-    Serial.print("\t\t");
-    Serial.print(value);
-    Serial.print("\t\t");
-    Serial.print(sum[pos]);
-    Serial.print("\t\t");
-    Serial.print(avg[pos]);*/
 }
 
 float roundToTwoDecimals(float value)

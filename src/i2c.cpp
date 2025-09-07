@@ -5,14 +5,14 @@ RTC_DS3231 rtc;
 
 void read_sensors(void)
 {
-    float temp_sensor_data[2][8][3] = {0};
+    float temp_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS] = {0};
 
     int bus0_multiplexer_addr = 0;
     int bus1_multiplexer_addr = 0;
+    char msg[MSG_SIZE] = {};
 
     String sensor_type = "";
     String sensor = "";
-    String message = "";
 
     // Read address for TCA9548. I2C address for TCA9548 may be differently configured with resistors on the board.
     if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
@@ -53,7 +53,6 @@ void read_sensors(void)
                     sensor_type = String(sensor2settings[slot].wire1_sensor_type);
                     xSemaphoreGive(settings_sensor2_mutex);
                 }
-
                 Wire1.beginTransmission(bus1_multiplexer_addr);
                 Wire1.write(1 << slot);
                 Wire1.endTransmission();
@@ -140,13 +139,13 @@ void read_sensors(void)
                     error = SCD4X_1.readMeasurement(co2, temperature, humidity);
                     if (error)
                     {
-                        message = "[Error] Failed to execute readMeasurement().";
-                        print_message(message);
+                        snprintf(msg, sizeof(msg), "[Error] Failed to execute readMeasurement().");
+                        printmessage(msg);
                     }
                     else if (co2 == 0)
                     {
-                        message = "[Error] Invalid sample detected, skipping.";
-                        print_message(message);
+                        snprintf(msg, sizeof(msg), "[Error] Invalid sample detected, skipping.");
+                        printmessage(msg);
                     }
                     else
                     {
@@ -166,18 +165,17 @@ void read_sensors(void)
                     uint16_t co2 = 0;
                     float temperature = 0.0f;
                     float humidity = 0.0f;
-                    // bool isDataReady = false;
 
                     error = SCD4X_2.readMeasurement(co2, temperature, humidity);
                     if (error)
                     {
-                        message = "[Error] Failed to execute readMeasurement().";
-                        print_message(message);
+                        snprintf(msg, sizeof(msg), "[Error] Failed to execute readMeasurement().");
+                        printmessage(msg);
                     }
                     else if (co2 == 0)
                     {
-                        message = "[Error] Invalid sample detected, skipping.";
-                        print_message(message);
+                        snprintf(msg, sizeof(msg), "[Error] Invalid sample detected, skipping.");
+                        printmessage(msg);
                     }
                     else
                     {
@@ -212,20 +210,20 @@ void read_sensors(void)
         {
             if (xQueueOverwrite(sensor_queue, &temp_sensor_data) != pdPASS)
             {
-                message = "[Error] Failed to send data to queue.";
-                print_message(message);
+                snprintf(msg, sizeof(msg), "[Error] Failed to send data to queue.");
+                printmessage(msg);
             }
         }
         else
         {
-            message = "[Error] Send data to queue - Queue handle is NULL";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[Error] Send data to queue - Queue handle is NULL");
+            printmessage(msg);
         }
     }
     else
     {
-        message = "[Error] I2C communication problem";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[Error] I2C communication problem.");
+        printmessage(msg);
     }
 }
 
@@ -241,7 +239,7 @@ void display_sensors(void)
     3 |	C	O	2	:	1	2	0	0   .   0   0	p	p	m
     */
 
-    float queue_sensor_data[2][8][3]; // local variable to store sensor data from queue
+    float queue_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS]; // local variable to store sensor data from queue
     String valve;
     String location;
     String rh;
@@ -359,10 +357,10 @@ void display_valve_positions(void)
     */
 
     bool status_file_present = 0;
+    char buffer[512] = {};
+    char msg[MSG_SIZE] = {};
     String json = "";
-    String message = "";
     JsonDocument doc;
-    char buffer[512];
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
@@ -371,26 +369,25 @@ void display_valve_positions(void)
     if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[Error] Failed to parse %s with error %s", VALVE_POSITIONS_PATH, error);
+            printmessage(msg);
         }
     }
 
-    String valve0_pos = doc[String("valve0")];
-    String valve1_pos = doc[String("valve1")];
-    String valve2_pos = doc[String("valve2")];
-    String valve3_pos = doc[String("valve3")];
-    String valve4_pos = doc[String("valve4")];
-    String valve5_pos = doc[String("valve5")];
-    String valve6_pos = doc[String("valve6")];
-    String valve7_pos = doc[String("valve7")];
-    String valve8_pos = doc[String("valve8")];
-    String valve9_pos = doc[String("valve9")];
-    String valve10_pos = doc[String("valve10")];
-    String valve11_pos = doc[String("valve11")];
+    int valve0_pos = doc["valve0"];
+    int valve1_pos = doc["valve1"];
+    int valve2_pos = doc["valve2"];
+    int valve3_pos = doc["valve3"];
+    int valve4_pos = doc["valve4"];
+    int valve5_pos = doc["valve5"];
+    int valve6_pos = doc["valve6"];
+    int valve7_pos = doc["valve7"];
+    int valve8_pos = doc["valve8"];
+    int valve9_pos = doc["valve9"];
+    int valve10_pos = doc["valve10"];
+    int valve11_pos = doc["valve11"];
 
     lcd.setCursor(0, 0);
     lcd.print("v0:");
@@ -433,7 +430,6 @@ void display_valve_positions(void)
     lcd.print(valve11_pos);
     vTaskDelay(5000);
     lcd.clear();
-
     Wire1.endTransmission();
 }
 
@@ -487,7 +483,6 @@ void display_time_and_date(void)
 
 void display_state_fan(void)
 {
-
     /*
            0 	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15  16  17  18  19
           -------------------------------------------------------------------------------
@@ -496,6 +491,7 @@ void display_state_fan(void)
        2 |
        3 |
    */
+
     String temp_state = "";
     String temp_fanspeed = "";
 
@@ -511,19 +507,15 @@ void display_state_fan(void)
         xSemaphoreGive(statemachine_state_mutex);
     }
 
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
+    {
+        temp_fanspeed = fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
+    }
+
     lcd.print(state);
     lcd.setCursor(0, 1);
     lcd.print("Fan speed: ");
-
-    if (fanspeed_mutex != NULL)
-    {
-        if (xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
-        {
-            temp_fanspeed = fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
-    }
-
     lcd.print(fanspeed);
 
     lcd.setCursor(0, 2);
@@ -541,39 +533,34 @@ void display_state_fan(void)
 
 void current_time(void)
 {
-
     char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+    DateTime now = rtc.now();
 
     Wire.begin(I2C_SDA1, I2C_SCL1, 100000);
     rtc.begin(&Wire);
 
-    DateTime now = rtc.now();
-
-    if (date_time_mutex != NULL)
+    if (date_time_mutex && xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(date_time_mutex, (TickType_t)10) == pdTRUE)
-        {
-            rtcdatetime.year = now.year();
-            rtcdatetime.month = now.month();
-            rtcdatetime.day = now.day();
-            rtcdatetime.hour = now.hour();
-            rtcdatetime.minute = now.minute();
-            rtcdatetime.second = now.second();
-            rtcdatetime.day_of_week = now.dayOfTheWeek();
-            xSemaphoreGive(date_time_mutex);
-        }
+        rtcdatetime.year = now.year();
+        rtcdatetime.month = now.month();
+        rtcdatetime.day = now.day();
+        rtcdatetime.hour = now.hour();
+        rtcdatetime.minute = now.minute();
+        rtcdatetime.second = now.second();
+        rtcdatetime.day_of_week = now.dayOfTheWeek();
+        xSemaphoreGive(date_time_mutex);
     }
     Wire.endTransmission();
 }
 
 void sync_rtc_ntp(void)
 {
-    struct tm timeinfo;
-
     char ntp_server[LARGE_CONFIG_ITEM] = {};
     char timezone[LARGE_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
 
-    String message = "";
+    struct tm timeinfo;
 
     RTC_DS3231 rtc;
 
@@ -595,19 +582,18 @@ void sync_rtc_ntp(void)
     configTzTime(timezone, ntp_server);
     if (!getLocalTime(&timeinfo))
     {
-        message = "Failed to obtain time";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] Failed to obtain time.");
+        printmessage(msg);
         return;
     }
     else
     {
-        message = "ESP32 Time synchronized with NTP server.";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[INFO] ESP32 Time synchronized with NTP server.");
+        printmessage(msg);
     }
 
     // Sync the RTC with the NTP time
     rtc.adjust(DateTime(timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec));
-
     Wire.endTransmission();
 }
 
@@ -618,11 +604,11 @@ void IRAM_ATTR lcd_baclight_pb_isr()
 
 void pb_start_display(void)
 {
-    pb_toggle = false; // global variable
-
     int display_i2c_addr = 0;
     char enable_lcd[SMALL_CONFIG_ITEM] = {};
-    String message = "";
+    char msg[MSG_SIZE] = {};
+
+    pb_toggle = false; // global variable
 
     // Only start display when enabled. Configured with global variable
     if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
@@ -648,16 +634,15 @@ void pb_start_display(void)
     }
     else
     {
-        message = "Display is not enabled in settings.";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[INFO] Display is not enabled in settings.");
+        printmessage(msg);
     }
 }
 
 void init_display_off(void)
 {
-
     char enable_lcd[SMALL_CONFIG_ITEM] = {};
-    String message = "";
+    char msg[MSG_SIZE] = {};
 
     // Only start display when enabled.
     if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
@@ -677,7 +662,7 @@ void init_display_off(void)
     }
     else
     {
-        message = "Display is not enabled in settings.";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[INFO] Display is not enabled in settings.");
+        printmessage(msg);
     }
 }

@@ -6,15 +6,15 @@ void set_fanspeed(String speed)
     int httpResponseCode = 0;
     bool settings_file_present = 0;
 
-    String fanspeed_temp = "";
-    String message = "";
-    String http_payload = "";
-
     char fan_control_url_high_speed[XXLARGE_CONFIG_ITEM];
     char fan_control_url_medium_speed[XXLARGE_CONFIG_ITEM];
     char fan_control_url_low_speed[XXLARGE_CONFIG_ITEM];
     char fan_control_mode[LARGE_CONFIG_ITEM];
     char fan_control_mqtt_topic[XLARGE_CONFIG_ITEM];
+    char msg[MSG_SIZE] = {};
+
+    String fanspeed_temp = "";
+    String http_payload = "";
 
     HTTPClient http;
     JsonDocument doc;
@@ -41,65 +41,64 @@ void set_fanspeed(String speed)
         xSemaphoreGive(fanspeed_mutex);
     }
 
-    // String fan_control_mode = doc[String("fan_control_mode")];
-    message = "Fanspeed: " + String(fanspeed_temp);
-    print_message(message);
+    snprintf(msg, sizeof(msg), "Fanspeed %s", fanspeed_temp);
+    printmessage(msg);
 
     if (strcmp(fan_control_mode, "MQTT publish") == 0)
     {
-        message = "Using MQTT to set fan speed";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "Using MQTT to set fan speed");
+        printmessage(msg);
         // String fan_control_mqtt_topic = doc[String("fan_control_mqtt_topic")];
         //  Not yet implmented, subscribe to MQTT topic, create callback function
     }
     else if (strcmp(fan_control_mode, "HTTP API") == 0)
     {
-        message = "Using HTTP API to set fan speed";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "Using HTTP API to set fan speed");
+        printmessage(msg);
 
         if (fanspeed_temp == "Low")
         {
-            message = "Low speed selected";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "Low speed selected");
+            printmessage(msg);
             http.begin(String(fan_control_url_low_speed));
             httpResponseCode = http.GET();
             if (httpResponseCode > 0)
             {
                 http_payload = http.getString();
-                message = "HTTP Response code: " + String(httpResponseCode) + ", HTTP payload: " + String(http_payload);
-                print_message(message);
+                snprintf(msg, sizeof(msg), "HTTP Response code: %s, HTTP payload: %s", httpResponseCode, http_payload);
+                printmessage(msg);
             }
         }
         else if (fanspeed_temp == "Medium")
         {
-            message = "Medium speed selected";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "Medium speed selected");
+            printmessage(msg);
             http.begin(String(fan_control_url_medium_speed));
             httpResponseCode = http.GET();
             if (httpResponseCode > 0)
             {
                 http_payload = http.getString();
-                message = "HTTP Response code: " + String(httpResponseCode) + ", HTTP payload: " + String(http_payload);
-                print_message(message);
+                snprintf(msg, sizeof(msg), "HTTP Response code: %s, HTTP payload: %s", httpResponseCode, http_payload);
+                printmessage(msg);
             }
         }
         else if (fanspeed_temp == "High")
         {
-            message = "High speed selected";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "High speed selected");
+            printmessage(msg);
             http.begin(String(fan_control_url_high_speed));
             httpResponseCode = http.GET();
             if (httpResponseCode > 0)
             {
                 http_payload = http.getString();
-                message = "HTTP Response code: " + String(httpResponseCode) + ", HTTP payload: " + String(http_payload);
-                print_message(message);
+                snprintf(msg, sizeof(msg), "HTTP Response code: %s, HTTP payload: %s", httpResponseCode, http_payload);
+                printmessage(msg);
             }
         }
     }
     else
     {
-        message = "No method to set fan speed.";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "No method to set fanspeed");
+        printmessage(msg);
     }
 }

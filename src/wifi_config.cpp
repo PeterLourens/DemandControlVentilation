@@ -15,7 +15,7 @@ void config_wifi()
     const char *primary_dns;
     const char *secondary_dns;
 
-    String message = "";
+    char msg[MSG_SIZE] = {};
 
     // Copy to local variables to prevent nested mutexes
     if (settings_network_mutex != NULL)
@@ -35,8 +35,8 @@ void config_wifi()
     }
     else
     {
-        message = "Failed to copy network settings to local variables. Check network configuration.";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "Failed to copy network settings to local variables. Check network configuration.");
+        printmessage(msg);
         const char *enable_dhcp = "";
         const char *ssid = "";
         const char *wifi_password = "";
@@ -61,7 +61,8 @@ void config_wifi()
         }
         else
         {
-            Serial.println("\nWiFi configuration failed");
+            snprintf(msg, sizeof(msg), "WiFi configuration failed.");
+            printmessage(msg);
         }
     }
     else
@@ -69,7 +70,9 @@ void config_wifi()
         WiFi.mode(WIFI_AP);
         WiFi.softAP("OSVENTILATION-WIFI", NULL);
         IPAddress IP = WiFi.softAPIP();
-        Serial.println("\nAP IP address: " + IP.toString());
+
+        snprintf(msg, sizeof(msg), "AP IP address: %s", IP.toString());
+        printmessage(msg);
 
         if (ap_active_mutex != NULL)
         {
@@ -89,12 +92,15 @@ void config_wifi()
 
 bool setupDHCP(const char *ssid, const char *wifi_password)
 {
+    char msg[MSG_SIZE] = {};
+
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, wifi_password);
 
     if (WiFi.waitForConnectResult() != WL_CONNECTED)
     {
-        Serial.print("\nWiFi Failed!");
+        snprintf(msg, sizeof(msg), "WiFi Failed!");
+        printmessage(msg);
         return false;
     }
 
@@ -117,9 +123,12 @@ bool setupStaticIP(const char *ssid, const char *wifi_password, const char *ip_a
     const char *ip_addresses[5] = {ip_address, subnet_mask, gateway, primary_dns, secondary_dns};
     int **ip_address_numbers = splitStringsToInts(ip_addresses);
 
+    char msg[MSG_SIZE] = {};
+
     if (!ip_address_numbers)
     {
-        Serial.print("\nFailed to parse IP addresses");
+        snprintf(msg, sizeof(msg), "Failed to parse IP addresses");
+        printmessage(msg);
         return false;
     }
 
@@ -136,24 +145,23 @@ bool setupStaticIP(const char *ssid, const char *wifi_password, const char *ip_a
     WiFi.mode(WIFI_STA);
     if (!WiFi.config(local_IP, gateway_IP, subnet_mask_IP, primary_dns_IP, secondary_dns_IP))
     {
-        Serial.print("\nSTA Failed to configure");
+        snprintf(msg, sizeof(msg), "STA Failed to configure");
+        printmessage(msg);
         return false;
     }
 
     WiFi.begin(ssid, wifi_password);
     if (WiFi.waitForConnectResult() != WL_CONNECTED)
     {
-        Serial.print("\nWiFi Failed!");
+        snprintf(msg, sizeof(msg), "Wifi failed");
+        printmessage(msg);
         return false;
     }
 
-    if (ap_active_mutex != NULL)
+    if (ap_active_mutex && xSemaphoreTake(ap_active_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(ap_active_mutex, (TickType_t)10))
-        {
-            ap_active = 0;
-            xSemaphoreGive(ap_active_mutex);
-        }
+        ap_active = 0;
+        xSemaphoreGive(ap_active_mutex);
     }
 
     return true;
@@ -192,6 +200,5 @@ int **splitStringsToInts(const char *input[])
             output[i][count++] = 0;
         }
     }
-
     return output;
 }

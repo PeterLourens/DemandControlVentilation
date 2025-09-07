@@ -50,7 +50,7 @@ void init_statemachine(void)
 
 void run_statemachine(void)
 {
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     String temp_state = "";
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
@@ -138,7 +138,7 @@ void run_statemachine(void)
 
 void stopped_transitions(void)
 {
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     
     // Actions for this state
     if (statemachine_state_mutex != NULL)
@@ -157,7 +157,7 @@ void stopped_transitions(void)
 
 void init_transitions(void)
 {
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "init";
     String state_fanspeed = "Low";
@@ -207,7 +207,7 @@ void day_transitions(void)
     int minimum_state_time = 0;
     int new_time = 0;
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String state_fanspeed = "";
     String statemachine_state = "day";
@@ -357,7 +357,7 @@ void night_transitions(void)
     int minimum_state_time = 0;
     int new_time = 0;
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "night";
     String state_fanspeed = "";
@@ -502,7 +502,7 @@ void high_co2_day_transitions(void)
     int minimum_state_time = 0;
     int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "highco2day";
     String state_fanspeed = "";
@@ -677,7 +677,7 @@ void high_co2_night_transitions(void)
     int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
     bool valve_move_locked = 0;
     bool state_valve_pos_file_present = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "highco2night";
     String state_fanspeed = "";
@@ -849,7 +849,7 @@ void high_rh_day_transitions(void)
     int maximum_state_time = 0;
     int new_time = 0;
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "highrhday";
     String state_fanspeed = "";
@@ -968,7 +968,7 @@ void high_rh_night_transitions(void)
     int maximum_state_time = 0;
     int new_time = 0;
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "highrhnight";
     String state_fanspeed = "";
@@ -1084,7 +1084,7 @@ void cooking_transitions(void)
 {
     int new_time = 0;
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "cooking";
     String state_fanspeed = "";
@@ -1177,7 +1177,7 @@ void valve_cycle_day_transitions(void)
     int temp_minute = 0;
     int new_time = 0;
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "cyclingday";
     String state_fanspeed = "";
@@ -1258,7 +1258,7 @@ void valve_cycle_night_transitions(void)
 {
     int new_time = 0;
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "cyclingnight";
     String state_fanspeed = "";
@@ -1339,7 +1339,7 @@ void valve_cycle_night_transitions(void)
 void manual_high_speed_transitions(void)
 {
     bool valve_move_locked = 0;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     String statemachine_state = "manual_high_speed";
     String fanspeed = "high";
@@ -1385,7 +1385,7 @@ void select_sensors(void)
     char *rh_sensor_wire1 = NULL;
     char *valve_wire = NULL;
     char *valve_wire1 = NULL;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     co2_sensor_counter = 0;
     rh_sensor_counter = 0;

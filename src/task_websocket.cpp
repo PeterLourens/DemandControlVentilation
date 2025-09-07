@@ -14,8 +14,7 @@ void task_websocket_code(void *pvParameters)
 
     char rxBuffer[400];
     char datetime_buffer[40];
-
-    String message = "";
+    char msg[150] = {};
 
     // webSerial.onMessage([](const std::string &msg){ Serial.println(msg.c_str()); });
     webSerial.begin(&ws_server);
@@ -24,17 +23,17 @@ void task_websocket_code(void *pvParameters)
     ws_server.addHandler(&ws);
     ws_server.begin();
 
-    
-
     // Loop code for the task
     for (;;)
     {
         if (xQueueReceive(webserial_queue, rxBuffer, 50) == pdPASS)
         {
             formatted_datetime(datetime_buffer, sizeof(datetime_buffer));
-            message = String(datetime_buffer) + " " + String(rxBuffer);
-            Serial.print("\n" + message);
-            webSerial.print("\n" + message);
+            snprintf(msg, sizeof(msg), "%s %s", datetime_buffer, rxBuffer);
+            Serial.print("\n");
+            Serial.print(msg);
+            webSerial.print("\n");
+            webSerial.print(msg);
         }
         vTaskDelay(500);
     }
@@ -48,8 +47,9 @@ void notifyClients(String json)
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
 {
     String page_name = "";
-    String message = "";
     String json = "";
+
+    char msg[MSG_SIZE] = {};
 
     AwsFrameInfo *info = (AwsFrameInfo *)arg;
 
@@ -91,8 +91,8 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
         {
             page_name = "Page without form data requested, nothing to transmit over websocket";
         }
-        message = "Request json for page: " + page_name;
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[INFO] Request json for page: %d", page_name);
+        printmessage(msg);
     }
 }
 

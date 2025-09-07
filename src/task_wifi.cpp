@@ -8,53 +8,54 @@ void start_task_wifi(void)
 
 void task_wifi_code(void *pvParameters)
 {
-    String message = "";
+    char msg[MSG_SIZE] = {};
     uint8_t baseMac[6];
 
     for (;;)
     {
         if (WiFi.status() != WL_CONNECTED && ap_active == 0)
         {
-            message = "No Wifi connection. Trying to connect to Wifi.";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[INFO] No Wifi connection. Trying to connect to Wifi.");
+            printmessage(msg);
             config_wifi();
         }
         else if (ap_active == 1)
         {
-            message = "Wifi Access Point is active. Configure wifi on http://192.168.4.1";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[INFO] Wifi Access Point is active. Configure wifi on http://192.168.4.1");
+            printmessage(msg);
         }
         else
         {
-            message = "Wifi connection ok. Nothing to do.";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[INFO] Wifi connection ok. Nothing to do.");
+            printmessage(msg);
         }
 
-        message = "Wifi status: " + String(WiFi.status()) + ", Wifi SSID: " + WiFi.SSID();
-        print_message(message);
+        // message = "Wifi status: " + String(WiFi.status()) + ", Wifi SSID: " + WiFi.SSID();
+        snprintf(msg, sizeof(msg), "[INFO] Wifi status: %s, Wifi SSID: %s", WiFi.status(), WiFi.SSID());
+        printmessage(msg);
 
-        message = "Wifi BSSID: " + WiFi.BSSIDstr() + ", Wifi RSSI: " + String(WiFi.RSSI());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[INFO] Wifi BSSID: %s, Wifi RSSI: %s", WiFi.BSSIDstr(), WiFi.RSSI());
+        printmessage(msg);
 
-        message = "IP Address: " + String(WiFi.localIP().toString()) + ", Subnetmask: " + String(WiFi.subnetMask().toString());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "IP Address: %s, Subnetmask: %s", WiFi.localIP().toString(), WiFi.subnetMask().toString());
+        printmessage(msg);
 
-        message = "Gateway IP: " + String(WiFi.gatewayIP().toString());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "Gateway IP: ", WiFi.gatewayIP().toString());
+        printmessage(msg);
 
-        message = "Primary DNS: " + String(WiFi.dnsIP(0).toString()) + ", Secondary DNS: " + String(WiFi.dnsIP(1).toString());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "Primary DNS: %s, secondary DNS: %s", WiFi.dnsIP(0).toString(), WiFi.dnsIP(1).toString());
+        printmessage(msg);
 
         esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
         if (ret == ESP_OK)
         {
-            message = "MAC: " + String(baseMac[0], HEX) + ":" + String(baseMac[1], HEX) + ":" + String(baseMac[2], HEX) + ":" + String(baseMac[3], HEX) + ":" + String(baseMac[4], HEX) + ":" + String(baseMac[5], HEX);
-            print_message(message);
+            snprintf(msg, sizeof(msg), "MAC: %02X:%02X:%02X:%02X:%02X:%02X", baseMac[0], baseMac[1], baseMac[2], baseMac[3], baseMac[4], baseMac[5]);
+            printmessage(msg);
         }
         else
         {
-            message = "Failed to read MAC address";
-            print_message(message);
+            snprintf(msg, sizeof(msg), "Failed to read MAC address");
+            printmessage(msg);
         }
         vTaskDelay(120000);
     }
@@ -62,12 +63,13 @@ void task_wifi_code(void *pvParameters)
 
 String create_webserial_url(void)
 {
-    String webserial_url;
-    String message;
+    char msg[MSG_SIZE] = {};
+    char webserial_url[MSG_SIZE] = {};
 
-    webserial_url = "http://" + String(WiFi.localIP().toString()) + ":8080/webserial";
-    message = "Webserial URL: " + webserial_url;
-    print_message(message);
+    //webserial_url = "http://" + String(WiFi.localIP().toString()) + ":8080/webserial";
+    snprintf(msg, sizeof(msg), "http://%s:8080/webserial", WiFi.localIP().toString());
+    snprintf(msg, sizeof(msg), "Webserial URL: %s", webserial_url);
+    printmessage(msg);
 
     return webserial_url;
 }

@@ -4,7 +4,7 @@
 bool write_settings(const char *path, char *file_contents, SemaphoreHandle_t mutex)
 {
     bool ok = false;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     if (path == NULL)
     {
@@ -52,7 +52,7 @@ bool write_settings(const char *path, char *file_contents, SemaphoreHandle_t mut
 
 bool read_settings(const char *path, char *buffer, size_t bufferSize, SemaphoreHandle_t mutex)
 {
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     if (mutex && xSemaphoreTake(mutex, (TickType_t)50))
     {
@@ -78,7 +78,7 @@ bool read_settings(const char *path, char *buffer, size_t bufferSize, SemaphoreH
 bool parse_network_settings(void)
 {
     char buffer[512];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_NETWORK_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -149,7 +149,7 @@ bool parse_network_settings(void)
 bool parse_rtc_settings(void)
 {
     char buffer[128];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_RTC_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -189,7 +189,7 @@ bool parse_rtc_settings(void)
 bool parse_influxdb_settings(void)
 {
     char buffer[512];
-    char msg[150];
+    char msg[MSG_SIZE];
     JsonDocument doc;
 
     if (read_settings(SETTINGS_INFLUXDB_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -245,7 +245,7 @@ bool parse_influxdb_settings(void)
 bool parse_i2c_settings(void)
 {
     char buffer[512];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_I2C_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -280,7 +280,7 @@ bool parse_i2c_settings(void)
 bool parse_mqtt_settings(void)
 {
     char buffer[512];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_MQTT_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -326,7 +326,7 @@ bool parse_mqtt_settings(void)
 bool parse_fan_settings(void)
 {
     char buffer[512];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_FAN_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -395,7 +395,7 @@ bool parse_fan_settings(void)
 bool parse_statemachine_settings(void)
 {
     char buffer[512];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATEMACHINE_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -444,7 +444,7 @@ bool parse_statemachine_settings(void)
 bool parse_sensor1_settings(void)
 {
     char buffer[1500];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SENSOR_CONFIG1_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -498,7 +498,7 @@ bool parse_sensor1_settings(void)
 bool parse_sensor2_settings(void)
 {
     char buffer[1500];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SENSOR_CONFIG2_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -552,7 +552,7 @@ bool parse_sensor2_settings(void)
 bool parse_state_day_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_DAY_PATH, buffer, sizeof(buffer), settings_state_day_mutex))
@@ -604,7 +604,7 @@ bool parse_state_day_settings(void)
 bool parse_state_night_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_NIGHT_PATH, buffer, sizeof(buffer), settings_state_night_mutex))
@@ -656,7 +656,7 @@ bool parse_state_night_settings(void)
 bool parse_state_highco2day_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_HIGHCO2DAY_PATH, buffer, sizeof(buffer), settings_state_highco2day_mutex))
@@ -708,7 +708,7 @@ bool parse_state_highco2day_settings(void)
 bool parse_state_highco2night_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_HIGHCO2NIGHT_PATH, buffer, sizeof(buffer), settings_state_highco2night_mutex))
@@ -760,7 +760,7 @@ bool parse_state_highco2night_settings(void)
 bool parse_state_highrhday_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_HIGHRHDAY_PATH, buffer, sizeof(buffer), settings_state_highrhday_mutex))
@@ -812,7 +812,7 @@ bool parse_state_highrhday_settings(void)
 bool parse_state_highrhnight_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_HIGHRHNIGHT_PATH, buffer, sizeof(buffer), settings_state_highrhnight_mutex))
@@ -864,7 +864,7 @@ bool parse_state_highrhnight_settings(void)
 bool parse_state_cooking_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_COOKING_PATH, buffer, sizeof(buffer), settings_state_cooking_mutex))
@@ -918,7 +918,7 @@ bool parse_state_cooking_settings(void)
 bool parse_state_cyclingday_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_CYCLINGDAY_PATH, buffer, sizeof(buffer), settings_state_cyclingday_mutex))
@@ -967,7 +967,7 @@ bool parse_state_cyclingday_settings(void)
 bool parse_state_cyclingnight_settings(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_CYCLINGNIGHT_PATH, buffer, sizeof(buffer), settings_state_cyclingnight_mutex))
@@ -1016,7 +1016,7 @@ bool parse_state_cyclingnight_settings(void)
 bool parse_actual_valve_positions(void)
 {
     char buffer[700];
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     JsonDocument doc;
 
     if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
@@ -1045,7 +1045,7 @@ bool parse_actual_valve_positions(void)
 void valve_status_file_create()
 {
     const char *default_valve_position_file;
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
     File file;
 
     default_valve_position_file = "{\"valve0\":0, \"valve1\":0, \"valve2\":0, \"valve3\":0, \"valve4\":0, \"valve5\":0, \"valve6\":0, \"valve7\":0, \"valve8\":0, \"valve9\":0, \"valve10\":0, \"valve11\":0}";
@@ -1079,7 +1079,7 @@ void valve_status_file_create()
 // Delete file with path as input variable
 void delete_file(const char *path)
 {
-    char msg[150] = {};
+    char msg[MSG_SIZE] = {};
 
     if (path == NULL)
     {

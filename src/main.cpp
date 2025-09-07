@@ -6,6 +6,10 @@
 
 void setup()
 {
+	float temp[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+	char txBuffer[400] = {};
+	char msg[MSG_SIZE] = {};
+	
 	Serial.begin(115200);
 
 	pinMode(LATCHPIN1, OUTPUT);
@@ -50,18 +54,15 @@ void setup()
 	lock_valve_move_mutex = xSemaphoreCreateMutex();
 	ap_active_mutex = xSemaphoreCreateMutex();
 
-	// Init queues for sensors
-	float temp[2][8][3];
-	char txBuffer[400];
+	// Init queues for sensors and Webserial
 	sensor_queue = xQueueCreate(1, sizeof(temp));
 	sensor_avg_queue = xQueueCreate(1, sizeof(temp));
 	webserial_queue = xQueueCreate(30, sizeof(txBuffer));
 
-	String message = "";
-
 	if (webserial_queue == 0 || sensor_queue == 0 || sensor_avg_queue == 0)
 	{
-		Serial.print("\nFailed to create queues");
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to create queues");
+		printmessage(msg);
 	}
 
 	// First switch off all outputs which may have come randomly at power on
@@ -70,7 +71,8 @@ void setup()
 	// Begin LittleFS
 	if (!LittleFS.begin())
 	{
-		Serial.println("\nAn Error has occurred while mounting LittleFS");
+		snprintf(msg, sizeof(msg), "[ERROR] An Error has occurred while mounting LittleFS");
+		printmessage(msg);
 		return;
 	}
 
@@ -80,209 +82,209 @@ void setup()
 	vTaskDelay(10000); // So can lauch serial monitor
 	if (!parse_i2c_settings())
 	{
-		message = "Failed to parse I2C settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse I2C settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed I2C settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed I2C settings");
+		printmessage(msg);
 	}
 
 	if (!parse_rtc_settings())
 	{
-		message = "Failed to parse RTC settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse RTC settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed RTC settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed RTC settings");
+		printmessage(msg);
 	}
 
 	if (!parse_fan_settings())
 	{
-		message = "Failed to parse fan settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse fan settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed fan settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed fan settings");
+		printmessage(msg);
 	}
 
 	if (!parse_influxdb_settings())
 	{
-		message = "Failed to parse influxdb settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse Influxdb settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed influxdb settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed Influxdb settings");
+		printmessage(msg);
 	}
 
 	if (!parse_mqtt_settings())
 	{
-		message = "Failed to parse MQTT settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse MQTT settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed MQTT settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed MQTT settings");
+		printmessage(msg);
 	}
 
 	if (!parse_network_settings())
 	{
-		message = "Failed to parse network settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse network settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed network settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed network settings");
+		printmessage(msg);
 	}
 
 	if (!parse_sensor1_settings())
 	{
-		message = "Failed to parse sensor1 settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse sensor1 settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed sensor1 settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed sensor1 settings");
+		printmessage(msg);
 	}
 
 	if (!parse_sensor2_settings())
 	{
-		message = "Failed to parse sensor2 settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse sensor2 settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed sensor2 settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed sensor2 settings");
+		printmessage(msg);
 	}
 
 	if (!parse_statemachine_settings())
 	{
-		message = "Failed to parse statemachine settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse statemachine settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed statemachine settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed statemachine settings");
+		printmessage(msg);
 	}
 	if (!parse_state_day_settings())
 	{
-		message = "Failed to parse state_day settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state day settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed state_day settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state day settings");
+		printmessage(msg);
 	}
 	if (!parse_state_night_settings())
 	{
-		message = "Failed to parse state_night settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state night settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed state_night settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state night settings");
+		printmessage(msg);
 	}
 
 	if (!parse_state_highco2day_settings())
 	{
-		message = "Failed to parse state_highco2day settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state highco2day settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed state_highco2day settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state highco2day settings");
+		printmessage(msg);
 	}
 
 	if (!parse_state_highco2night_settings())
 	{
-		message = "Failed to parse highco2night settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state highco2night settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed highco2night settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state highco2night settings");
+		printmessage(msg);
 	}
 
 	if (!parse_state_highrhday_settings())
 	{
-		message = "Failed to parse state_highco2night settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state highrhday settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed state_highrhday settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state highrhday settings");
+		printmessage(msg);
 	}
 
 	if (!parse_state_highrhnight_settings())
 	{
-		message = "Failed to parse state_rhnight settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state highrhnight settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed state_highrhnight settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state highrhnight settings");
+		printmessage(msg);
 	}
 
 	if (!parse_state_cooking_settings())
 	{
-		message = "Failed to parse state_cooking settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state cooking settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed state_cooking settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state cooking settings");
+		printmessage(msg);
 	}
 
 	if (!parse_state_cyclingday_settings())
 	{
-		message = "Failed to parse state_cyclingday settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state cyclingday settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed state_cyclingday settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state cyclingday settings");
+		printmessage(msg);
 	}
 
 	if (!parse_state_cyclingnight_settings())
 	{
-		message = "Failed to parse state_cyclingnight settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse state cyclingnight settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed state_cyclingnight settings";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state cyclingnight settings");
+		printmessage(msg);
 	}
 
 	if (!parse_actual_valve_positions())
 	{
-		message = "failed to parse actual valve positions";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[ERROR] Failed to parse actual valve settings");
+		printmessage(msg);
 	}
 	else
 	{
-		message = "Successfully parsed actual valve positions ";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed actual valve settings");
+		printmessage(msg);
 	}
 
 	// parse_state_temp_settings();
@@ -304,11 +306,63 @@ void setup()
 	eTaskState wifi_state = eTaskGetState(task_wifi);
 	eTaskState i2c_state = eTaskGetState(task_i2c);
 	eTaskState statemachine_state = eTaskGetState(task_statemach);
+	eTaskState influxdb_state = eTaskGetState(task_influxdb);
+	eTaskState mqtt_state = eTaskGetState(task_mqtt);
+	eTaskState np_state = eTaskGetState(task_np);
+	eTaskState system_state = eTaskGetState(task_sys);
+	eTaskState valvectrl_state = eTaskGetState(task_valvectrl);
+	eTaskState h_Task_web_state = eTaskGetState(h_Task_web);
+	eTaskState websocket_state = eTaskGetState(task_websocket);
 
 	if (wifi_state != eDeleted && wifi_state != eInvalid)
 	{
-		message = "Task WIFI has started or is running.";
-		print_message(message);
+		snprintf(msg, sizeof(msg), "[INFO] Task WIFI has started or is running.");
+		printmessage(msg);
+	}
+	if (i2c_state != eDeleted && i2c_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task I2C has started or is running.");
+		printmessage(msg);
+	}
+	if (influxdb_state != eDeleted && influxdb_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task InfluxDB has started or is running.");
+		printmessage(msg);
+	}
+	if (mqtt_state != eDeleted && mqtt_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task MQTT has started or is running.");
+		printmessage(msg);
+	}
+	if (np_state != eDeleted && np_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task Neopixel has started or is running.");
+		printmessage(msg);
+	}
+	if (statemachine_state != eDeleted && statemachine_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task statemachine has started or is running.");
+		printmessage(msg);
+	}
+	if (system_state != eDeleted && system_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task system has started or is running.");
+		printmessage(msg);
+	}
+	if (valvectrl_state != eDeleted && valvectrl_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task valvecontrol has started or is running.");
+		printmessage(msg);
+	}
+	if (h_Task_web_state != eDeleted && h_Task_web_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task web has started or is running.");
+		printmessage(msg);
+	}
+	if (websocket_state  != eDeleted && websocket_state != eInvalid)
+	{
+		snprintf(msg, sizeof(msg), "[INFO] Task web has started or is running.");
+		printmessage(msg);
 	}
 }
 

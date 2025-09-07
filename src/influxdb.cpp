@@ -2,22 +2,19 @@
 
 void write_sensor_data(void)
 {
+    float queue_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
-
+    char msg[MSG_SIZE] = {};
     String state_tmp = "";
-    String message = "";
     String sensor_valve = "";
     String sensor_location = "";
 
-    float queue_sensor_data[2][8][3];
-
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
-
         strncpy(enable_influxdb, influxdbsettings.enable_influxdb, sizeof(enable_influxdb) - 1);
         enable_influxdb[sizeof(enable_influxdb) - 1] = '\0';
 
@@ -46,12 +43,9 @@ void write_sensor_data(void)
 
     if (xQueuePeek(sensor_queue, &queue_sensor_data, 0) == pdTRUE)
     {
-
         // Check server connection. Only write data when server is available.
         if (client.validateConnection())
         {
-            // message = "Connection to influxDB validated. Writing sensor data to influxDB.";
-            // print_message(message);
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < 8; j++)
@@ -80,14 +74,11 @@ void write_sensor_data(void)
                         }
                         else
                         {
-                            if (settings_sensor2_mutex != NULL)
+                            if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
                             {
-                                if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
-                                {
-                                    sensor_valve = sensor2settings[j].wire1_sensor_valve;
-                                    sensor_location = sensor2settings[j].wire1_sensor_location;
-                                    xSemaphoreGive(settings_sensor2_mutex);
-                                }
+                                sensor_valve = sensor2settings[j].wire1_sensor_valve;
+                                sensor_location = sensor2settings[j].wire1_sensor_location;
+                                xSemaphoreGive(settings_sensor2_mutex);
                             }
                             if (!sensor_valve.isEmpty())
                             {
@@ -120,8 +111,8 @@ void write_sensor_data(void)
 
                         if (!client.writePoint(sensor))
                         {
-                            message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
-                            print_message(message);
+                            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
+                            printmessage(msg);
                         }
                         vTaskDelay(50);
                     }
@@ -130,21 +121,21 @@ void write_sensor_data(void)
         }
         else
         {
-            message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
+            printmessage(msg);
         }
     }
 }
 
 void write_avg_sensor_data(void)
 {
+    float queue_avg_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
-
-    String message = "";
+    char msg[MSG_SIZE] = {};
     String sensor_valve = "";
     String sensor_location = "";
 
@@ -170,8 +161,6 @@ void write_avg_sensor_data(void)
     InfluxDBClient client(influxdb_url, influxdb_org, influxdb_bucket, influxdb_token);
     Point sensor("Sensors_avg");
 
-    float queue_avg_sensor_data[2][8][3];
-
     if (xQueuePeek(sensor_avg_queue, &queue_avg_sensor_data, 0) == pdTRUE)
     {
         if (client.validateConnection())
@@ -186,15 +175,13 @@ void write_avg_sensor_data(void)
                         sensor.clearTags();
                         if (i == 0)
                         {
-                            if (settings_sensor1_mutex != NULL)
+                            if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                             {
-                                if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
-                                {
-                                    sensor_valve = sensor1settings[j].wire_sensor_valve;
-                                    sensor_location = sensor1settings[j].wire_sensor_location;
-                                    xSemaphoreGive(settings_sensor1_mutex);
-                                }
+                                sensor_valve = sensor1settings[j].wire_sensor_valve;
+                                sensor_location = sensor1settings[j].wire_sensor_location;
+                                xSemaphoreGive(settings_sensor1_mutex);
                             }
+
                             if (!sensor_valve.isEmpty())
                             {
                                 sensor.addTag("valve", sensor_valve);
@@ -206,15 +193,13 @@ void write_avg_sensor_data(void)
                         }
                         else
                         {
-                            if (settings_sensor2_mutex != NULL)
+                            if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
                             {
-                                if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
-                                {
-                                    sensor_valve = sensor2settings[j].wire1_sensor_valve;
-                                    sensor_location = sensor2settings[j].wire1_sensor_location;
-                                    xSemaphoreGive(settings_sensor2_mutex);
-                                }
+                                sensor_valve = sensor2settings[j].wire1_sensor_valve;
+                                sensor_location = sensor2settings[j].wire1_sensor_location;
+                                xSemaphoreGive(settings_sensor2_mutex);
                             }
+
                             if (!sensor_valve.isEmpty())
                             {
                                 sensor.addTag("valve", sensor_valve);
@@ -234,8 +219,8 @@ void write_avg_sensor_data(void)
                         client.pointToLineProtocol(sensor);
                         if (!client.writePoint(sensor))
                         {
-                            message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
-                            print_message(message);
+                            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
+                            printmessage(msg);
                         }
                         vTaskDelay(50);
                     }
@@ -244,29 +229,24 @@ void write_avg_sensor_data(void)
         }
         else
         {
-            message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
+            printmessage(msg);
         }
     }
 }
 
 void write_valve_position_data(void)
 {
-    bool status_file_present = false;
     int valve_pos_temp = 0;
     int valve_pos_sum = 0;
-
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
-
-    char buffer[512];
-
+    char buffer[512] = {};
+    char msg[MSG_SIZE] = {};
     String json = "";
-    String message = "";
-
     JsonDocument doc;
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
@@ -294,11 +274,10 @@ void write_valve_position_data(void)
     if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s.", VALVE_POSITIONS_PATH, error);
+            printmessage(msg);
         }
     }
 
@@ -306,7 +285,6 @@ void write_valve_position_data(void)
     {
         for (int i = 0; i < 12; i++)
         {
-
             valve_pos_temp = doc["valve" + String(i)];
             valve_pos_sum = valve_pos_sum + valve_pos_temp;
 
@@ -322,34 +300,31 @@ void write_valve_position_data(void)
 
                 if (!client.writePoint(sensor))
                 {
-                    message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
-                    print_message(message);
+                    snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
+                    printmessage(msg);
                 }
             }
         }
     }
     else
     {
-        message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(msg);
     }
 }
 
 void write_system_uptime(void)
 {
     uint64_t uptime;
-
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
-
-    String message = "";
+    char msg[MSG_SIZE] = {};
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
-
         strncpy(enable_influxdb, influxdbsettings.enable_influxdb, sizeof(enable_influxdb) - 1);
         enable_influxdb[sizeof(enable_influxdb) - 1] = '\0';
 
@@ -382,14 +357,14 @@ void write_system_uptime(void)
 
         if (!client.writePoint(sensor))
         {
-            message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
+            printmessage(msg);
         }
     }
     else
     {
-        message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(msg);
     }
 }
 
@@ -402,13 +377,12 @@ void write_state_info(void)
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
 
     String temp_state = "";
-    String message = "";
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
-
         strncpy(enable_influxdb, influxdbsettings.enable_influxdb, sizeof(enable_influxdb) - 1);
         enable_influxdb[sizeof(enable_influxdb) - 1] = '\0';
 
@@ -429,13 +403,10 @@ void write_state_info(void)
     InfluxDBClient client(influxdb_url, influxdb_org, influxdb_bucket, influxdb_token);
     Point sensor("Status");
 
-    if (statemachine_state_mutex != NULL)
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-        {
-            temp_state = state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+        temp_state = state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 
     // Need to translate state to number for easy processing in Grafana
@@ -500,29 +471,28 @@ void write_state_info(void)
 
         if (!client.writePoint(sensor))
         {
-            message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
+            printmessage(msg);
         }
     }
     else
     {
-        message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(msg);
     }
 }
 
 void write_fanspeed(void)
 {
+    int temp_fanspeed_nr = 0;
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
 
     String temp_fanspeed = "";
-    String message = "";
-
-    int temp_fanspeed_nr = 0;
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -546,13 +516,10 @@ void write_fanspeed(void)
     InfluxDBClient client(influxdb_url, influxdb_org, influxdb_bucket, influxdb_token);
     Point sensor("Status");
 
-    if (fanspeed_mutex != NULL)
+    if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
-        {
-            temp_fanspeed = fanspeed;
-            xSemaphoreGive(fanspeed_mutex);
-        }
+        temp_fanspeed = fanspeed;
+        xSemaphoreGive(fanspeed_mutex);
     }
 
     // Need to translate fanspeed to number for easy processing in Grafana
@@ -580,14 +547,14 @@ void write_fanspeed(void)
         sensor.addField("fanspeed", temp_fanspeed_nr);
         if (!client.writePoint(sensor))
         {
-            message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
+            printmessage(msg);
         }
     }
     else
     {
-        message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(msg);
     }
 }
 
@@ -595,14 +562,12 @@ void write_heap_info(void)
 {
     int free_heap_size = 0;
     int minimum_ever_free_heap_size = 0;
-
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
-
-    String message = "";
+    char msg[MSG_SIZE] = {};
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -623,15 +588,8 @@ void write_heap_info(void)
         xSemaphoreGive(settings_influxdb_mutex);
     }
 
-    //free_heap_size = xPortGetFreeHeapSize();
     free_heap_size = get_free_heap_size();
-    //message = "Free heap size: " + String(free_heap_size);
-    //print_message(message);
-
-    //minimum_ever_free_heap_size = xPortGetMinimumEverFreeHeapSize();
     minimum_ever_free_heap_size = get_min_ever_heap_size();
-    //message = "Minimum ever free heap size: " + String(minimum_ever_free_heap_size);
-    //print_message(message);
 
     InfluxDBClient client(influxdb_url, influxdb_org, influxdb_bucket, influxdb_token);
     Point sensor("System_stats");
@@ -645,13 +603,13 @@ void write_heap_info(void)
 
         if (!client.writePoint(sensor))
         {
-            message = "InfluxDB write failed: " + String(client.getLastErrorMessage());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
+            printmessage(msg);
         }
     }
     else
     {
-        message = "InfluxDB connection failed: " + String(client.getLastErrorMessage());
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(msg);
     }
 }

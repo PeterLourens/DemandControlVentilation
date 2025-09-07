@@ -341,11 +341,13 @@ const char *VALVE9_POSITION_CYCLINGNIGHT = "valve9_position_cyclingnight";
 const char *VALVE10_POSITION_CYCLINGNIGHT = "valve10_position_cyclingnight";
 const char *VALVE11_POSITION_CYCLINGNIGHT = "valve11_position_cyclingnight";
 
+char msg[MSG_SIZE] = {};
+
 String valve0_direction = "", valve1_direction = "", valve2_direction = "", valve3_direction = "", valve4_direction = "", valve5_direction = "";
 String valve6_direction = "", valve7_direction = "", valve8_direction = "", valve9_direction = "", valve10_direction = "", valve11_direction = "";
 String check_valve_position = "";		  // True when check is required if valve moves within operating range
 String store_valve_position_in_file = ""; // True to enable storing of new position in valve position file
-String message = "";
+
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -883,8 +885,8 @@ void Taskwebcode(void *pvParameters)
 			xTaskNotifyGive(xTaskGetHandle("task_valvectrl"));
 		}
 		else {
-			message = "Valves are locked for moving, try again";
-			print_message(message);
+			snprintf(msg, sizeof(msg), "[INFO] Valves are locked for moving, try again.");
+        	printmessage(msg);
 		} });
 
 	// POST on button create config file - name must match with action of the form submit
