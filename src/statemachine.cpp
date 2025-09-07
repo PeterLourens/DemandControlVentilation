@@ -7,12 +7,10 @@ float statemachine_avg_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_
 
 int co2_sensor_counter = 0;
 int rh_sensor_counter = 0;
-
 int co2_sensors_high = 0;
 int rh_sensors_high = 0;
-
-long old_time = 0;
-long elapsed_time = 0;
+int old_time = 0;
+int elapsed_time = 0;
 
 String new_state = "";
 String temp_fanspeed = "Low";
@@ -52,7 +50,7 @@ void init_statemachine(void)
 
 void run_statemachine(void)
 {
-    String message = "";
+    char msg[150] = {};
     String temp_state = "";
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
@@ -61,23 +59,23 @@ void run_statemachine(void)
         xSemaphoreGive(statemachine_state_mutex);
     }
 
-    message = "Read sensor data from queue for statemachine.";
-    print_message(message);
+    snprintf(msg, sizeof(msg), "Read sensor data from queue for statemachine.");
+    printmessage(msg);
 
     if (xQueuePeek(sensor_queue, &statemachine_sensor_data, 0) != pdTRUE)
     {
-        message = "Failed to read from sensor_queue in function: " + String(__FUNCTION__);
-        print_message(message);
+        snprintf(msg, sizeof(msg), "Failed to read from sensor_queue.");
+        printmessage(msg);
         return;
     }
 
-    message = "Read average sensor data from queue for statemachine.";
-    print_message(message);
+    snprintf(msg, sizeof(msg), "Read average sensor data from queue for statemachine.");
+    printmessage(msg);
 
     if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) != pdTRUE)
     {
-        message = "Failed to read from sensor_avg_queue in function: " + String(__FUNCTION__);
-        print_message(message);
+        snprintf(msg, sizeof(msg), "Failed to read from sensor_avg_queue.");
+        printmessage(msg);
         return;
     }
 
@@ -132,16 +130,16 @@ void run_statemachine(void)
     else
     {
         // This state should normally never be entered. Back to init of statemachine to keep it running
-        message = "Error in state number, back to init state";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "Error in state number, back to init state.");
+        printmessage(msg);
         init_transitions();
     }
 }
 
 void stopped_transitions(void)
 {
-    String message = "";
-
+    char msg[150] = {};
+    
     // Actions for this state
     if (statemachine_state_mutex != NULL)
     {
@@ -153,20 +151,18 @@ void stopped_transitions(void)
     }
 
     // No further logic required because when start statemachine button is pushed the statemachine will go back to init state
-    message = "Statemachine in stopped state. Push start statemachine button on the Valve Control web page to continue.";
-    print_message(message);
+    snprintf(msg, sizeof(msg), "Statemachine in stopped state. Push start statemachine button on the Valve Control web page to continue.");
+    printmessage(msg);
 }
 
 void init_transitions(void)
 {
-    String statemachine_state = "init";
-    String state_fanspeed = "Low";
-    //String message = "";
-    
     char msg[150] = {};
 
-    // Actions for this state
+    String statemachine_state = "init";
+    String state_fanspeed = "Low";
 
+    // Actions for this state
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
         state = statemachine_state;
@@ -179,9 +175,6 @@ void init_transitions(void)
         xSemaphoreGive(fanspeed_mutex);
     }
 
-    //message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed;
-    //print_message(message);
-
     snprintf(msg, sizeof(msg), "Statemachin in state %s, fanspeed is %s", statemachine_state, state_fanspeed);
     printmessage(msg);
 
@@ -189,18 +182,12 @@ void init_transitions(void)
 
     if (is_day() == true)
     {
-        //message = "It is day. Transit to day.";
-        //print_message(message);
-
         snprintf(msg, sizeof(msg), "Transit to day");
         printmessage(msg);
         new_state = "day";
     }
     else
     {
-        //message = "It is night. Transit to night.";
-        //print_message(message);
-
         snprintf(msg, sizeof(msg), "Transit to night");
         printmessage(msg);
         new_state = "night";
@@ -218,14 +205,12 @@ void day_transitions(void)
     int rhhighlevel = 0;
     int co2highlevel = 0;
     int minimum_state_time = 0;
-    long new_time = 0;
+    int new_time = 0;
     bool valve_move_locked = 0;
-
     char msg[150] = {};
 
     String state_fanspeed = "";
     String statemachine_state = "day";
-    //String message = "";
 
     co2_sensors_high = 0;
     rh_sensors_high = 0;
@@ -263,9 +248,6 @@ void day_transitions(void)
         xSemaphoreGive(settings_statemachine_mutex);
     }
 
-    //message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
-    //print_message(message);
-
     snprintf(msg, sizeof(msg), "Statemachin state: %s, fanspeed: %s, state_time: %d", statemachine_state, state_fanspeed, elapsed_time);
     printmessage(msg);
 
@@ -279,14 +261,8 @@ void day_transitions(void)
         old_time = new_time;
     }
 
-    //message = "High CO2 detection level: " + String(co2highlevel);
-    //print_message(message);
-
     snprintf(msg, sizeof(msg), "High CO2 detection level: %d", co2highlevel);
     printmessage(msg);
-
-    //message = "High RH detection level: " + String(rhhighlevel);
-    //print_message(message);
 
     snprintf(msg, sizeof(msg), "High RH detection level: %d", rhhighlevel);
     printmessage(msg);
@@ -297,9 +273,6 @@ void day_transitions(void)
     }
     else
     {
-        //message = "Valves are locked for moving, will try again later";
-        //print_message(message);
-
         snprintf(msg, sizeof(msg), "Valves are locked for moving, will try again later");
         printmessage(msg);
     }
@@ -308,10 +281,7 @@ void day_transitions(void)
     {
         if (co2_sensors[i].co2_reading > co2highlevel)
         {
-            //message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading. Transit to highco2day state";
-            //print_message(message);
-            
-            snprintf(msg, sizeof(msg), "Sensor located at %s has high CO2. Transit to highco2day if minimum state time has expired.",co2_sensors[i].valve);
+            snprintf(msg, sizeof(msg), "Sensor located at %s has high CO2. Transit to highco2day if minimum state time has expired.", co2_sensors[i].valve);
             printmessage(msg);
             co2_sensors_high++;
         }
@@ -321,19 +291,11 @@ void day_transitions(void)
     {
         if (rh_sensors[i].rh_reading > rhhighlevel)
         {
-            //message = "Sensor" + String(i) + " which is located at " + String(rh_sensors[i].valve) + " has high RH reading. Transit to highrhday state";
-            //print_message(message);
-            
             snprintf(msg, sizeof(msg), "Sensor located at %s has high RH. Transit to highrhday if minimum state time has expired.", rh_sensors[i].valve);
             printmessage(msg);
             rh_sensors_high++;
         }
     }
-
-    //message = "Number of sensors measure high CO2: " + String(co2_sensors_high);
-    //print_message(message);
-    //message = "Number of sensors measure high RH: " + String(rh_sensors_high);
-    //print_message(message);
 
     snprintf(msg, sizeof(msg), "Number of sensors measure high CO2: %d.", co2_sensors_high);
     printmessage(msg);
@@ -355,8 +317,6 @@ void day_transitions(void)
     }
     else if (is_day() == false)
     {
-        //message = "It is night time. Transit to night.";
-        //print_message(message);
         snprintf(msg, sizeof(msg), "Transit to night.");
         printmessage(msg);
         new_state = "night";
@@ -365,16 +325,12 @@ void day_transitions(void)
     }
     else if (cooking_times() == true)
     {
-        //message = "It's day and cooking time. Transit to cooking state.";
-        //print_message(message);
         snprintf(msg, sizeof(msg), "Transit to cooking.");
         printmessage(msg);
         new_state = "cooking";
     }
     else if (valve_cycle_times_day() == true)
     {
-        //message = "It's day and valve_cycle_time_day. Transit to valvecycleday state";
-        //print_message(message);
         snprintf(msg, sizeof(msg), "Transit to valve cycling day.");
         printmessage(msg);
         new_state = "cyclingday";
@@ -382,8 +338,6 @@ void day_transitions(void)
     // Manual high speed mode is ignored for now
     else
     {
-        //message = "Conditions have not changed, it's still day";
-        //print_message(message);
         snprintf(msg, sizeof(msg), "Conditions have not changed. Stay in day state.");
         printmessage(msg);
         new_state = "day";
@@ -401,13 +355,12 @@ void night_transitions(void)
     int co2highlevel = 0;
     int rhhighlevel = 0;
     int minimum_state_time = 0;
-    long new_time = 0;
+    int new_time = 0;
     bool valve_move_locked = 0;
     char msg[150] = {};
 
     String statemachine_state = "night";
     String state_fanspeed = "";
-    //String message = "";
 
     co2_sensors_high = 0;
     rh_sensors_high = 0;
@@ -444,12 +397,6 @@ void night_transitions(void)
         xSemaphoreGive(settings_statemachine_mutex);
     }
 
-    //message = "High CO2 detection level: " + String(co2highlevel);
-    //print_message(message);
-
-    //message = "High RH detection level: " + String(rhhighlevel);
-    //print_message(message);
-
     snprintf(msg, sizeof(msg), "High CO2 detection level: %d", co2highlevel);
     printmessage(msg);
 
@@ -458,9 +405,6 @@ void night_transitions(void)
 
     snprintf(msg, sizeof(msg), "Statemachin state: %s, fanspeed: %s, state_time: %d", statemachine_state, state_fanspeed, elapsed_time);
     printmessage(msg);
-
-    //message = "Statemachine in state " + statemachine_state + ", fanspeed is " + state_fanspeed + ", elapsed time: " + String(elapsed_time);
-    //print_message(message);
 
     set_fanspeed(state_fanspeed);
     select_sensors();
@@ -486,9 +430,6 @@ void night_transitions(void)
     {
         if (co2_sensors[i].co2_reading > co2highlevel)
         {
-            //message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has high CO2 reading. Transit to highco2night state";
-            //print_message(message);
-
             snprintf(msg, sizeof(msg), "Sensor located at %s has high CO2. Transit to highco2day if minimum state time has expired.", co2_sensors[i].valve);
             printmessage(msg);
             co2_sensors_high++;
@@ -499,9 +440,6 @@ void night_transitions(void)
     {
         if (rh_sensors[i].rh_reading > rhhighlevel)
         {
-            //message = "Sensor" + String(i) + " which is located at " + String(rh_sensors[i].valve) + " has high RH reading. Transit to highrhnight state";
-            //print_message(message);
-
             snprintf(msg, sizeof(msg), "Sensor located at %s has high RH. Transit to highrhday if minimum state time has expired.", rh_sensors[i].valve);
             printmessage(msg);
             rh_sensors_high++;
@@ -560,12 +498,10 @@ void high_co2_day_transitions(void)
     int co2lowlevel = 0;
     int reading = 0;
     int valve_nr = 0;
-    long new_time = 0;
-    bool valve_move_locked = 0;
+    int new_time = 0;
     int minimum_state_time = 0;
-
     int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
-
+    bool valve_move_locked = 0;
     char msg[150] = {};
 
     String statemachine_state = "highco2day";
@@ -737,13 +673,10 @@ void high_co2_night_transitions(void)
     int reading = 0;
     int minimum_state_time = 0;
     int valve_nr = 0;
-
-    long new_time = 0;
+    int new_time = 0;
+    int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
     bool valve_move_locked = 0;
     bool state_valve_pos_file_present = 0;
-
-    int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
-
     char msg[150] = {};
 
     String statemachine_state = "highco2night";
@@ -800,7 +733,7 @@ void high_co2_night_transitions(void)
 
     new_time = (esp_timer_get_time()) / 1000000;
     if (new_time > old_time)
-    { // Just in case that a reboot happened and old_time is not set
+    {
         elapsed_time += new_time - old_time;
         old_time = new_time;
     }
@@ -829,7 +762,6 @@ void high_co2_night_transitions(void)
             {
                 // CO2 is low so close the valve re-route the air to valves with high CO2
                 state_valve_position[valve_nr] = 4;
-                //message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has CO2 reading low than CO2lowlevel. Valve remain at 4 until CO2 exceeds the CO2lowlevel";
                 snprintf(msg, sizeof(msg), "Sensor located at %s has low CO2. Valve reamains at 4 until CO2 exceeds the CO2lowlevel.", co2_sensors[i].valve);
                 printmessage(msg);
             }
@@ -838,14 +770,12 @@ void high_co2_night_transitions(void)
                 // The sensor value is between 900 and 1000 ppm so the valve position should remain at 4 until low co2 level is reached. The valve was set at 20 by default.
                 // This logic corrects the default setting of 4 to 20 and to make sure a deadband of the difference between highco2level and lowc02level is achieved
                 state_valve_position[valve_nr] = 4;
-                //message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has CO2 reading between low and high CO2 level. Valve remain at 20 until CO2 reduces to the CO2 low level";
                 snprintf(msg, sizeof(msg), "Sensor located at %s has CO2 reading between low and high CO2 level. Valve remain at 20 until CO2 reduces to the CO2 low level", co2_sensors[i].valve);
                 printmessage(msg);
             }
             else
             {
                 // The sensor value is above co2highlevel so default valve setting applies
-                //message = "Sensor" + String(i) + " which is located at " + String(co2_sensors[i].valve) + " has CO2 reading higher than co2highlevel. Default valve setting applies";
                 snprintf(msg, sizeof(msg), "Sensor located at %s has CO2 reading higher than co2highlevel. Default valve setting applies.", co2_sensors[i].valve);
                 printmessage(msg);
             }
@@ -905,13 +835,10 @@ void high_co2_night_transitions(void)
         new_state = "highco2night";
     }
 
-    if (statemachine_state_mutex != NULL)
+    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-        {
-            state = new_state;
-            xSemaphoreGive(statemachine_state_mutex);
-        }
+        state = new_state;
+        xSemaphoreGive(statemachine_state_mutex);
     }
 }
 
@@ -920,10 +847,8 @@ void high_rh_day_transitions(void)
     int rhlowlevel = 0;
     int minimum_state_time = 0;
     int maximum_state_time = 0;
-
-    long new_time = 0;
+    int new_time = 0;
     bool valve_move_locked = 0;
-
     char msg[150] = {};
 
     String statemachine_state = "highrhday";
@@ -1001,7 +926,7 @@ void high_rh_day_transitions(void)
         }
     }
 
-    //message = "Number of sensors measure high RH: " + String(rh_sensors_high);
+    // message = "Number of sensors measure high RH: " + String(rh_sensors_high);
     snprintf(msg, sizeof(msg), "Number of sensors measure high RH: ", rh_sensors_high);
     printmessage(msg);
 
@@ -1041,10 +966,8 @@ void high_rh_night_transitions(void)
     int rhlowlevel = 0;
     int minimum_state_time = 0;
     int maximum_state_time = 0;
-    
-    long new_time = 0;
+    int new_time = 0;
     bool valve_move_locked = 0;
-
     char msg[150] = {};
 
     String statemachine_state = "highrhnight";
@@ -1095,7 +1018,6 @@ void high_rh_night_transitions(void)
     select_sensors();
 
     // If the statemachine is till in this state after 30 mins then RH cannot be lowered with ventilation
-    // No mutex is required as only statemachine uses this variable
     new_time = (esp_timer_get_time()) / 1000000;
     if (new_time > old_time)
     {
@@ -1120,7 +1042,7 @@ void high_rh_night_transitions(void)
         {
             snprintf(msg, sizeof(msg), "Sensor located at %s has high RH.", rh_sensors[i].valve);
             printmessage(msg);
-            rh_sensors_high++;         
+            rh_sensors_high++;
         }
     }
 
@@ -1160,14 +1082,12 @@ void high_rh_night_transitions(void)
 
 void cooking_transitions(void)
 {
+    int new_time = 0;
     bool valve_move_locked = 0;
-    long new_time = 0;
-
     char msg[150] = {};
 
     String statemachine_state = "cooking";
     String state_fanspeed = "";
-
 
     // Actions for this sate
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
@@ -1255,10 +1175,8 @@ void valve_cycle_day_transitions(void)
     int rh_sensors_high = 0;
     int temp_hour = 0;
     int temp_minute = 0;
-    
-    long new_time = 0;
+    int new_time = 0;
     bool valve_move_locked = 0;
-
     char msg[150] = {};
 
     String statemachine_state = "cyclingday";
@@ -1338,17 +1256,14 @@ void valve_cycle_day_transitions(void)
 
 void valve_cycle_night_transitions(void)
 {
-    long new_time = 0;
+    int new_time = 0;
     bool valve_move_locked = 0;
-
     char msg[150] = {};
 
     String statemachine_state = "cyclingnight";
     String state_fanspeed = "";
-    String message = "";
 
     // Actions for this state
-
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
         state = statemachine_state;
@@ -1369,13 +1284,10 @@ void valve_cycle_night_transitions(void)
     }
 
     // Disable valve moving when valves are already moving
-    if (lock_valve_move_mutex != NULL)
+    if (lock_valve_move_mutex && xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
     {
-        if (xSemaphoreTake(lock_valve_move_mutex, (TickType_t)10) == pdTRUE)
-        {
-            valve_move_locked = lock_valve_move;
-            xSemaphoreGive(lock_valve_move_mutex);
-        }
+        valve_move_locked = lock_valve_move;
+        xSemaphoreGive(lock_valve_move_mutex);
     }
 
     snprintf(msg, sizeof(msg), "Statemachin state: %s, fanspeed: %s, state_time: %d", statemachine_state, state_fanspeed, elapsed_time);
@@ -1427,7 +1339,6 @@ void valve_cycle_night_transitions(void)
 void manual_high_speed_transitions(void)
 {
     bool valve_move_locked = 0;
-
     char msg[150] = {};
 
     String statemachine_state = "manual_high_speed";
@@ -1465,22 +1376,19 @@ void manual_high_speed_transitions(void)
 
 void select_sensors(void)
 {
+    int j = 0; // counter for struct
+    int k = 0; // counter for struct
+
     char *co2_sensor_wire = NULL;
     char *co2_sensor_wire1 = NULL;
     char *rh_sensor_wire = NULL;
     char *rh_sensor_wire1 = NULL;
     char *valve_wire = NULL;
     char *valve_wire1 = NULL;
-
     char msg[150] = {};
-
-    String message = "";
 
     co2_sensor_counter = 0;
     rh_sensor_counter = 0;
-
-    int j = 0; // counter for struct
-    int k = 0; // counter for struct
 
     float sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
 
@@ -1515,9 +1423,7 @@ void select_sensors(void)
         {
             co2_sensors[j].valve = valve_wire;
             co2_sensors[j].co2_reading = sensor_data[0][i][2];
-
-            //message = String(co2_sensors[j].valve) + ", CO2 reading: " + String(co2_sensors[j].co2_reading);
-            snprintf(msg, sizeof(msg), "%s, CO2 reading: %d", co2_sensors[j].valve, co2_sensors[j].co2_reading);
+            snprintf(msg, sizeof(msg), "%s, CO2 reading: %.2f", co2_sensors[j].valve, co2_sensors[j].co2_reading);
             printmessage(msg);
             j++;
         }
@@ -1526,9 +1432,7 @@ void select_sensors(void)
         {
             co2_sensors[j].valve = valve_wire1;
             co2_sensors[j].co2_reading = sensor_data[1][i][2];
-
-            //message = String(co2_sensors[j].valve) + ", CO2 reading: " + String(co2_sensors[j].co2_reading);
-            snprintf(msg, sizeof(msg), "%s, CO2 reading: %d", co2_sensors[j].valve, co2_sensors[j].co2_reading);
+            snprintf(msg, sizeof(msg), "%s, CO2 reading: %.2f", co2_sensors[j].valve, co2_sensors[j].co2_reading);
             printmessage(msg);
             j++;
         }
@@ -1537,9 +1441,7 @@ void select_sensors(void)
         {
             rh_sensors[k].valve = valve_wire;
             rh_sensors[k].rh_reading = sensor_data[0][i][1];
-
-            //message = String(rh_sensors[k].valve) + ", RH reading: " + String(rh_sensors[k].rh_reading);
-            snprintf(msg, sizeof(msg), "%s, RH reading: %d", rh_sensors[k].valve, rh_sensors[k].rh_reading);
+            snprintf(msg, sizeof(msg), "%s, RH reading: %.2f", rh_sensors[k].valve, rh_sensors[k].rh_reading);
             printmessage(msg);
             k++;
         }
@@ -1548,9 +1450,7 @@ void select_sensors(void)
         {
             rh_sensors[k].valve = valve_wire1;
             rh_sensors[k].rh_reading = sensor_data[1][i][1];
-
-            //message = String(rh_sensors[k].valve) + ", RH reading: " + String(rh_sensors[k].rh_reading);
-            snprintf(msg, sizeof(msg), "%s, RH reading: %d", rh_sensors[k].valve, rh_sensors[k].rh_reading);
+            snprintf(msg, sizeof(msg), "%s, RH reading: %.2f", rh_sensors[k].valve, rh_sensors[k].rh_reading);
             printmessage(msg);
             k++;
         }
