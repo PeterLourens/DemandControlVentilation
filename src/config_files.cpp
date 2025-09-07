@@ -3,52 +3,48 @@
 // Write string to file, path and contents as string as parameters
 bool write_settings(const char *path, char *file_contents, SemaphoreHandle_t mutex)
 {
-    String message = "";
     bool ok = false;
+    char msg[150] = {};
 
     if (path == NULL)
     {
-        message = "[ERROR] Path is NULL, cannot write file";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] Path is NULL, cannot write file");
+        printmessage(msg);
         return false;
     }
 
-    if (mutex != NULL)
+    if (mutex && xSemaphoreTake(mutex, (TickType_t)50))
     {
-        if (xSemaphoreTake(mutex, (TickType_t)50))
+        File file = LittleFS.open(path, "w");
+
+        if (!file)
         {
-            File file = LittleFS.open(path, "w");
-
-            if (!file)
-            {
-                message = "[ERROR] Failed to open file for writing: " + String(path);
-                print_message(message);
-                xSemaphoreGive(mutex);
-                return false;
-            }
-
-            ok = file.print(file_contents) != 0;
-            file.close();
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to open file for writing with path %s", path);
+            printmessage(msg);
             xSemaphoreGive(mutex);
+            return false;
         }
+        ok = file.print(file_contents) != 0;
+        file.close();
+        xSemaphoreGive(mutex);
     }
     else
     {
-        message = "[ERROR] Mutex is NULL, cannot write file: " + String(path);
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] Mutex is NULL, cannot write file with path %s", path);
+        printmessage(msg);
         return false;
     }
 
     if (!ok)
     {
-        message = "[ERROR] Failed to write to file: " + String(path);
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] Failed to write file with path %s", path);
+        printmessage(msg);
         return false;
     }
     else
     {
-        message = "Config file written: " + String(path);
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[INFO] Config file written with path %s", path);
+        printmessage(msg);
         return true;
     }
     return false;
@@ -56,32 +52,33 @@ bool write_settings(const char *path, char *file_contents, SemaphoreHandle_t mut
 
 bool read_settings(const char *path, char *buffer, size_t bufferSize, SemaphoreHandle_t mutex)
 {
+    char msg[150] = {};
+
     if (mutex && xSemaphoreTake(mutex, (TickType_t)50))
     {
         File file = LittleFS.open(path, "r");
         if (!file)
         {
-            Serial.println("Failed to open network settings file");
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to open %s", path);
+            printmessage(msg);
             xSemaphoreGive(mutex);
             return false;
         }
-
         size_t len = file.readBytes(buffer, bufferSize - 1);
         buffer[len] = '\0'; // Null-terminate
         file.close();
         xSemaphoreGive(mutex);
         return true;
     }
-
-    Serial.println("Failed to acquire file mutex");
-
+    snprintf(msg, sizeof(msg), "[ERROR] Failed to  acquire file %s", mutex);
+    printmessage(msg);
     return false;
 }
 
 bool parse_network_settings(void)
 {
     char buffer[512];
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_NETWORK_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -90,8 +87,9 @@ bool parse_network_settings(void)
 
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_NETWORK_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            // message = "[ERROR] Failed to parse: " + String(SETTINGS_NETWORK_PATH) + " with error: " + String(error.c_str());
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_NETWORK_PATH, error);
+            printmessage(msg);
             return false;
         }
 
@@ -104,48 +102,45 @@ bool parse_network_settings(void)
         const char *primary_dns = doc["primary_dns"];
         const char *secondary_dns = doc["secondary_dns"];
 
-        if (settings_network_mutex != NULL)
+        if (settings_network_mutex && xSemaphoreTake(settings_network_mutex, (TickType_t)10))
         {
-            if (xSemaphoreTake(settings_network_mutex, (TickType_t)10))
+            if (enable_dhcp)
             {
-                if (enable_dhcp)
-                {
-                    strncpy(networksettings.enable_dhcp, enable_dhcp, sizeof(networksettings.enable_dhcp) - 1);
-                    networksettings.enable_dhcp[sizeof(networksettings.enable_dhcp) - 1] = '\0';
-                }
-                if (ssid)
-                {
-                    strncpy(networksettings.ssid, ssid, sizeof(networksettings.ssid) - 1);
-                    networksettings.ssid[sizeof(networksettings.ssid) - 1] = '\0';
-                }
-                if (wifi_password)
-                {
-                    strncpy(networksettings.wifi_password, wifi_password, sizeof(networksettings.wifi_password) - 1);
-                    networksettings.wifi_password[sizeof(networksettings.wifi_password) - 1] = '\0';
-                }
-                if (subnet_mask)
-                {
-                    strncpy(networksettings.subnet_mask, subnet_mask, sizeof(networksettings.subnet_mask) - 1);
-                    networksettings.subnet_mask[sizeof(networksettings.subnet_mask) - 1] = '\0';
-                }
-                if (gateway)
-                {
-                    strncpy(networksettings.gateway, gateway, sizeof(networksettings.gateway) - 1);
-                    networksettings.gateway[sizeof(networksettings.gateway) - 1] = '\0';
-                }
-                if (primary_dns)
-                {
-                    strncpy(networksettings.primary_dns, primary_dns, sizeof(networksettings.primary_dns) - 1);
-                    networksettings.primary_dns[sizeof(networksettings.primary_dns) - 1] = '\0';
-                }
-                if (secondary_dns)
-                {
-                    strncpy(networksettings.secondary_dns, secondary_dns, sizeof(networksettings.secondary_dns) - 1);
-                    networksettings.secondary_dns[sizeof(networksettings.secondary_dns) - 1] = '\0';
-                }
-                xSemaphoreGive(settings_network_mutex);
-                return true;
+                strncpy(networksettings.enable_dhcp, enable_dhcp, sizeof(networksettings.enable_dhcp) - 1);
+                networksettings.enable_dhcp[sizeof(networksettings.enable_dhcp) - 1] = '\0';
             }
+            if (ssid)
+            {
+                strncpy(networksettings.ssid, ssid, sizeof(networksettings.ssid) - 1);
+                networksettings.ssid[sizeof(networksettings.ssid) - 1] = '\0';
+            }
+            if (wifi_password)
+            {
+                strncpy(networksettings.wifi_password, wifi_password, sizeof(networksettings.wifi_password) - 1);
+                networksettings.wifi_password[sizeof(networksettings.wifi_password) - 1] = '\0';
+            }
+            if (subnet_mask)
+            {
+                strncpy(networksettings.subnet_mask, subnet_mask, sizeof(networksettings.subnet_mask) - 1);
+                networksettings.subnet_mask[sizeof(networksettings.subnet_mask) - 1] = '\0';
+            }
+            if (gateway)
+            {
+                strncpy(networksettings.gateway, gateway, sizeof(networksettings.gateway) - 1);
+                networksettings.gateway[sizeof(networksettings.gateway) - 1] = '\0';
+            }
+            if (primary_dns)
+            {
+                strncpy(networksettings.primary_dns, primary_dns, sizeof(networksettings.primary_dns) - 1);
+                networksettings.primary_dns[sizeof(networksettings.primary_dns) - 1] = '\0';
+            }
+            if (secondary_dns)
+            {
+                strncpy(networksettings.secondary_dns, secondary_dns, sizeof(networksettings.secondary_dns) - 1);
+                networksettings.secondary_dns[sizeof(networksettings.secondary_dns) - 1] = '\0';
+            }
+            xSemaphoreGive(settings_network_mutex);
+            return true;
         }
     }
     return false;
@@ -153,9 +148,8 @@ bool parse_network_settings(void)
 
 bool parse_rtc_settings(void)
 {
-
     char buffer[128];
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_RTC_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -164,8 +158,9 @@ bool parse_rtc_settings(void)
 
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_RTC_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            // message = "[ERROR] Failed to parse: " + String(SETTINGS_RTC_PATH) + " with error: " + String(error.c_str());
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_RTC_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -173,23 +168,20 @@ bool parse_rtc_settings(void)
     const char *ntp_server = doc["ntp_server"];
     const char *timezone = doc["timezone"];
 
-    if (settings_rtc_mutex != NULL)
+    if (settings_rtc_mutex && xSemaphoreTake(settings_rtc_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(settings_rtc_mutex, (TickType_t)10))
+        if (ntp_server)
         {
-            if (ntp_server)
-            {
-                strncpy(rtcsettings.ntp_server, ntp_server, sizeof(rtcsettings.ntp_server) - 1);
-                rtcsettings.ntp_server[sizeof(rtcsettings.ntp_server) - 1] = '\0';
-            }
-            if (timezone)
-            {
-                strncpy(rtcsettings.timezone, timezone, sizeof(rtcsettings.timezone) - 1);
-                rtcsettings.timezone[sizeof(rtcsettings.timezone) - 1] = '\0';
-            }
-            xSemaphoreGive(settings_rtc_mutex);
-            return true;
+            strncpy(rtcsettings.ntp_server, ntp_server, sizeof(rtcsettings.ntp_server) - 1);
+            rtcsettings.ntp_server[sizeof(rtcsettings.ntp_server) - 1] = '\0';
         }
+        if (timezone)
+        {
+            strncpy(rtcsettings.timezone, timezone, sizeof(rtcsettings.timezone) - 1);
+            rtcsettings.timezone[sizeof(rtcsettings.timezone) - 1] = '\0';
+        }
+        xSemaphoreGive(settings_rtc_mutex);
+        return true;
     }
     return false;
 }
@@ -197,17 +189,16 @@ bool parse_rtc_settings(void)
 bool parse_influxdb_settings(void)
 {
     char buffer[512];
-    String message;
+    char msg[150];
     JsonDocument doc;
 
-    if (read_settings(SETTINGS_INFLUDB_PATH, buffer, sizeof(buffer), settings_files_mutex))
+    if (read_settings(SETTINGS_INFLUXDB_PATH, buffer, sizeof(buffer), settings_files_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_INFLUDB_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_INFLUXDB_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -218,38 +209,35 @@ bool parse_influxdb_settings(void)
     const char *influxdb_bucket = doc["influxdb_bucket"];
     const char *influxdb_token = doc["influxdb_token"];
 
-    if (settings_influxdb_mutex != NULL)
+    if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10))
+        if (enable_influxdb)
         {
-            if (enable_influxdb)
-            {
-                strncpy(influxdbsettings.enable_influxdb, enable_influxdb, sizeof(influxdbsettings.enable_influxdb) - 1);
-                influxdbsettings.enable_influxdb[sizeof(influxdbsettings.enable_influxdb) - 1] = '\0';
-            }
-            if (influxdb_url)
-            {
-                strncpy(influxdbsettings.influxdb_url, influxdb_url, sizeof(influxdbsettings.influxdb_url) - 1);
-                influxdbsettings.influxdb_url[sizeof(influxdbsettings.influxdb_url) - 1] = '\0';
-            }
-            if (influxdb_org)
-            {
-                strncpy(influxdbsettings.influxdb_org, influxdb_org, sizeof(influxdbsettings.influxdb_org) - 1);
-                influxdbsettings.influxdb_org[sizeof(influxdbsettings.influxdb_org) - 1] = '\0';
-            }
-            if (influxdb_bucket)
-            {
-                strncpy(influxdbsettings.influxdb_bucket, influxdb_bucket, sizeof(influxdbsettings.influxdb_bucket) - 1);
-                influxdbsettings.influxdb_bucket[sizeof(influxdbsettings.influxdb_bucket) - 1] = '\0';
-            }
-            if (influxdb_token)
-            {
-                strncpy(influxdbsettings.influxdb_token, influxdb_token, sizeof(influxdbsettings.influxdb_token) - 1);
-                influxdbsettings.influxdb_token[sizeof(influxdbsettings.influxdb_token) - 1] = '\0';
-            }
-            xSemaphoreGive(settings_influxdb_mutex);
-            return true;
+            strncpy(influxdbsettings.enable_influxdb, enable_influxdb, sizeof(influxdbsettings.enable_influxdb) - 1);
+            influxdbsettings.enable_influxdb[sizeof(influxdbsettings.enable_influxdb) - 1] = '\0';
         }
+        if (influxdb_url)
+        {
+            strncpy(influxdbsettings.influxdb_url, influxdb_url, sizeof(influxdbsettings.influxdb_url) - 1);
+            influxdbsettings.influxdb_url[sizeof(influxdbsettings.influxdb_url) - 1] = '\0';
+        }
+        if (influxdb_org)
+        {
+            strncpy(influxdbsettings.influxdb_org, influxdb_org, sizeof(influxdbsettings.influxdb_org) - 1);
+            influxdbsettings.influxdb_org[sizeof(influxdbsettings.influxdb_org) - 1] = '\0';
+        }
+        if (influxdb_bucket)
+        {
+            strncpy(influxdbsettings.influxdb_bucket, influxdb_bucket, sizeof(influxdbsettings.influxdb_bucket) - 1);
+            influxdbsettings.influxdb_bucket[sizeof(influxdbsettings.influxdb_bucket) - 1] = '\0';
+        }
+        if (influxdb_token)
+        {
+            strncpy(influxdbsettings.influxdb_token, influxdb_token, sizeof(influxdbsettings.influxdb_token) - 1);
+            influxdbsettings.influxdb_token[sizeof(influxdbsettings.influxdb_token) - 1] = '\0';
+        }
+        xSemaphoreGive(settings_influxdb_mutex);
+        return true;
     }
     return false;
 }
@@ -257,39 +245,34 @@ bool parse_influxdb_settings(void)
 bool parse_i2c_settings(void)
 {
     char buffer[512];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_I2C_PATH, buffer, sizeof(buffer), settings_files_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_I2C_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_I2C_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
 
     const char *enable_lcd = doc["enable_lcd"];
 
-    if (settings_i2c_mutex != NULL)
+    if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(settings_i2c_mutex, (TickType_t)10))
+        i2csettings.bus0_multiplexer_address = doc["bus0_multiplexer_address"];
+        i2csettings.bus1_multiplexer_address = doc["bus1_multiplexer_address"];
+        i2csettings.display_i2c_address = doc["display_i2c_address"];
+        if (enable_lcd)
         {
-            i2csettings.bus0_multiplexer_address = doc["bus0_multiplexer_address"];
-            i2csettings.bus1_multiplexer_address = doc["bus1_multiplexer_address"];
-            i2csettings.display_i2c_address = doc["display_i2c_address"];
-            if (enable_lcd)
-            {
-                strncpy(i2csettings.enable_lcd, enable_lcd, sizeof(i2csettings.enable_lcd) - 1);
-                i2csettings.enable_lcd[sizeof(i2csettings.enable_lcd) - 1] = '\0';
-            }
-            xSemaphoreGive(settings_i2c_mutex);
-            return true;
+            strncpy(i2csettings.enable_lcd, enable_lcd, sizeof(i2csettings.enable_lcd) - 1);
+            i2csettings.enable_lcd[sizeof(i2csettings.enable_lcd) - 1] = '\0';
         }
+        xSemaphoreGive(settings_i2c_mutex);
+        return true;
     }
     return false;
 }
@@ -297,50 +280,45 @@ bool parse_i2c_settings(void)
 bool parse_mqtt_settings(void)
 {
     char buffer[512];
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_MQTT_PATH, buffer, sizeof(buffer), settings_files_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_MQTT_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_MQTT_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
 
     const char *enable_mqtt = doc["enable_mqtt"];
     const char *mqtt_server = doc["mqtt_server"];
-    // const char *mqtt_port = doc["mqtt_port"];
     const char *mqtt_base_topic = doc["mqtt_base_topic"];
 
-    if (settings_mqtt_mutex != NULL)
+    if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10))
-        {
-            mqttsettings.mqtt_port = doc["mqtt_port"];
+        mqttsettings.mqtt_port = doc["mqtt_port"];
 
-            if (enable_mqtt)
-            {
-                strncpy(mqttsettings.enable_mqtt, enable_mqtt, sizeof(mqttsettings.enable_mqtt) - 1);
-                mqttsettings.enable_mqtt[sizeof(mqttsettings.enable_mqtt) - 1] = '\0';
-            }
-            if (mqtt_server)
-            {
-                strncpy(mqttsettings.mqtt_server, mqtt_server, sizeof(mqttsettings.mqtt_server) - 1);
-                mqttsettings.mqtt_server[sizeof(mqttsettings.mqtt_server) - 1] = '\0';
-            }
-            if (mqtt_base_topic)
-            {
-                strncpy(mqttsettings.mqtt_base_topic, mqtt_base_topic, sizeof(mqttsettings.mqtt_base_topic) - 1);
-                mqttsettings.mqtt_base_topic[sizeof(mqttsettings.mqtt_base_topic) - 1] = '\0';
-            }
-            xSemaphoreGive(settings_mqtt_mutex);
-            return true;
+        if (enable_mqtt)
+        {
+            strncpy(mqttsettings.enable_mqtt, enable_mqtt, sizeof(mqttsettings.enable_mqtt) - 1);
+            mqttsettings.enable_mqtt[sizeof(mqttsettings.enable_mqtt) - 1] = '\0';
         }
+        if (mqtt_server)
+        {
+            strncpy(mqttsettings.mqtt_server, mqtt_server, sizeof(mqttsettings.mqtt_server) - 1);
+            mqttsettings.mqtt_server[sizeof(mqttsettings.mqtt_server) - 1] = '\0';
+        }
+        if (mqtt_base_topic)
+        {
+            strncpy(mqttsettings.mqtt_base_topic, mqtt_base_topic, sizeof(mqttsettings.mqtt_base_topic) - 1);
+            mqttsettings.mqtt_base_topic[sizeof(mqttsettings.mqtt_base_topic) - 1] = '\0';
+        }
+        xSemaphoreGive(settings_mqtt_mutex);
+        return true;
     }
     return false;
 }
@@ -348,7 +326,7 @@ bool parse_mqtt_settings(void)
 bool parse_fan_settings(void)
 {
     char buffer[512];
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_FAN_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -357,8 +335,8 @@ bool parse_fan_settings(void)
 
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_FAN_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_FAN_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -371,48 +349,45 @@ bool parse_fan_settings(void)
     const char *fan_control_url_medium_speed = doc["fan_control_url_medium_speed"];
     const char *fan_control_url_low_speed = doc["fan_control_url_high_speed"];
 
-    if (settings_fan_mutex != NULL)
+    if (settings_fan_mutex && xSemaphoreTake(settings_fan_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(settings_fan_mutex, (TickType_t)10))
+        if (fan_control_mode)
         {
-            if (fan_control_mode)
-            {
-                strncpy(fansettings.fan_control_mode, fan_control_mode, sizeof(fansettings.fan_control_mode) - 1);
-                fansettings.fan_control_mode[sizeof(fansettings.fan_control_mode) - 1] = '\0';
-            }
-            if (fan_control_mqtt_server)
-            {
-                strncpy(fansettings.fan_control_mqtt_server, fan_control_mqtt_server, sizeof(fansettings.fan_control_mqtt_server) - 1);
-                fansettings.fan_control_mqtt_server[sizeof(fansettings.fan_control_mqtt_server) - 1] = '\0';
-            }
-            if (fan_control_mqtt_port)
-            {
-                strncpy(fansettings.fan_control_mqtt_port, fan_control_mqtt_port, sizeof(fansettings.fan_control_mqtt_port) - 1);
-                fansettings.fan_control_mqtt_port[sizeof(fansettings.fan_control_mqtt_port) - 1] = '\0';
-            }
-            if (fan_control_mqtt_topic)
-            {
-                strncpy(fansettings.fan_control_mqtt_topic, fan_control_mqtt_topic, sizeof(fansettings.fan_control_mqtt_topic) - 1);
-                fansettings.fan_control_mqtt_topic[sizeof(fansettings.fan_control_mqtt_topic) - 1] = '\0';
-            }
-            if (fan_control_url_high_speed)
-            {
-                strncpy(fansettings.fan_control_url_high_speed, fan_control_url_high_speed, sizeof(fansettings.fan_control_url_high_speed) - 1);
-                fansettings.fan_control_url_high_speed[sizeof(fansettings.fan_control_url_high_speed) - 1] = '\0';
-            }
-            if (fan_control_url_medium_speed)
-            {
-                strncpy(fansettings.fan_control_url_medium_speed, fan_control_url_medium_speed, sizeof(fansettings.fan_control_url_medium_speed) - 1);
-                fansettings.fan_control_url_medium_speed[sizeof(fansettings.fan_control_url_medium_speed) - 1] = '\0';
-            }
-            if (fan_control_url_low_speed)
-            {
-                strncpy(fansettings.fan_control_url_low_speed, fan_control_url_low_speed, sizeof(fansettings.fan_control_url_low_speed) - 1);
-                fansettings.fan_control_url_low_speed[sizeof(fansettings.fan_control_url_low_speed) - 1] = '\0';
-            }
-            xSemaphoreGive(settings_fan_mutex);
-            return true;
+            strncpy(fansettings.fan_control_mode, fan_control_mode, sizeof(fansettings.fan_control_mode) - 1);
+            fansettings.fan_control_mode[sizeof(fansettings.fan_control_mode) - 1] = '\0';
         }
+        if (fan_control_mqtt_server)
+        {
+            strncpy(fansettings.fan_control_mqtt_server, fan_control_mqtt_server, sizeof(fansettings.fan_control_mqtt_server) - 1);
+            fansettings.fan_control_mqtt_server[sizeof(fansettings.fan_control_mqtt_server) - 1] = '\0';
+        }
+        if (fan_control_mqtt_port)
+        {
+            strncpy(fansettings.fan_control_mqtt_port, fan_control_mqtt_port, sizeof(fansettings.fan_control_mqtt_port) - 1);
+            fansettings.fan_control_mqtt_port[sizeof(fansettings.fan_control_mqtt_port) - 1] = '\0';
+        }
+        if (fan_control_mqtt_topic)
+        {
+            strncpy(fansettings.fan_control_mqtt_topic, fan_control_mqtt_topic, sizeof(fansettings.fan_control_mqtt_topic) - 1);
+            fansettings.fan_control_mqtt_topic[sizeof(fansettings.fan_control_mqtt_topic) - 1] = '\0';
+        }
+        if (fan_control_url_high_speed)
+        {
+            strncpy(fansettings.fan_control_url_high_speed, fan_control_url_high_speed, sizeof(fansettings.fan_control_url_high_speed) - 1);
+            fansettings.fan_control_url_high_speed[sizeof(fansettings.fan_control_url_high_speed) - 1] = '\0';
+        }
+        if (fan_control_url_medium_speed)
+        {
+            strncpy(fansettings.fan_control_url_medium_speed, fan_control_url_medium_speed, sizeof(fansettings.fan_control_url_medium_speed) - 1);
+            fansettings.fan_control_url_medium_speed[sizeof(fansettings.fan_control_url_medium_speed) - 1] = '\0';
+        }
+        if (fan_control_url_low_speed)
+        {
+            strncpy(fansettings.fan_control_url_low_speed, fan_control_url_low_speed, sizeof(fansettings.fan_control_url_low_speed) - 1);
+            fansettings.fan_control_url_low_speed[sizeof(fansettings.fan_control_url_low_speed) - 1] = '\0';
+        }
+        xSemaphoreGive(settings_fan_mutex);
+        return true;
     }
     return false;
 }
@@ -420,8 +395,7 @@ bool parse_fan_settings(void)
 bool parse_statemachine_settings(void)
 {
     char buffer[512];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATEMACHINE_PATH, buffer, sizeof(buffer), settings_files_mutex))
@@ -430,8 +404,8 @@ bool parse_statemachine_settings(void)
 
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATEMACHINE_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATEMACHINE_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -439,33 +413,30 @@ bool parse_statemachine_settings(void)
     const char *weekend_day_1 = doc["weekend_day_1"];
     const char *weekend_day_2 = doc["weekend_day_2"];
 
-    if (settings_statemachine_mutex != NULL)
+    if (settings_statemachine_mutex && xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(settings_statemachine_mutex, (TickType_t)10))
-        {
-            statemachinesettings.weekday_day_hour_start = doc["weekday_day_hour_start"];
-            statemachinesettings.weekday_day_minute_start = doc["weekday_day_minute_start"];
-            statemachinesettings.weekday_night_hour_start = doc["weekday_night_hour_start"];
-            statemachinesettings.weekday_night_minute_start = doc["weekday_night_minute_start"];
-            statemachinesettings.weekend_day_hour_start = doc["weekend_day_hour_start"];
-            statemachinesettings.weekend_day_minute_start = doc["weekend_day_minute_start"];
-            statemachinesettings.weekend_night_hour_start = doc["weekend_night_hour_start"];
-            statemachinesettings.weekend_night_minute_start = doc["weekend_night_minute_start"];
-            statemachinesettings.minimum_state_time = doc["minimum_state_time"];
+        statemachinesettings.weekday_day_hour_start = doc["weekday_day_hour_start"];
+        statemachinesettings.weekday_day_minute_start = doc["weekday_day_minute_start"];
+        statemachinesettings.weekday_night_hour_start = doc["weekday_night_hour_start"];
+        statemachinesettings.weekday_night_minute_start = doc["weekday_night_minute_start"];
+        statemachinesettings.weekend_day_hour_start = doc["weekend_day_hour_start"];
+        statemachinesettings.weekend_day_minute_start = doc["weekend_day_minute_start"];
+        statemachinesettings.weekend_night_hour_start = doc["weekend_night_hour_start"];
+        statemachinesettings.weekend_night_minute_start = doc["weekend_night_minute_start"];
+        statemachinesettings.minimum_state_time = doc["minimum_state_time"];
 
-            if (weekend_day_1)
-            {
-                strncpy(statemachinesettings.weekend_day_1, weekend_day_1, sizeof(statemachinesettings.weekend_day_1) - 1);
-                statemachinesettings.weekend_day_1[sizeof(statemachinesettings.weekend_day_1) - 1] = '\0';
-            }
-            if (weekend_day_2)
-            {
-                strncpy(statemachinesettings.weekend_day_2, weekend_day_2, sizeof(statemachinesettings.weekend_day_2) - 1);
-                statemachinesettings.weekend_day_2[sizeof(statemachinesettings.weekend_day_2) - 1] = '\0';
-            }
-            xSemaphoreGive(settings_statemachine_mutex);
-            return true;
+        if (weekend_day_1)
+        {
+            strncpy(statemachinesettings.weekend_day_1, weekend_day_1, sizeof(statemachinesettings.weekend_day_1) - 1);
+            statemachinesettings.weekend_day_1[sizeof(statemachinesettings.weekend_day_1) - 1] = '\0';
         }
+        if (weekend_day_2)
+        {
+            strncpy(statemachinesettings.weekend_day_2, weekend_day_2, sizeof(statemachinesettings.weekend_day_2) - 1);
+            statemachinesettings.weekend_day_2[sizeof(statemachinesettings.weekend_day_2) - 1] = '\0';
+        }
+        xSemaphoreGive(settings_statemachine_mutex);
+        return true;
     }
     return false;
 }
@@ -473,60 +444,53 @@ bool parse_statemachine_settings(void)
 bool parse_sensor1_settings(void)
 {
     char buffer[1500];
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SENSOR_CONFIG1_PATH, buffer, sizeof(buffer), settings_files_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG1_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SENSOR_CONFIG1_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
 
     // Read all 7 sensors settings
-    if (settings_sensor1_mutex != NULL)
+    if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
+        for (int i = 0; i < 8; i++)
         {
-            for (int i = 0; i < 8; i++)
+            if (doc["wire_sensor" + String(i) + "_type"])
             {
-                if (doc["wire_sensor" + String(i) + "_type"])
-                {
-                    strncpy(sensor1settings[i].wire_sensor_type, doc["wire_sensor" + String(i) + "_type"], sizeof(sensor1settings[i].wire_sensor_type) - 1);
-                    sensor1settings[i].wire_sensor_type[sizeof(sensor1settings[i].wire_sensor_type) - 1] = '\0';
-                    // Serial.print("Sensor " + String(i) + " type: " + String(sensor1settings[i].wire_sensor_type) + "\n");
-                }
-                if (doc["wire_sensor" + String(i) + "_valve"])
-                {
-                    strncpy(sensor1settings[i].wire_sensor_valve, doc["wire_sensor" + String(i) + "_valve"], sizeof(sensor1settings[i].wire_sensor_valve) - 1);
-                    sensor1settings[i].wire_sensor_valve[sizeof(sensor1settings[i].wire_sensor_valve) - 1] = '\0';
-                    // Serial.print("Sensor " + String(i) + " valve: " + String(sensor1settings[i].wire_sensor_valve) + "\n");
-                }
-                if (doc["wire_sensor" + String(i) + "_location"])
-                {
-                    strncpy(sensor1settings[i].wire_sensor_location, doc["wire_sensor" + String(i) + "_location"], sizeof(sensor1settings[i].wire_sensor_location) - 1);
-                    sensor1settings[i].wire_sensor_location[sizeof(sensor1settings[i].wire_sensor_location) - 1] = '\0';
-                    // Serial.print("Sensor " + String(i) + " location: " + String(sensor1settings[i].wire_sensor_location) + "\n");
-                }
-                if (doc["wire_sensor" + String(i) + "_rh"])
-                {
-                    strncpy(sensor1settings[i].wire_sensor_rh, doc["wire_sensor" + String(i) + "_rh"], sizeof(sensor1settings[i].wire_sensor_rh) - 1);
-                    sensor1settings[i].wire_sensor_rh[sizeof(sensor1settings[i].wire_sensor_rh) - 1] = '\0';
-                }
-                if (doc["wire_sensor" + String(i) + "_co2"])
-                {
-                    strncpy(sensor1settings[i].wire_sensor_co2, doc["wire_sensor" + String(i) + "_co2"], sizeof(sensor1settings[i].wire_sensor_co2) - 1);
-                    sensor1settings[i].wire_sensor_co2[sizeof(sensor1settings[i].wire_sensor_co2) - 1] = '\0';
-                }
+                strncpy(sensor1settings[i].wire_sensor_type, doc["wire_sensor" + String(i) + "_type"], sizeof(sensor1settings[i].wire_sensor_type) - 1);
+                sensor1settings[i].wire_sensor_type[sizeof(sensor1settings[i].wire_sensor_type) - 1] = '\0';
             }
-            xSemaphoreGive(settings_sensor1_mutex);
-            return true;
+            if (doc["wire_sensor" + String(i) + "_valve"])
+            {
+                strncpy(sensor1settings[i].wire_sensor_valve, doc["wire_sensor" + String(i) + "_valve"], sizeof(sensor1settings[i].wire_sensor_valve) - 1);
+                sensor1settings[i].wire_sensor_valve[sizeof(sensor1settings[i].wire_sensor_valve) - 1] = '\0';
+            }
+            if (doc["wire_sensor" + String(i) + "_location"])
+            {
+                strncpy(sensor1settings[i].wire_sensor_location, doc["wire_sensor" + String(i) + "_location"], sizeof(sensor1settings[i].wire_sensor_location) - 1);
+                sensor1settings[i].wire_sensor_location[sizeof(sensor1settings[i].wire_sensor_location) - 1] = '\0';
+            }
+            if (doc["wire_sensor" + String(i) + "_rh"])
+            {
+                strncpy(sensor1settings[i].wire_sensor_rh, doc["wire_sensor" + String(i) + "_rh"], sizeof(sensor1settings[i].wire_sensor_rh) - 1);
+                sensor1settings[i].wire_sensor_rh[sizeof(sensor1settings[i].wire_sensor_rh) - 1] = '\0';
+            }
+            if (doc["wire_sensor" + String(i) + "_co2"])
+            {
+                strncpy(sensor1settings[i].wire_sensor_co2, doc["wire_sensor" + String(i) + "_co2"], sizeof(sensor1settings[i].wire_sensor_co2) - 1);
+                sensor1settings[i].wire_sensor_co2[sizeof(sensor1settings[i].wire_sensor_co2) - 1] = '\0';
+            }
         }
+        xSemaphoreGive(settings_sensor1_mutex);
+        return true;
     }
     return false;
 }
@@ -534,57 +498,53 @@ bool parse_sensor1_settings(void)
 bool parse_sensor2_settings(void)
 {
     char buffer[1500];
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SENSOR_CONFIG2_PATH, buffer, sizeof(buffer), settings_files_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SENSOR_CONFIG2_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SENSOR_CONFIG2_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
 
     // Read all 7 sensors settings
-    if (settings_sensor2_mutex != NULL)
+    if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
     {
-        if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
+        for (int i = 0; i < 8; i++)
         {
-            for (int i = 0; i < 8; i++)
+            if (doc["wire1_sensor" + String(i) + "_type"])
             {
-                if (doc["wire1_sensor" + String(i) + "_type"])
-                {
-                    strncpy(sensor2settings[i].wire1_sensor_type, doc["wire1_sensor" + String(i) + "_type"], sizeof(sensor2settings[i].wire1_sensor_type) - 1);
-                    sensor2settings[i].wire1_sensor_type[sizeof(sensor2settings[i].wire1_sensor_type) - 1] = '\0';
-                }
-                if (doc["wire1_sensor" + String(i) + "_valve"])
-                {
-                    strncpy(sensor2settings[i].wire1_sensor_valve, doc["wire1_sensor" + String(i) + "_valve"], sizeof(sensor2settings[i].wire1_sensor_valve) - 1);
-                    sensor2settings[i].wire1_sensor_valve[sizeof(sensor2settings[i].wire1_sensor_valve) - 1] = '\0';
-                }
-                if (doc["wire1_sensor" + String(i) + "_location"])
-                {
-                    strncpy(sensor2settings[i].wire1_sensor_location, doc["wire1_sensor" + String(i) + "_location"], sizeof(sensor2settings[i].wire1_sensor_location) - 1);
-                    sensor2settings[i].wire1_sensor_location[sizeof(sensor2settings[i].wire1_sensor_location) - 1] = '\0';
-                }
-                if (doc["wire1_sensor" + String(i) + "_rh"])
-                {
-                    strncpy(sensor2settings[i].wire1_sensor_rh, doc["wire1_sensor" + String(i) + "_rh"], sizeof(sensor2settings[i].wire1_sensor_rh) - 1);
-                    sensor2settings[i].wire1_sensor_rh[sizeof(sensor2settings[i].wire1_sensor_rh) - 1] = '\0';
-                }
-                if (doc["wire1_sensor" + String(i) + "_co2"])
-                {
-                    strncpy(sensor2settings[i].wire1_sensor_co2, doc["wire1_sensor" + String(i) + "_co2"], sizeof(sensor2settings[i].wire1_sensor_co2) - 1);
-                    sensor2settings[i].wire1_sensor_co2[sizeof(sensor2settings[i].wire1_sensor_co2) - 1] = '\0';
-                }
+                strncpy(sensor2settings[i].wire1_sensor_type, doc["wire1_sensor" + String(i) + "_type"], sizeof(sensor2settings[i].wire1_sensor_type) - 1);
+                sensor2settings[i].wire1_sensor_type[sizeof(sensor2settings[i].wire1_sensor_type) - 1] = '\0';
             }
-            xSemaphoreGive(settings_sensor2_mutex);
-            return true;
+            if (doc["wire1_sensor" + String(i) + "_valve"])
+            {
+                strncpy(sensor2settings[i].wire1_sensor_valve, doc["wire1_sensor" + String(i) + "_valve"], sizeof(sensor2settings[i].wire1_sensor_valve) - 1);
+                sensor2settings[i].wire1_sensor_valve[sizeof(sensor2settings[i].wire1_sensor_valve) - 1] = '\0';
+            }
+            if (doc["wire1_sensor" + String(i) + "_location"])
+            {
+                strncpy(sensor2settings[i].wire1_sensor_location, doc["wire1_sensor" + String(i) + "_location"], sizeof(sensor2settings[i].wire1_sensor_location) - 1);
+                sensor2settings[i].wire1_sensor_location[sizeof(sensor2settings[i].wire1_sensor_location) - 1] = '\0';
+            }
+            if (doc["wire1_sensor" + String(i) + "_rh"])
+            {
+                strncpy(sensor2settings[i].wire1_sensor_rh, doc["wire1_sensor" + String(i) + "_rh"], sizeof(sensor2settings[i].wire1_sensor_rh) - 1);
+                sensor2settings[i].wire1_sensor_rh[sizeof(sensor2settings[i].wire1_sensor_rh) - 1] = '\0';
+            }
+            if (doc["wire1_sensor" + String(i) + "_co2"])
+            {
+                strncpy(sensor2settings[i].wire1_sensor_co2, doc["wire1_sensor" + String(i) + "_co2"], sizeof(sensor2settings[i].wire1_sensor_co2) - 1);
+                sensor2settings[i].wire1_sensor_co2[sizeof(sensor2settings[i].wire1_sensor_co2) - 1] = '\0';
+            }
         }
+        xSemaphoreGive(settings_sensor2_mutex);
+        return true;
     }
     return false;
 }
@@ -592,18 +552,16 @@ bool parse_sensor2_settings(void)
 bool parse_state_day_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_DAY_PATH, buffer, sizeof(buffer), settings_state_day_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_DAY_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_DAY_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -646,18 +604,16 @@ bool parse_state_day_settings(void)
 bool parse_state_night_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_NIGHT_PATH, buffer, sizeof(buffer), settings_state_night_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_NIGHT_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_NIGHT_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -700,18 +656,16 @@ bool parse_state_night_settings(void)
 bool parse_state_highco2day_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_HIGHCO2DAY_PATH, buffer, sizeof(buffer), settings_state_highco2day_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHCO2DAY_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_HIGHCO2DAY_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -754,18 +708,16 @@ bool parse_state_highco2day_settings(void)
 bool parse_state_highco2night_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_HIGHCO2NIGHT_PATH, buffer, sizeof(buffer), settings_state_highco2night_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHCO2NIGHT_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_HIGHCO2NIGHT_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -808,18 +760,16 @@ bool parse_state_highco2night_settings(void)
 bool parse_state_highrhday_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_HIGHRHDAY_PATH, buffer, sizeof(buffer), settings_state_highrhday_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHRHDAY_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_HIGHRHDAY_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -862,18 +812,16 @@ bool parse_state_highrhday_settings(void)
 bool parse_state_highrhnight_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_HIGHRHNIGHT_PATH, buffer, sizeof(buffer), settings_state_highrhnight_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_HIGHRHNIGHT_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_HIGHRHNIGHT_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -916,18 +864,16 @@ bool parse_state_highrhnight_settings(void)
 bool parse_state_cooking_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_COOKING_PATH, buffer, sizeof(buffer), settings_state_cooking_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_COOKING_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_COOKING_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -972,18 +918,16 @@ bool parse_state_cooking_settings(void)
 bool parse_state_cyclingday_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_CYCLINGDAY_PATH, buffer, sizeof(buffer), settings_state_cyclingday_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_CYCLINGDAY_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_CYCLINGDAY_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -1023,18 +967,16 @@ bool parse_state_cyclingday_settings(void)
 bool parse_state_cyclingnight_settings(void)
 {
     char buffer[700];
-
-    String message;
+    char msg[150] = {};
     JsonDocument doc;
 
     if (read_settings(SETTINGS_STATE_CYCLINGNIGHT_PATH, buffer, sizeof(buffer), settings_state_cyclingnight_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(SETTINGS_STATE_CYCLINGNIGHT_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_CYCLINGNIGHT_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -1074,17 +1016,16 @@ bool parse_state_cyclingnight_settings(void)
 bool parse_actual_valve_positions(void)
 {
     char buffer[700];
+    char msg[150] = {};
     JsonDocument doc;
-    String message = "";
 
     if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
     {
         DeserializationError error = deserializeJson(doc, buffer);
-
         if (error)
         {
-            message = "[ERROR] Failed to parse: " + String(VALVE_POSITIONS_PATH) + " with error: " + String(error.c_str());
-            print_message(message);
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", VALVE_POSITIONS_PATH, error);
+            printmessage(msg);
             return false;
         }
     }
@@ -1104,61 +1045,57 @@ bool parse_actual_valve_positions(void)
 void valve_status_file_create()
 {
     const char *default_valve_position_file;
+    char msg[150] = {};
     File file;
-    String message = "";
 
     default_valve_position_file = "{\"valve0\":0, \"valve1\":0, \"valve2\":0, \"valve3\":0, \"valve4\":0, \"valve5\":0, \"valve6\":0, \"valve7\":0, \"valve8\":0, \"valve9\":0, \"valve10\":0, \"valve11\":0}";
 
-    if (valve_position_file_mutex != NULL)
+    if (valve_position_file_mutex && xSemaphoreTake(valve_position_file_mutex, (TickType_t)100) == pdTRUE)
     {
-        if (xSemaphoreTake(valve_position_file_mutex, (TickType_t)100) == pdTRUE)
+        file = LittleFS.open(VALVE_POSITIONS_PATH, "w");
+        if (!file)
         {
-            file = LittleFS.open(VALVE_POSITIONS_PATH, "w");
-            if (!file)
-            {
-                message = "[ERROR] Failed to open file for writing: " + String(VALVE_POSITIONS_PATH);
-                print_message(message);
-                xSemaphoreGive(valve_position_file_mutex);
-                return;
-            }
-            if (file.print(default_valve_position_file) == 0)
-            {
-                message = "[ERROR] Write failed: /json/valvepositions.json";
-                print_message(message);
-                return;
-            }
-            else
-            {
-                message = "Valve status file written";
-                print_message(message);
-            }
-            file.close();
+            snprintf(msg, sizeof(msg), "[ERROR] Failed to open file for writing for %s", VALVE_POSITIONS_PATH);
+            printmessage(msg);
             xSemaphoreGive(valve_position_file_mutex);
+            return;
         }
+        if (file.print(default_valve_position_file) == 0)
+        {
+            snprintf(msg, sizeof(msg), "[ERROR] Write failed for %s", VALVE_POSITIONS_PATH);
+            printmessage(msg);
+            return;
+        }
+        else
+        {
+            snprintf(msg, sizeof(msg), "[INFO] Valve status file written");
+            printmessage(msg);
+        }
+        file.close();
+        xSemaphoreGive(valve_position_file_mutex);
     }
 }
 
 // Delete file with path as input variable
 void delete_file(const char *path)
 {
-
-    String message = "";
+    char msg[150] = {};
 
     if (path == NULL)
     {
-        message = "[ERROR] Path is NULL, cannot delete file";
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] Path is NULL, cannot delete file");
+        printmessage(msg);
         return;
     }
     else if (LittleFS.remove(path))
     {
-        message = "[INF] File deleted: " + String(path);
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[INFO] File deleted for %s", path);
+        printmessage(msg);
     }
     else
     {
-        message = "[ERROR] Delete failed: " + String(path);
-        print_message(message);
+        snprintf(msg, sizeof(msg), "[ERROR] Delete failed for %s", path);
+        printmessage(msg);
     }
 }
 

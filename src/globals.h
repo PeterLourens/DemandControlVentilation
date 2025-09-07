@@ -60,7 +60,7 @@
 
 #define SETTINGS_NETWORK_PATH "/json/settings_network.json"
 #define SETTINGS_RTC_PATH "/json/settings_rtc.json"
-#define SETTINGS_INFLUDB_PATH "/json/settings_influxdb.json"
+#define SETTINGS_INFLUXDB_PATH "/json/settings_influxdb.json"
 #define SETTINGS_I2C_PATH "/json/settings_i2c.json"
 #define SETTINGS_MQTT_PATH "/json/settings_mqtt.json"
 #define SETTINGS_FAN_PATH "/json/settings_fan.json"
@@ -306,13 +306,13 @@ typedef struct
     int valve_position_cyclingnight[MAX_VALVES];
 } State_cyclingnight_settings;
 
-//To store temporary valve positions settings defined in statemachine
+// To store temporary valve positions settings defined in statemachine
 typedef struct
 {
     int valve_position_temp[MAX_VALVES];
 } State_temp_settings;
 
-//To store valve control data from web page and from statemachine and actual valvel data
+// To store valve control data from web page and from statemachine and actual valvel data
 typedef struct
 {
     int valve_number[MAX_VALVES];
@@ -372,14 +372,14 @@ extern bool ap_active;
 extern bool debug_mode;
 
 // Data pins for 74HC595
-//extern int clockPin1;
-//extern int latchPin1;
-//extern int dataPin1;
+// extern int clockPin1;
+// extern int latchPin1;
+// extern int dataPin1;
 
 // Data pins for 74HC595
-//extern int clockPin2;
-//extern int latchPin2;
-//extern int dataPin2;
+// extern int clockPin2;
+// extern int latchPin2;
+// extern int dataPin2;
 
 // Function definitions
 #endif

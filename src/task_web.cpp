@@ -590,7 +590,7 @@ void Taskwebcode(void *pvParameters)
 			}
 		}
 		serializeJson(settings_influxdb_doc, settings_influxdb_char, sizeof(settings_influxdb_char));
-		write_settings(SETTINGS_INFLUDB_PATH, settings_influxdb_char, settings_influxdb_mutex);
+		write_settings(SETTINGS_INFLUXDB_PATH, settings_influxdb_char, settings_influxdb_mutex);
 		parse_influxdb_settings(); // Apply new InfluxDB settings
 		request->send(200, "text/html", settings_html); });
 
