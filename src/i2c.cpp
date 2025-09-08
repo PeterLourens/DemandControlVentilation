@@ -139,13 +139,13 @@ void read_sensors(void)
                     error = SCD4X_1.readMeasurement(co2, temperature, humidity);
                     if (error)
                     {
-                        snprintf(msg, sizeof(msg), "[Error] Failed to execute readMeasurement().");
-                        printmessage(msg);
+                        snprintf(msg, sizeof(msg), "Failed to execute readMeasurement().");
+                        printmessage(LOG_ERROR, msg);
                     }
                     else if (co2 == 0)
                     {
-                        snprintf(msg, sizeof(msg), "[Error] Invalid sample detected, skipping.");
-                        printmessage(msg);
+                        snprintf(msg, sizeof(msg), "Invalid sample detected, skipping.");
+                        printmessage(LOG_ERROR, msg);
                     }
                     else
                     {
@@ -169,13 +169,13 @@ void read_sensors(void)
                     error = SCD4X_2.readMeasurement(co2, temperature, humidity);
                     if (error)
                     {
-                        snprintf(msg, sizeof(msg), "[Error] Failed to execute readMeasurement().");
-                        printmessage(msg);
+                        snprintf(msg, sizeof(msg), "Failed to execute readMeasurement().");
+                        printmessage(LOG_ERROR, msg);
                     }
                     else if (co2 == 0)
                     {
-                        snprintf(msg, sizeof(msg), "[Error] Invalid sample detected, skipping.");
-                        printmessage(msg);
+                        snprintf(msg, sizeof(msg), "Invalid sample detected, skipping.");
+                        printmessage(LOG_ERROR, msg);
                     }
                     else
                     {
@@ -210,20 +210,20 @@ void read_sensors(void)
         {
             if (xQueueOverwrite(sensor_queue, &temp_sensor_data) != pdPASS)
             {
-                snprintf(msg, sizeof(msg), "[Error] Failed to send data to queue.");
-                printmessage(msg);
+                snprintf(msg, sizeof(msg), "Failed to send data to queue.");
+                printmessage(LOG_ERROR, msg);
             }
         }
         else
         {
-            snprintf(msg, sizeof(msg), "[Error] Send data to queue - Queue handle is NULL");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Send data to queue - Queue handle is NULL");
+            printmessage(LOG_ERROR, msg);
         }
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[Error] I2C communication problem.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "I2C communication problem.");
+        printmessage(LOG_ERROR, msg);
     }
 }
 
@@ -371,8 +371,8 @@ void display_valve_positions(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[Error] Failed to parse %s with error %s", VALVE_POSITIONS_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", VALVE_POSITIONS_PATH, error);
+            printmessage(LOG_ERROR, msg);
         }
     }
 
@@ -582,14 +582,14 @@ void sync_rtc_ntp(void)
     configTzTime(timezone, ntp_server);
     if (!getLocalTime(&timeinfo))
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Failed to obtain time.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Failed to obtain time.");
+        printmessage(LOG_ERROR, msg);
         return;
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[INFO] ESP32 Time synchronized with NTP server.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "ESP32 Time synchronized with NTP server.");
+        printmessage(LOG_INFO, msg);
     }
 
     // Sync the RTC with the NTP time
@@ -634,8 +634,8 @@ void pb_start_display(void)
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[INFO] Display is not enabled in settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Display is not enabled in settings.");
+        printmessage(LOG_INFO, msg);
     }
 }
 
@@ -662,7 +662,7 @@ void init_display_off(void)
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[INFO] Display is not enabled in settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Display is not enabled in settings.");
+        printmessage(LOG_INFO, msg);
     }
 }

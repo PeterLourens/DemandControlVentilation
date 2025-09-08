@@ -13,6 +13,6 @@
 #include "general.h"
 
 // function declarations
-void set_fanspeed(String speed);
+void set_fanspeed(const char *);
 
 #endif

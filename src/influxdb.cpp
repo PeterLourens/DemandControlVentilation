@@ -111,8 +111,8 @@ void write_sensor_data(void)
 
                         if (!client.writePoint(sensor))
                         {
-                            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
-                            printmessage(msg);
+                            snprintf(msg, sizeof(msg), "InfluxDB write failed with %s.", client.getLastErrorMessage());
+                            printmessage(LOG_ERROR, msg);
                         }
                         vTaskDelay(50);
                     }
@@ -121,8 +121,8 @@ void write_sensor_data(void)
         }
         else
         {
-            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "InfluxDB connection failed with %s.", client.getLastErrorMessage());
+            printmessage(LOG_ERROR, msg);
         }
     }
 }
@@ -219,8 +219,8 @@ void write_avg_sensor_data(void)
                         client.pointToLineProtocol(sensor);
                         if (!client.writePoint(sensor))
                         {
-                            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
-                            printmessage(msg);
+                            snprintf(msg, sizeof(msg), "InfluxDB write failed with %s.", client.getLastErrorMessage());
+                            printmessage(LOG_ERROR, msg);
                         }
                         vTaskDelay(50);
                     }
@@ -229,8 +229,8 @@ void write_avg_sensor_data(void)
         }
         else
         {
-            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "InfluxDB connection failed with %s.", client.getLastErrorMessage());
+            printmessage(LOG_ERROR, msg);
         }
     }
 }
@@ -276,8 +276,8 @@ void write_valve_position_data(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s.", VALVE_POSITIONS_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s.", VALVE_POSITIONS_PATH, error);
+            printmessage(LOG_ERROR, msg);
         }
     }
 
@@ -300,16 +300,16 @@ void write_valve_position_data(void)
 
                 if (!client.writePoint(sensor))
                 {
-                    snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
-                    printmessage(msg);
+                    snprintf(msg, sizeof(msg), "InfluxDB write failed with %s.", client.getLastErrorMessage());
+                    printmessage(LOG_ERROR, msg);
                 }
             }
         }
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(LOG_ERROR, msg);
     }
 }
 
@@ -357,14 +357,14 @@ void write_system_uptime(void)
 
         if (!client.writePoint(sensor))
         {
-            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "InfluxDB write failed with %s.", client.getLastErrorMessage());
+            printmessage(LOG_ERROR, msg);
         }
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(LOG_ERROR, msg);
     }
 }
 
@@ -471,14 +471,14 @@ void write_state_info(void)
 
         if (!client.writePoint(sensor))
         {
-            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "InfluxDB write failed with %s.", client.getLastErrorMessage());
+            printmessage(LOG_ERROR, msg);
         }
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(LOG_ERROR, msg);
     }
 }
 
@@ -547,14 +547,14 @@ void write_fanspeed(void)
         sensor.addField("fanspeed", temp_fanspeed_nr);
         if (!client.writePoint(sensor))
         {
-            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "InfluxDB write failed with %s.", client.getLastErrorMessage());
+            printmessage(LOG_ERROR, msg);
         }
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(LOG_ERROR, msg);
     }
 }
 
@@ -603,13 +603,13 @@ void write_heap_info(void)
 
         if (!client.writePoint(sensor))
         {
-            snprintf(msg, sizeof(msg), "[ERROR] InfluxDB write failed with %s.", client.getLastErrorMessage());
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "InfluxDB write failed with %s.", client.getLastErrorMessage());
+            printmessage(LOG_ERROR, msg);
         }
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB connection failed with %s.", client.getLastErrorMessage());
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "InfluxDB connection failed with %s.", client.getLastErrorMessage());
+        printmessage(LOG_ERROR, msg);
     }
 }

@@ -8,8 +8,8 @@ bool write_settings(const char *path, char *file_contents, SemaphoreHandle_t mut
 
     if (path == NULL)
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Path is NULL, cannot write file");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Path is NULL, cannot write file");
+        printmessage(LOG_ERROR, msg);
         return false;
     }
 
@@ -19,8 +19,8 @@ bool write_settings(const char *path, char *file_contents, SemaphoreHandle_t mut
 
         if (!file)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to open file for writing with path %s", path);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to open file for writing with path %s", path);
+            printmessage(LOG_ERROR, msg);
             xSemaphoreGive(mutex);
             return false;
         }
@@ -30,21 +30,21 @@ bool write_settings(const char *path, char *file_contents, SemaphoreHandle_t mut
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Mutex is NULL, cannot write file with path %s", path);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Mutex is NULL, cannot write file with path %s", path);
+        printmessage(LOG_ERROR, msg);
         return false;
     }
 
     if (!ok)
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Failed to write file with path %s", path);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Failed to write file with path %s", path);
+        printmessage(LOG_ERROR, msg);
         return false;
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[INFO] Config file written with path %s", path);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Config file written with path %s", path);
+        printmessage(LOG_INFO, msg);
         return true;
     }
     return false;
@@ -59,8 +59,8 @@ bool read_settings(const char *path, char *buffer, size_t bufferSize, SemaphoreH
         File file = LittleFS.open(path, "r");
         if (!file)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to open %s", path);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to open %s", path);
+            printmessage(LOG_ERROR, msg);
             xSemaphoreGive(mutex);
             return false;
         }
@@ -70,8 +70,8 @@ bool read_settings(const char *path, char *buffer, size_t bufferSize, SemaphoreH
         xSemaphoreGive(mutex);
         return true;
     }
-    snprintf(msg, sizeof(msg), "[ERROR] Failed to  acquire file %s", mutex);
-    printmessage(msg);
+    snprintf(msg, sizeof(msg), "Failed to  acquire file %s", mutex);
+    printmessage(LOG_ERROR, msg);
     return false;
 }
 
@@ -88,8 +88,8 @@ bool parse_network_settings(void)
         if (error)
         {
             // message = "[ERROR] Failed to parse: " + String(SETTINGS_NETWORK_PATH) + " with error: " + String(error.c_str());
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_NETWORK_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_NETWORK_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
 
@@ -159,8 +159,8 @@ bool parse_rtc_settings(void)
         if (error)
         {
             // message = "[ERROR] Failed to parse: " + String(SETTINGS_RTC_PATH) + " with error: " + String(error.c_str());
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_RTC_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_RTC_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -197,8 +197,8 @@ bool parse_influxdb_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_INFLUXDB_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_INFLUXDB_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -253,8 +253,8 @@ bool parse_i2c_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_I2C_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_I2C_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -288,8 +288,8 @@ bool parse_mqtt_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_MQTT_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_MQTT_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -335,8 +335,8 @@ bool parse_fan_settings(void)
 
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_FAN_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_FAN_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -404,8 +404,8 @@ bool parse_statemachine_settings(void)
 
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATEMACHINE_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATEMACHINE_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -452,8 +452,8 @@ bool parse_sensor1_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SENSOR_CONFIG1_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SENSOR_CONFIG1_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -506,8 +506,8 @@ bool parse_sensor2_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SENSOR_CONFIG2_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SENSOR_CONFIG2_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -560,8 +560,8 @@ bool parse_state_day_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_DAY_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_DAY_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -612,8 +612,8 @@ bool parse_state_night_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_NIGHT_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_NIGHT_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -664,8 +664,8 @@ bool parse_state_highco2day_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_HIGHCO2DAY_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_HIGHCO2DAY_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -716,8 +716,8 @@ bool parse_state_highco2night_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_HIGHCO2NIGHT_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_HIGHCO2NIGHT_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -768,8 +768,8 @@ bool parse_state_highrhday_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_HIGHRHDAY_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_HIGHRHDAY_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -820,8 +820,8 @@ bool parse_state_highrhnight_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_HIGHRHNIGHT_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_HIGHRHNIGHT_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -872,8 +872,8 @@ bool parse_state_cooking_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_COOKING_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_COOKING_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -926,8 +926,8 @@ bool parse_state_cyclingday_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_CYCLINGDAY_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_CYCLINGDAY_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -975,8 +975,8 @@ bool parse_state_cyclingnight_settings(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", SETTINGS_STATE_CYCLINGNIGHT_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", SETTINGS_STATE_CYCLINGNIGHT_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -1024,8 +1024,8 @@ bool parse_actual_valve_positions(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error %s", VALVE_POSITIONS_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", VALVE_POSITIONS_PATH, error);
+            printmessage(LOG_ERROR, msg);
             return false;
         }
     }
@@ -1055,21 +1055,21 @@ void valve_status_file_create()
         file = LittleFS.open(VALVE_POSITIONS_PATH, "w");
         if (!file)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to open file for writing for %s", VALVE_POSITIONS_PATH);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to open file for writing for %s", VALVE_POSITIONS_PATH);
+            printmessage(LOG_ERROR, msg);
             xSemaphoreGive(valve_position_file_mutex);
             return;
         }
         if (file.print(default_valve_position_file) == 0)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Write failed for %s", VALVE_POSITIONS_PATH);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Write failed for %s", VALVE_POSITIONS_PATH);
+            printmessage(LOG_ERROR, msg);
             return;
         }
         else
         {
-            snprintf(msg, sizeof(msg), "[INFO] Valve status file written");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Valve status file written");
+            printmessage(LOG_INFO, msg);
         }
         file.close();
         xSemaphoreGive(valve_position_file_mutex);
@@ -1083,19 +1083,19 @@ void delete_file(const char *path)
 
     if (path == NULL)
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Path is NULL, cannot delete file");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Path is NULL, cannot delete file");
+        printmessage(LOG_ERROR, msg);
         return;
     }
     else if (LittleFS.remove(path))
     {
-        snprintf(msg, sizeof(msg), "[INFO] File deleted for %s", path);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "File deleted for %s", path);
+        printmessage(LOG_INFO, msg);
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Delete failed for %s", path);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Delete failed for %s", path);
+        printmessage(LOG_ERROR, msg);
     }
 }
 

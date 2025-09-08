@@ -52,7 +52,7 @@ void task_mqtt_code(void *pvParameters)
         if (WiFi.waitForConnectResult() == WL_CONNECTED && ap_active_temp == 0 && strcmp(enable_mqtt, "On") == 0 && strcmp(mqtt_server, "") != 0 && mqtt_port != 0)
         {
             snprintf(msg, sizeof(msg), "Update MQTT");
-            printmessage(msg);
+            printmessage(LOG_INFO, msg);
 
             // read_mqtt_config();
             publish_sensor_data();
@@ -65,7 +65,7 @@ void task_mqtt_code(void *pvParameters)
         else
         {
             snprintf(msg, sizeof(msg), "No WIFI connection, MQTT disabled or MQTT settings incomplete");
-            printmessage(msg);
+            printmessage(LOG_ERROR, msg);
         }
         vTaskDelay(10000);
     }

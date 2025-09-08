@@ -73,7 +73,7 @@ void publish_sensor_data(void)
         else
         {
             snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
-            printmessage(msg);
+            printmessage(LOG_ERROR, msg);
         }
     }
 }
@@ -151,7 +151,7 @@ void publish_avg_sensor_data(void)
         else
         {
             snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
-            printmessage(msg);
+            printmessage(LOG_ERROR, msg);
         }
     }
 }
@@ -203,8 +203,8 @@ void publish_valve_positions(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error: %s", VALVE_POSITIONS_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error: %s", VALVE_POSITIONS_PATH, error);
+            printmessage(LOG_ERROR, msg);
         }
     }
 
@@ -223,7 +223,7 @@ void publish_valve_positions(void)
     else
     {
         snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
     }
 }
 
@@ -271,7 +271,7 @@ void publish_uptime(void)
     else
     {
         snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
     }
 }
 
@@ -326,7 +326,7 @@ void publish_fanspeed(void)
     else
     {
         snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
     }
 }
 
@@ -334,10 +334,12 @@ void publish_state(void)
 {
     int mqtt_port = 0;
     char topic[100] = {};
-    char temp_state[20] = {};
+    //char temp_state[20] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
+    char *temp_state = NULL;
+
     const char *mqtt_server;
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
@@ -360,7 +362,8 @@ void publish_state(void)
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        state.toCharArray(temp_state, 20);
+        //state.toCharArray(temp_state, 20);
+        temp_state = state;
         xSemaphoreGive(statemachine_state_mutex);
     }
 
@@ -374,6 +377,6 @@ void publish_state(void)
     else
     {
         snprintf(msg, sizeof(msg), "Could not connect to MQTT server.");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
     }
 }

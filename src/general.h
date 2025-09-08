@@ -1,7 +1,8 @@
 #ifndef GENERAL_H
 #define GENERAL_H
 
-#define MAX_FIFO_SIZE 30
+#define MAX_FIFO_SIZE 25
+#define MIN_LOG_LEVEL LOG_INFO
 
 #include <Arduino.h>
 #include <math.h>
@@ -9,9 +10,16 @@
 
 #include "globals.h"
 
+typedef enum
+{
+    LOG_DEBUG,
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR
+} LogLevel;
+
 // Function definitions
-void print_message(String);
-void printmessage(const char *);
+void printmessage(LogLevel level, const char *);
 String concatJson(String, String);
 void formatted_uptime(char *, size_t);
 void formatted_daydatetime(char *, size_t);
@@ -25,5 +33,6 @@ void fifoPush(int, int, int, float, int);
 float roundToTwoDecimals(float);
 int get_free_heap_size(void);
 int get_min_ever_heap_size(void);
+void check_task_status(void);
 
 #endif

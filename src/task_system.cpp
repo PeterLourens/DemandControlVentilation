@@ -16,12 +16,14 @@ void task_system_code(void *pvParameters)
     for (;;)
     {
         free_heap_size = get_free_heap_size();
-        snprintf(msg, sizeof(msg), "[INFO] Free heap size: %d",free_heap_size);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Free heap size: %d", free_heap_size);
+        printmessage(LOG_INFO, msg);
 
         minimum_ever_free_heap_size = get_min_ever_heap_size();
-        snprintf(msg, sizeof(msg), "[INFO] Minimum ever free heap size: %d",minimum_ever_free_heap_size);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Minimum ever free heap size: %d", minimum_ever_free_heap_size);
+        printmessage(LOG_INFO, msg);
+
+        check_task_status();
 
         vTaskDelay(120000);
     }

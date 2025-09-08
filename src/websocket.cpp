@@ -40,8 +40,8 @@ String create_index_json()
 
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse: %s with erro: %s", VALVE_POSITIONS_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse: %s with erro: %s", VALVE_POSITIONS_PATH, error);
+            printmessage(LOG_ERROR, msg);
         }
     }
 
@@ -143,8 +143,8 @@ String create_settings_json()
 
     if (settings_network_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Network settings string is empty.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Network settings string is empty.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -166,8 +166,8 @@ String create_settings_json()
 
     if (settings_mqtt_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] mqtt settings string is empty.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "MQTT settings string is empty.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -189,8 +189,8 @@ String create_settings_json()
 
     if (settings_i2c_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] I2C settings string is empty.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "I2C settings string is empty.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -215,8 +215,8 @@ String create_settings_json()
 
     if (settings_fan_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] fan settings string is empty.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Fan settings string is empty.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -239,8 +239,8 @@ String create_settings_json()
 
     if (settings_influxdb_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] InfluxDB settings string is empty.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "InfluxDB settings string is empty.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -260,8 +260,8 @@ String create_settings_json()
 
     if (settings_rtc_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] RTC settings string is empty.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "RTC settings string is empty.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -314,8 +314,8 @@ String create_sensors_json()
 
     if (sensor_config1_str == "" || sensor_config2_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty or failed to read file.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty or failed to read file.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -375,8 +375,8 @@ String create_statemachine_json()
 
     if (settings_statemachine_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read statemachine settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read statemachine settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -405,8 +405,8 @@ String create_statemachine_json()
 
     if (settings_state_day_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state day settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read state day settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -435,8 +435,8 @@ String create_statemachine_json()
 
     if (settings_state_night_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state night settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read state night settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -463,8 +463,8 @@ String create_statemachine_json()
     serializeJson(doc_highco2day, settings_state_highco2day_str);
     if (settings_state_highco2day_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state highco2day settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read state highco2day settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -491,8 +491,8 @@ String create_statemachine_json()
     serializeJson(doc_highco2night, settings_state_highco2night_str);
     if (settings_state_highco2night_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state highco2night settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read state highco2night settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -518,8 +518,8 @@ String create_statemachine_json()
     serializeJson(doc_highrhday, settings_state_highrhday_str);
     if (settings_state_highrhday_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state highrhday settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read state highrhday settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -545,8 +545,8 @@ String create_statemachine_json()
     serializeJson(doc_highrhnight, settings_state_highrhnight_str);
     if (settings_state_highrhnight_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state highrhnight settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read state highrhnight settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -575,8 +575,8 @@ String create_statemachine_json()
     serializeJson(doc_cooking, settings_state_cooking_str);
     if (settings_state_cooking_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state cooking settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read state cooking settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -601,8 +601,8 @@ String create_statemachine_json()
     serializeJson(doc_cyclingday, settings_state_cyclingday_str);
     if (settings_state_cyclingday_str == "")
     {
-        snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state cyclingday settings.");
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "String is empty. Failed to read state cyclingday settings.");
+        printmessage(LOG_ERROR, msg);
         return "";
     }
     else
@@ -627,8 +627,8 @@ String create_statemachine_json()
         serializeJson(doc_cyclingnight, settings_state_cyclingnight_str);
         if (settings_state_cyclingnight_str == "")
         {
-            snprintf(msg, sizeof(msg), "[ERROR] String is empty. Failed to read state cyclingnight settings.");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "String is empty. Failed to read state cyclingnight settings.");
+            printmessage(LOG_ERROR, msg);
             return "";
         }
         else

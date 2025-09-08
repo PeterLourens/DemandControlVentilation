@@ -31,8 +31,8 @@ void task_influxdb_code(void *pvParameters)
 
         if (WiFi.waitForConnectResult() == WL_CONNECTED && ap_active_temp == 0 && strcmp(enable_influxdb, "On") == 0)
         {
-            snprintf(msg, sizeof(msg), "[INFO] Writing to InfluxDB.");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Writing to InfluxDB.");
+            printmessage(LOG_INFO, msg);
 
             write_sensor_data();
             write_avg_sensor_data();

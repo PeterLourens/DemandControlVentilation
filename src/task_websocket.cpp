@@ -29,11 +29,11 @@ void task_websocket_code(void *pvParameters)
         if (xQueueReceive(webserial_queue, rxBuffer, 50) == pdPASS)
         {
             formatted_datetime(datetime_buffer, sizeof(datetime_buffer));
-            snprintf(msg, sizeof(msg), "%s %s", datetime_buffer, rxBuffer);
-            Serial.print("\n");
+            snprintf(msg, sizeof(msg), "\n%s %s", datetime_buffer, rxBuffer);
+            // Serial.print("\n");
             Serial.print(msg);
             vTaskDelay(20);
-            webSerial.print("\n");
+            // webSerial.print("\n");
             webSerial.print(msg);
             vTaskDelay(20);
         }
@@ -91,10 +91,10 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
         }
         else
         {
-            page_name = "Page without form data requested, nothing to transmit over websocket";
+            page_name = "[INFO] Page without form data requested, nothing to transmit over websocket";
         }
         snprintf(msg, sizeof(msg), "[INFO] Request json for page: %d", page_name);
-        printmessage(msg);
+        printmessage(LOG_INFO, msg);
     }
 }
 

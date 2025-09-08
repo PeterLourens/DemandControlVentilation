@@ -20,7 +20,9 @@ void move_valve(void)
     char new_valve_positions[512] = {};
     char buffer[512] = {};
     char msg[MSG_SIZE] = {};
-    String temp_state = "";
+    char *temp_state = NULL;
+    // char temp_state[MEDIUM_CONFIG_ITEM] = {};
+    // String temp_state = "";
     JsonDocument doc;
 
     if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
@@ -42,14 +44,14 @@ void move_valve(void)
         DeserializationError error = deserializeJson(doc, buffer);
         if (error)
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Failed to parse %s with error: %s.", VALVE_POSITIONS_PATH, error);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Failed to parse %s with error: %s.", VALVE_POSITIONS_PATH, error);
+            printmessage(LOG_ERROR, msg);
         }
     }
 
     // Debug
-    snprintf(msg, sizeof(msg), "[INFO] Store new valve Position: %d, Check valve position: ", store_valve_position, check_valve_position);
-    printmessage(msg);
+    snprintf(msg, sizeof(msg), "Store new valve Position: %d, Check valve position: ", store_valve_position, check_valve_position);
+    printmessage(LOG_INFO, msg);
 
     for (int i = 0; i < MAX_VALVES; i++)
     {
@@ -89,7 +91,7 @@ void move_valve(void)
                 new_valve_position = valve_pos + new_valve_position_change;
             }
             snprintf(msg, sizeof(msg), "Valve: %d, request: %d, current: %d, move: %d, direction: %s", i, valve_position_change, valve_pos, new_valve_position_change, (direction == 0 ? "close" : "open"));
-            printmessage(msg);
+            printmessage(LOG_INFO, msg);
             valvecontrol(direction, new_valve_position_change, valve_number, dataPin, clockPin, latchPin);
         }
         else if (check_valve_position == 0 && (valve_pos + valve_position_change) <= 24 && (valve_pos - valve_position_change) >= 0)
@@ -98,8 +100,8 @@ void move_valve(void)
         }
         else
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Error in valvecontrol. Position change outside valve range of 0 and 24");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Position change outside valve range of 0 and 24");
+            printmessage(LOG_ERROR, msg);
         }
 
         // Storing new valve positions only makes sense in combination with new calculated positions
@@ -125,9 +127,12 @@ void move_valve(void)
 
             if (write_valve_position_file == false)
             {
-                snprintf(msg, sizeof(msg), "[ERROR] Failed to write valve positions to file: %s", VALVE_POSITIONS_PATH);
-                printmessage(msg);
-                temp_state == "stopped";
+                snprintf(msg, sizeof(msg), "Failed to write valve positions to file: %s", VALVE_POSITIONS_PATH);
+                printmessage(LOG_ERROR, msg);
+
+                // temp_state = "stopped";
+                strncpy(temp_state, "stopped", sizeof(temp_state));
+                temp_state[sizeof(temp_state) - 1] = '\0';
             }
             else
             {
@@ -141,14 +146,16 @@ void move_valve(void)
                     xSemaphoreGive(valve_control_data_mutex);
                 }
                 snprintf(msg, sizeof(msg), "[INFO] Valve positions stored successfully in: %s", VALVE_POSITIONS_PATH);
-                printmessage(msg);
+                printmessage(LOG_INFO, msg);
             }
         }
     }
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        state = temp_state;
+        // state = temp_state;
+        strncpy(state, temp_state, sizeof(state));
+        state[sizeof(state) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
 }
@@ -284,8 +291,8 @@ void valvecontrol(int direction, int position_change, int valve_number, int data
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Error in valvecontrol. Requested position change is: %d. Position change should be between 0 and 24", position_change);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Error in valvecontrol. Requested position change is: %d. Position change should be between 0 and 24", position_change);
+        printmessage(LOG_ERROR, msg);
     }
 
     // Enable valve moving
@@ -431,8 +438,8 @@ void valve_position_statemachine(String statemachine_state)
         }
         else
         {
-            snprintf(msg, sizeof(msg), "[ERROR] Statemachine state not defined. Can't assign state valve positions.");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Statemachine state not defined. Can't assign state valve positions.");
+            printmessage(LOG_ERROR, msg);
         }
 
         if (actual_valve_pos > state_valve_pos)
@@ -477,18 +484,18 @@ void valve_position_statemachine(String statemachine_state)
     // finally the valves can be moved but function move_valve() should only be called if sum_move > 0
     if (sum_move > 0)
     {
-        snprintf(msg, sizeof(msg), "[INFO] Valve move sum is > 0 (%d). Call function to move valves.", sum_move);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Valve move sum is > 0 (%d). Call function to move valves.", sum_move);
+        printmessage(LOG_INFO, msg);
         move_valve();
     }
     else if (sum_move < 0)
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Valve move sum is < 0 (%d). This should not happen, check code.", sum_move);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Valve move sum is < 0 (%d). This should not happen, check code.", sum_move);
+        printmessage(LOG_ERROR, msg);
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[INFO] Valve move sum is %d. No valve movement required..", sum_move);
-        printmessage(msg);
+        snprintf(msg, sizeof(msg), "Valve move sum is %d. No valve movement required.", sum_move);
+        printmessage(LOG_INFO, msg);
     }
 }

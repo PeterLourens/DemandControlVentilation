@@ -885,8 +885,8 @@ void Taskwebcode(void *pvParameters)
 			xTaskNotifyGive(xTaskGetHandle("task_valvectrl"));
 		}
 		else {
-			snprintf(msg, sizeof(msg), "[INFO] Valves are locked for moving, try again.");
-        	printmessage(msg);
+			snprintf(msg, sizeof(msg), "Valves are locked for moving, try again.");
+			printmessage(LOG_INFO, msg);
 		} });
 
 	// POST on button create config file - name must match with action of the form submit
@@ -906,7 +906,9 @@ void Taskwebcode(void *pvParameters)
 			  {
 		if (statemachine_state_mutex != NULL) {
 			if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-				state = "stopped";
+				//state = "stopped";
+				strncpy(state, "stopped", sizeof(state));
+				state[sizeof(state) - 1] = '\0';
 				xSemaphoreGive(statemachine_state_mutex);
 			}
 		}
@@ -917,7 +919,9 @@ void Taskwebcode(void *pvParameters)
 			  {
 		if (statemachine_state_mutex != NULL) {
 			if(xSemaphoreTake(statemachine_state_mutex, ( TickType_t ) 10 ) == pdTRUE) {
-				state = "init";
+				//state = "init";
+				strncpy(state, "init", sizeof(state));
+				state[sizeof(state) - 1] = '\0';
 				xSemaphoreGive(statemachine_state_mutex);
 			}
 		}

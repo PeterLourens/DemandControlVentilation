@@ -62,16 +62,16 @@ void task_i2c_code(void *pvParameters)
             formatted_uptime(uptime_str, sizeof(uptime_str));
             //message = "System uptime: " + String(uptime_str);
             
-            snprintf(msg, sizeof(msg), "[INFO] System uptime: %s.", uptime_str);
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "System uptime: %s.", uptime_str);
+            printmessage(LOG_INFO, msg);
 
             rtc_time_multiplier = 0;
         }
 
         if (sync_time_multiplier == 30000)
         { // Every 30 mins
-            snprintf(msg, sizeof(msg), "[INFO] Sync RTC with NTP server.");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Sync RTC with NTP server.");
+            printmessage(LOG_INFO, msg);
             sync_rtc_ntp();
             sync_time_multiplier = 0;
         }
@@ -79,8 +79,8 @@ void task_i2c_code(void *pvParameters)
         // When pushbutton is pushed, toggle will be true and function to display status is started
         if (pb_toggle == true)
         {
-            snprintf(msg, sizeof(msg), "[INFO] Pushbutton pressed. Start task display.");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Pushbutton pressed. Start task display.");
+            printmessage(LOG_INFO, msg);
             pb_start_display();
         }
 

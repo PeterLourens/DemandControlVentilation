@@ -36,7 +36,7 @@ void config_wifi()
     else
     {
         snprintf(msg, sizeof(msg), "Failed to copy network settings to local variables. Check network configuration.");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
         const char *enable_dhcp = "";
         const char *ssid = "";
         const char *wifi_password = "";
@@ -62,7 +62,7 @@ void config_wifi()
         else
         {
             snprintf(msg, sizeof(msg), "WiFi configuration failed.");
-            printmessage(msg);
+            printmessage(LOG_ERROR, msg);
         }
     }
     else
@@ -72,7 +72,7 @@ void config_wifi()
         IPAddress IP = WiFi.softAPIP();
 
         snprintf(msg, sizeof(msg), "AP IP address: %s", IP.toString());
-        printmessage(msg);
+        printmessage(LOG_INFO, msg);
 
         if (ap_active_mutex != NULL)
         {
@@ -100,7 +100,7 @@ bool setupDHCP(const char *ssid, const char *wifi_password)
     if (WiFi.waitForConnectResult() != WL_CONNECTED)
     {
         snprintf(msg, sizeof(msg), "WiFi Failed!");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
         return false;
     }
 
@@ -128,7 +128,7 @@ bool setupStaticIP(const char *ssid, const char *wifi_password, const char *ip_a
     if (!ip_address_numbers)
     {
         snprintf(msg, sizeof(msg), "Failed to parse IP addresses");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
         return false;
     }
 
@@ -146,7 +146,7 @@ bool setupStaticIP(const char *ssid, const char *wifi_password, const char *ip_a
     if (!WiFi.config(local_IP, gateway_IP, subnet_mask_IP, primary_dns_IP, secondary_dns_IP))
     {
         snprintf(msg, sizeof(msg), "STA Failed to configure");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
         return false;
     }
 
@@ -154,7 +154,7 @@ bool setupStaticIP(const char *ssid, const char *wifi_password, const char *ip_a
     if (WiFi.waitForConnectResult() != WL_CONNECTED)
     {
         snprintf(msg, sizeof(msg), "Wifi failed");
-        printmessage(msg);
+        printmessage(LOG_ERROR, msg);
         return false;
     }
 

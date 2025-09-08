@@ -84,8 +84,11 @@ Sensor1_settings sensor1settings[SENSOR_COUNT];
 Sensor2_settings sensor2settings[SENSOR_COUNT];
 
 // Statemachine globals
-String state = "";
-String fanspeed = "";
+// String state = "";
+// String fanspeed = "";
+
+char state[LARGE_CONFIG_ITEM] = {};
+char fanspeed[MEDIUM_CONFIG_ITEM] = {};
 
 bool lock_valve_move = 0; // Variable for skipping valve move when already moving
 bool pb_toggle = false;
@@ -93,11 +96,11 @@ bool ap_active = 0;
 bool debug_mode = true;
 
 // Data pins for 74HC595
-//int clockPin1 = 11; // IO11 on ESP32-S3 and D13 on ESP32, connected to SH_CP (11) of 74HC595
-//int latchPin1 = 12; // IO12 on ESP32-S3 and D12 on ESP32, connected to ST_CP (12) of 74HC595
-//int dataPin1 = 13;  // IO13 on ESP32-S3 and D14 on ESP32, connected to DS (14) of 74HC595
+// int clockPin1 = 11; // IO11 on ESP32-S3 and D13 on ESP32, connected to SH_CP (11) of 74HC595
+// int latchPin1 = 12; // IO12 on ESP32-S3 and D12 on ESP32, connected to ST_CP (12) of 74HC595
+// int dataPin1 = 13;  // IO13 on ESP32-S3 and D14 on ESP32, connected to DS (14) of 74HC595
 
 // Data pins for 74HC595
-//int clockPin2 = 15; // IO14 on ESP32-S3 and D26 on ESP32, connected to SH_CP (11) of 74HC595
-//int latchPin2 = 16; // IO15 on ESP32-S3 and D25 on ESP32, connected to ST_CP (12) of 74HC595
-//int dataPin2 = 14;  // IO16 on ESP32-S3 and D27 on ESP32, connected to DS (14) of 74HC595
+// int clockPin2 = 15; // IO14 on ESP32-S3 and D26 on ESP32, connected to SH_CP (11) of 74HC595
+// int latchPin2 = 16; // IO15 on ESP32-S3 and D25 on ESP32, connected to ST_CP (12) of 74HC595
+// int dataPin2 = 14;  // IO16 on ESP32-S3 and D27 on ESP32, connected to DS (14) of 74HC595

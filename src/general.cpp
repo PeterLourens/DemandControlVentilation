@@ -1,43 +1,29 @@
 #include "general.h"
 
-/*void print_message(String message)
-{
-    char txBuffer[400];
-    char msg[MSG_SIZE] = {};
+LogLevel min_log_level = MIN_LOG_LEVEL;
 
-    if (debug_mode == true)
-    {
-        strcpy(txBuffer, message.c_str());
-        if (webserial_queue != 0)
-        {
-            if (xQueueSend(webserial_queue, txBuffer, 50))
-            {
-            }
-            else
-            {
-                snprintf(msg, sizeof(msg), "[ERROR] Failed to send message to webserial queue.");
-                printmessage(msg);
-            }
-        }
-    }
-}*/
+const char *log_level_str[] = {"DEBUG", "INFO", "WARN", "ERROR"};
 
-void printmessage(const char *message)
+void printmessage(LogLevel level, const char *message)
 {
     char txBuffer[400] = {};
     char msg[MSG_SIZE] = {};
 
-    if (debug_mode)
+    if (debug_mode && level >= min_log_level)
     {
-        strncpy(txBuffer, message, sizeof(txBuffer) - 1);
-        txBuffer[sizeof(txBuffer) - 1] = '\0'; // Ensure null termination
+        // Prefix message with log level
+        snprintf(txBuffer, sizeof(txBuffer), "[%s] %s", log_level_str[level], message);
 
         if (webserial_queue != 0)
         {
             if (!xQueueSend(webserial_queue, txBuffer, 50))
             {
-                snprintf(msg, sizeof(msg), "[ERROR] Failed to send message to webserial queue.");
-                printmessage(msg);
+                snprintf(msg, sizeof(msg), "Failed to send message to webserial queue.");
+                // Use LOG_ERROR for recursive call to avoid infinite recursion
+                if (level != LOG_ERROR)
+                {
+                    printmessage(LOG_ERROR, msg);
+                }
             }
         }
     }
@@ -234,8 +220,8 @@ void sensor_data_average(void)
         }
         else
         {
-            snprintf(msg, sizeof(msg), "Send - Average sensor data queue handle is NULL.");
-            printmessage(msg);
+            snprintf(msg, sizeof(msg), "Average sensor data queue handle is NULL.");
+            printmessage(LOG_ERROR, msg);
         }
     }
 }
@@ -273,4 +259,71 @@ int get_free_heap_size(void)
 int get_min_ever_heap_size(void)
 {
     return xPortGetMinimumEverFreeHeapSize();
+}
+
+void check_task_status(void) {
+
+    char msg[MSG_SIZE] = {};
+
+    /*eTaskState wifi_state = eTaskGetState(task_wifi);
+    eTaskState i2c_state = eTaskGetState(task_i2c);
+    eTaskState statemachine_state = eTaskGetState(task_statemach);
+    eTaskState influxdb_state = eTaskGetState(task_influxdb);
+    eTaskState mqtt_state = eTaskGetState(task_mqtt);
+    eTaskState np_state = eTaskGetState(task_np);
+    eTaskState system_state = eTaskGetState(task_sys);
+    eTaskState valvectrl_state = eTaskGetState(task_valvectrl);
+    eTaskState h_Task_web_state = eTaskGetState(h_Task_web);
+    eTaskState websocket_state = eTaskGetState(task_websocket);
+
+    if (wifi_state != eDeleted && wifi_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task WIFI has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (i2c_state != eDeleted && i2c_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task I2C has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (influxdb_state != eDeleted && influxdb_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task InfluxDB has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (mqtt_state != eDeleted && mqtt_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task MQTT has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (np_state != eDeleted && np_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task Neopixel has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (statemachine_state != eDeleted && statemachine_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task statemachine has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (system_state != eDeleted && system_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task system has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (valvectrl_state != eDeleted && valvectrl_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task valvecontrol has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (h_Task_web_state != eDeleted && h_Task_web_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task web has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }
+    if (websocket_state != eDeleted && websocket_state != eInvalid)
+    {
+        snprintf(msg, sizeof(msg), "Task web has started or is running.");
+        printmessage(LOG_INFO, msg);
+    }*/
 }
