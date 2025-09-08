@@ -31,19 +31,19 @@ void task_wifi_code(void *pvParameters)
         }
 
         // message = "Wifi status: " + String(WiFi.status()) + ", Wifi SSID: " + WiFi.SSID();
-        snprintf(msg, sizeof(msg), "[INFO] Wifi status: %s, Wifi SSID: %s", WiFi.status(), WiFi.SSID());
+        snprintf(msg, sizeof(msg), "[INFO] Wifi status: %d, Wifi SSID: %s", WiFi.status(), WiFi.SSID().c_str());
         printmessage(msg);
 
-        snprintf(msg, sizeof(msg), "[INFO] Wifi BSSID: %s, Wifi RSSI: %s", WiFi.BSSIDstr(), WiFi.RSSI());
+        snprintf(msg, sizeof(msg), "[INFO] Wifi BSSID: %s, Wifi RSSI: %d", WiFi.BSSIDstr().c_str(), WiFi.RSSI());
         printmessage(msg);
 
-        snprintf(msg, sizeof(msg), "IP Address: %s, Subnetmask: %s", WiFi.localIP().toString(), WiFi.subnetMask().toString());
+        snprintf(msg, sizeof(msg), "IP Address: %s, Subnetmask: %s", WiFi.localIP().toString().c_str(), WiFi.subnetMask().toString().c_str());
         printmessage(msg);
 
-        snprintf(msg, sizeof(msg), "Gateway IP: ", WiFi.gatewayIP().toString());
+        snprintf(msg, sizeof(msg), "Gateway IP: %s", WiFi.gatewayIP().toString().c_str());
         printmessage(msg);
 
-        snprintf(msg, sizeof(msg), "Primary DNS: %s, secondary DNS: %s", WiFi.dnsIP(0).toString(), WiFi.dnsIP(1).toString());
+        snprintf(msg, sizeof(msg), "Primary DNS: %s, Secondary DNS: %s", WiFi.dnsIP(0).toString().c_str(), WiFi.dnsIP(1).toString().c_str());
         printmessage(msg);
 
         esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);
@@ -61,13 +61,13 @@ void task_wifi_code(void *pvParameters)
     }
 }
 
-String create_webserial_url(void)
+char* create_webserial_url(void)
 {
     char msg[MSG_SIZE] = {};
-    char webserial_url[MSG_SIZE] = {};
+    static char webserial_url[MSG_SIZE] = {};
 
     //webserial_url = "http://" + String(WiFi.localIP().toString()) + ":8080/webserial";
-    snprintf(msg, sizeof(msg), "http://%s:8080/webserial", WiFi.localIP().toString());
+    snprintf(webserial_url, sizeof(webserial_url), "http://%s:8080/webserial", WiFi.localIP().toString().c_str());
     snprintf(msg, sizeof(msg), "Webserial URL: %s", webserial_url);
     printmessage(msg);
 

@@ -88,7 +88,7 @@ void move_valve(void)
                 new_valve_position_change = min(valve_position_change, 24 - valve_pos);
                 new_valve_position = valve_pos + new_valve_position_change;
             }
-            snprintf(msg, sizeof(msg), "Valve: %d, request: %.2f, current: %.2f, move: %.2f, direction: %s", i, valve_position_change, valve_pos, new_valve_position_change, (direction == 0 ? "close" : "open"));
+            snprintf(msg, sizeof(msg), "Valve: %d, request: %d, current: %d, move: %d, direction: %s", i, valve_position_change, valve_pos, new_valve_position_change, (direction == 0 ? "close" : "open"));
             printmessage(msg);
             valvecontrol(direction, new_valve_position_change, valve_number, dataPin, clockPin, latchPin);
         }
@@ -488,7 +488,7 @@ void valve_position_statemachine(String statemachine_state)
     }
     else
     {
-        snprintf(msg, sizeof(msg), "[ERROR] Valve move sum is %d. No valve movement required..", sum_move);
+        snprintf(msg, sizeof(msg), "[INFO] Valve move sum is %d. No valve movement required..", sum_move);
         printmessage(msg);
     }
 }

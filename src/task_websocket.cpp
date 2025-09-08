@@ -32,8 +32,10 @@ void task_websocket_code(void *pvParameters)
             snprintf(msg, sizeof(msg), "%s %s", datetime_buffer, rxBuffer);
             Serial.print("\n");
             Serial.print(msg);
+            vTaskDelay(20);
             webSerial.print("\n");
             webSerial.print(msg);
+            vTaskDelay(20);
         }
         vTaskDelay(500);
     }

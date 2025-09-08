@@ -11,12 +11,6 @@
 #include "task_wifi.h"
 
 // Function definitions
-/*
-String valvecontrol_processor(const String&);
-String sensor_config_processor(const String&);
-String status_processor(const String&);
-String settings_processor(const String&);
-String settings_valve_state(const String&);*/
-String webserial_processor(const String &);
+char* webserial_processor(const String &);
 
 #endif

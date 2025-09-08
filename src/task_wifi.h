@@ -12,6 +12,6 @@
 // function declarations
 void start_task_wifi(void);
 void task_wifi_code(void * pvParameters);
-String create_webserial_url(void);
+char* create_webserial_url(void);
 
 #endif
