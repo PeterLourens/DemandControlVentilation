@@ -17,12 +17,13 @@ void move_valve(void)
     int check_valve_position = 0;
     int write_failed_counter = 0;
     bool write_valve_position_file = false;
+
     char new_valve_positions[512] = {};
     char buffer[512] = {};
     char msg[MSG_SIZE] = {};
+
     char *temp_state = NULL;
-    // char temp_state[MEDIUM_CONFIG_ITEM] = {};
-    // String temp_state = "";
+
     JsonDocument doc;
 
     if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
@@ -90,7 +91,7 @@ void move_valve(void)
                 new_valve_position_change = min(valve_position_change, 24 - valve_pos);
                 new_valve_position = valve_pos + new_valve_position_change;
             }
-            snprintf(msg, sizeof(msg), "Valve: %d, request: %d, current: %d, move: %d, direction: %s", i, valve_position_change, valve_pos, new_valve_position_change, (direction == 0 ? "close" : "open"));
+            snprintf(msg, sizeof(msg), "Valve: %d, req.: %d, cur.: %d, move: %d, dir.: %s", i, valve_position_change, valve_pos, new_valve_position_change, (direction == 0 ? "close" : "open"));
             printmessage(LOG_INFO, msg);
             valvecontrol(direction, new_valve_position_change, valve_number, dataPin, clockPin, latchPin);
         }
@@ -334,7 +335,6 @@ void valve_position_statemachine(String statemachine_state)
     }
     */
 
-    // String actual_valve_pos_json = "";
     int move = 0;
     int direction = 0;
     int valve_number = 0;

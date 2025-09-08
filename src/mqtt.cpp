@@ -265,7 +265,7 @@ void publish_uptime(void)
 
     if (client.connect("OSventilation"))
     {
-        (String(mqtt_base_topic) + "/system/uptime").toCharArray(topic, 100);
+        snprintf(topic, sizeof(topic), "%s/system/uptime", mqtt_base_topic);
         client.publish(topic, uptime_str);
     }
     else
@@ -278,14 +278,14 @@ void publish_uptime(void)
 void publish_fanspeed(void)
 {
     int mqtt_port = 0;
-    char topic[100];
-    char fan[20];
+
+    char topic[XLARGE_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-    const char *mqtt_server;
-    String json;
-    String temp_fanspeed;
+
+    char *temp_fanspeed = NULL;
+    const char *mqtt_server = NULL;
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -319,9 +319,8 @@ void publish_fanspeed(void)
 
     if (client.connect("OSventilation"))
     {
-        temp_fanspeed.toCharArray(fan, 20);
-        (String(mqtt_base_topic) + "/status/fanspeed").toCharArray(topic, 100);
-        client.publish(topic, fan);
+        snprintf(topic, sizeof(topic), "%s/status/fanspeed", mqtt_base_topic);
+        client.publish(topic, temp_fanspeed);
     }
     else
     {
@@ -333,13 +332,13 @@ void publish_fanspeed(void)
 void publish_state(void)
 {
     int mqtt_port = 0;
-    char topic[100] = {};
-    //char temp_state[20] = {};
+
+    char topic[XLARGE_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-    char *temp_state = NULL;
 
+    char *temp_state = NULL;
     const char *mqtt_server;
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
@@ -362,7 +361,6 @@ void publish_state(void)
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        //state.toCharArray(temp_state, 20);
         temp_state = state;
         xSemaphoreGive(statemachine_state_mutex);
     }
@@ -371,7 +369,7 @@ void publish_state(void)
 
     if (client.connect("OSventilation"))
     {
-        (String(mqtt_base_topic) + "/status/state").toCharArray(topic, 100);
+        snprintf(topic, sizeof(topic), "%s/status/state", mqtt_base_topic);
         client.publish(topic, temp_state);
     }
     else

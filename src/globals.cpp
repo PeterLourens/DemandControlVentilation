@@ -84,9 +84,6 @@ Sensor1_settings sensor1settings[SENSOR_COUNT];
 Sensor2_settings sensor2settings[SENSOR_COUNT];
 
 // Statemachine globals
-// String state = "";
-// String fanspeed = "";
-
 char state[LARGE_CONFIG_ITEM] = {};
 char fanspeed[MEDIUM_CONFIG_ITEM] = {};
 

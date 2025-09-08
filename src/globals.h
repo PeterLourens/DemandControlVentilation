@@ -365,8 +365,6 @@ extern State_cyclingnight_settings statecyclingnightsettings;
 
 extern State_temp_settings statetempsettings;
 
-// extern String state;
-// extern String fanspeed;
 extern char state[LARGE_CONFIG_ITEM];
 extern char fanspeed[MEDIUM_CONFIG_ITEM];
 
