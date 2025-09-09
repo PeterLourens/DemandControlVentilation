@@ -3,15 +3,17 @@
 void write_sensor_data(void)
 {
     float queue_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
+    char tag[MEDIUM_CONFIG_ITEM] = {};
+    char bus[SMALL_CONFIG_ITEM] = {};
+    char sensor_valve[MEDIUM_CONFIG_ITEM] = {};
+    char sensor_location[MEDIUM_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-    String state_tmp = "";
-    String sensor_valve = "";
-    String sensor_location = "";
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -30,12 +32,6 @@ void write_sensor_data(void)
         strncpy(influxdb_token, influxdbsettings.influxdb_token, sizeof(influxdb_token) - 1);
         influxdb_token[sizeof(influxdb_token) - 1] = '\0';
         xSemaphoreGive(settings_influxdb_mutex);
-    }
-
-    if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
-    {
-        state_tmp = state;
-        xSemaphoreGive(statemachine_state_mutex);
     }
 
     InfluxDBClient client(influxdb_url, influxdb_org, influxdb_bucket, influxdb_token);
@@ -58,16 +54,16 @@ void write_sensor_data(void)
                         {
                             if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                             {
-                                sensor_valve = sensor1settings[j].wire_sensor_valve;
-                                sensor_location = sensor1settings[j].wire_sensor_location;
+                                snprintf(sensor_valve, sizeof(sensor_valve), "%s", sensor1settings[j].wire_sensor_valve);
+                                snprintf(sensor_location, sizeof(sensor_location), "%s", sensor1settings[j].wire_sensor_location);
                                 xSemaphoreGive(settings_sensor1_mutex);
                             }
 
-                            if (!sensor_valve.isEmpty())
+                            if (sensor_valve != NULL)
                             {
                                 sensor.addTag("valve", sensor_valve);
                             }
-                            if (!sensor_location.isEmpty())
+                            if (sensor_location != NULL)
                             {
                                 sensor.addTag("location", sensor_location);
                             }
@@ -76,21 +72,21 @@ void write_sensor_data(void)
                         {
                             if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
                             {
-                                sensor_valve = sensor2settings[j].wire1_sensor_valve;
-                                sensor_location = sensor2settings[j].wire1_sensor_location;
+                                snprintf(sensor_valve, sizeof(sensor_valve), "%s", sensor2settings[j].wire1_sensor_valve);
+                                snprintf(sensor_location, sizeof(sensor_location), "%s", sensor2settings[j].wire1_sensor_location);
                                 xSemaphoreGive(settings_sensor2_mutex);
                             }
-                            if (!sensor_valve.isEmpty())
+                            if (sensor_valve != NULL)
                             {
                                 sensor.addTag("valve", sensor_valve);
                             }
-                            if (!sensor_location.isEmpty())
+                            if (sensor_location != NULL)
                             {
                                 sensor.addTag("location", sensor_location);
                             }
                         }
-                        String tag = "sensor" + String(j);
-                        String bus = "bus" + String(i);
+                        snprintf(tag, sizeof(tag), "sensor%d", j);
+                        snprintf(bus, sizeof(bus), "bus%d", i);
                         sensor.addTag("device", tag);
                         sensor.addTag("bus", bus);
 
@@ -130,14 +126,17 @@ void write_sensor_data(void)
 void write_avg_sensor_data(void)
 {
     float queue_avg_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-    String sensor_valve = "";
-    String sensor_location = "";
+    char tag[MEDIUM_CONFIG_ITEM] = {};
+    char bus[SMALL_CONFIG_ITEM] = {};
+    char sensor_valve[MEDIUM_CONFIG_ITEM] = {};
+    char sensor_location[MEDIUM_CONFIG_ITEM] = {};
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -177,16 +176,15 @@ void write_avg_sensor_data(void)
                         {
                             if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                             {
-                                sensor_valve = sensor1settings[j].wire_sensor_valve;
-                                sensor_location = sensor1settings[j].wire_sensor_location;
+                                snprintf(sensor_valve, sizeof(sensor_valve), "%s", sensor1settings[j].wire_sensor_valve);
+                                snprintf(sensor_location, sizeof(sensor_location), "%s", sensor1settings[j].wire_sensor_location);
                                 xSemaphoreGive(settings_sensor1_mutex);
                             }
-
-                            if (!sensor_valve.isEmpty())
+                            if (sensor_valve != NULL)
                             {
                                 sensor.addTag("valve", sensor_valve);
                             }
-                            if (!sensor_location.isEmpty())
+                            if (sensor_location != NULL)
                             {
                                 sensor.addTag("location", sensor_location);
                             }
@@ -195,22 +193,21 @@ void write_avg_sensor_data(void)
                         {
                             if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
                             {
-                                sensor_valve = sensor2settings[j].wire1_sensor_valve;
-                                sensor_location = sensor2settings[j].wire1_sensor_location;
+                                snprintf(sensor_valve, sizeof(sensor_valve), "%s", sensor2settings[j].wire1_sensor_valve);
+                                snprintf(sensor_location, sizeof(sensor_location), "%s", sensor2settings[j].wire1_sensor_location);
                                 xSemaphoreGive(settings_sensor2_mutex);
                             }
-
-                            if (!sensor_valve.isEmpty())
+                            if (sensor_valve != NULL)
                             {
                                 sensor.addTag("valve", sensor_valve);
                             }
-                            if (!sensor_location.isEmpty())
+                            if (sensor_location != NULL)
                             {
                                 sensor.addTag("location", sensor_location);
                             }
                         }
-                        String tag = "sensor" + String(j);
-                        String bus = "bus" + String(i);
+                        snprintf(tag, sizeof(tag), "sensor%d", j);
+                        snprintf(bus, sizeof(bus), "bus%d", i);
                         sensor.addTag("device", tag);
                         sensor.addTag("bus", bus);
                         sensor.addField("temperature", queue_avg_sensor_data[i][j][0]);
@@ -239,6 +236,7 @@ void write_valve_position_data(void)
 {
     int valve_pos_temp = 0;
     int valve_pos_sum = 0;
+
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
@@ -246,8 +244,7 @@ void write_valve_position_data(void)
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
     char buffer[512] = {};
     char msg[MSG_SIZE] = {};
-    String json = "";
-    JsonDocument doc;
+    char tag[SMALL_CONFIG_ITEM] = {};
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -271,31 +268,24 @@ void write_valve_position_data(void)
     InfluxDBClient client(influxdb_url, influxdb_org, influxdb_bucket, influxdb_token);
     Point sensor("Valves");
 
-    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
-    {
-        DeserializationError error = deserializeJson(doc, buffer);
-        if (error)
-        {
-            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s.", VALVE_POSITIONS_PATH, error);
-            printmessage(LOG_ERROR, msg);
-        }
-    }
-
     if (client.validateConnection())
     {
         for (int i = 0; i < 12; i++)
         {
-            valve_pos_temp = doc["valve" + String(i)];
+            if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
+            {
+                valve_pos_temp = valvecontroldata.actual_valve_position[i];
+                xSemaphoreGive(valve_control_data_mutex);
+            }
             valve_pos_sum = valve_pos_sum + valve_pos_temp;
 
             if (valve_pos_sum != 0)
             {
                 sensor.clearFields();
                 sensor.clearTags();
-                String tag = "valve" + String(i);
+                snprintf(tag, sizeof(tag), "valve%d", i);
                 sensor.addTag("device", tag);
                 sensor.addField("position", valve_pos_temp);
-
                 client.pointToLineProtocol(sensor);
 
                 if (!client.writePoint(sensor))
@@ -316,6 +306,7 @@ void write_valve_position_data(void)
 void write_system_uptime(void)
 {
     uint64_t uptime;
+
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
@@ -352,7 +343,6 @@ void write_system_uptime(void)
         sensor.clearFields();
         sensor.clearTags();
         sensor.addField("uptime", uptime);
-
         client.pointToLineProtocol(sensor);
 
         if (!client.writePoint(sensor))
@@ -377,9 +367,8 @@ void write_state_info(void)
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
+    char temp_state[MEDIUM_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-
-    String temp_state = "";
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -397,6 +386,7 @@ void write_state_info(void)
 
         strncpy(influxdb_token, influxdbsettings.influxdb_token, sizeof(influxdb_token) - 1);
         influxdb_token[sizeof(influxdb_token) - 1] = '\0';
+
         xSemaphoreGive(settings_influxdb_mutex);
     }
 
@@ -405,56 +395,57 @@ void write_state_info(void)
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        temp_state = state;
+        strncpy(temp_state, state, sizeof(temp_state) - 1);
+        temp_state[sizeof(temp_state) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
 
     // Need to translate state to number for easy processing in Grafana
-    if (temp_state == "init")
+    if (strcmp(temp_state, "init") == 0)
     {
         temp_state_nr = 1;
     }
-    else if (temp_state == "night")
+    else if (strcmp(temp_state, "night") == 0)
     {
         temp_state_nr = 2;
     }
-    else if (temp_state == "day")
+    else if (strcmp(temp_state, "day") == 0)
     {
         temp_state_nr = 3;
     }
-    else if (temp_state == "highco2night")
+    else if (strcmp(temp_state, "highco2night") == 0)
     {
         temp_state_nr = 4;
     }
-    else if (temp_state == "highco2day")
+    else if (strcmp(temp_state, "highco2day") == 0)
     {
         temp_state_nr = 5;
     }
-    else if (temp_state == "manualhighspeed")
+    else if (strcmp(temp_state, "manualhighspeed") == 0)
     {
         temp_state_nr = 6;
     }
-    else if (temp_state == "cyclingnight")
+    else if (strcmp(temp_state, "cyclingnight") == 0)
     {
         temp_state_nr = 7;
     }
-    else if (temp_state == "cyclingday")
+    else if (strcmp(temp_state, "cyclingday") == 0)
     {
         temp_state_nr = 8;
     }
-    else if (temp_state == "cooking")
+    else if (strcmp(temp_state, "cooking") == 0)
     {
         temp_state_nr = 9;
     }
-    else if (temp_state == "highrhnight")
+    else if (strcmp(temp_state, "highrhnight") == 0)
     {
         temp_state_nr = 10;
     }
-    else if (temp_state == "highrhday")
+    else if (strcmp(temp_state, "highrhday") == 0)
     {
         temp_state_nr = 11;
     }
-    else if (temp_state == "stopped")
+    else if (strcmp(temp_state, "stopped") == 0)
     {
         temp_state_nr = 12;
     }
@@ -485,14 +476,14 @@ void write_state_info(void)
 void write_fanspeed(void)
 {
     int temp_fanspeed_nr = 0;
+
     char enable_influxdb[SMALL_CONFIG_ITEM] = {};
     char influxdb_url[XXLARGE_CONFIG_ITEM] = {};
     char influxdb_org[LARGE_CONFIG_ITEM] = {};
     char influxdb_bucket[LARGE_CONFIG_ITEM] = {};
     char influxdb_token[XXLARGE_CONFIG_ITEM] = {};
+    char temp_fanspeed[SMALL_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-
-    String temp_fanspeed = "";
 
     if (settings_influxdb_mutex && xSemaphoreTake(settings_influxdb_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -518,20 +509,22 @@ void write_fanspeed(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        temp_fanspeed = fanspeed;
+        // temp_fanspeed = fanspeed;
+        strncpy(temp_fanspeed, fanspeed, sizeof(temp_fanspeed) - 1);
+        temp_fanspeed[sizeof(temp_fanspeed) - 1] = '\0';
         xSemaphoreGive(fanspeed_mutex);
     }
 
     // Need to translate fanspeed to number for easy processing in Grafana
-    if (temp_fanspeed == "Low")
+    if (strcmp(temp_fanspeed, "Low") == 0)
     {
         temp_fanspeed_nr = 1;
     }
-    else if (temp_fanspeed == "Medium")
+    else if (strcmp(temp_fanspeed, "Medium") == 0)
     {
         temp_fanspeed_nr = 2;
     }
-    else if (temp_fanspeed == "High")
+    else if (strcmp(temp_fanspeed, "High") == 0)
     {
         temp_fanspeed_nr = 3;
     }

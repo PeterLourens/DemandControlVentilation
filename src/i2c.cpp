@@ -11,6 +11,10 @@ void read_sensors(void)
     int bus1_multiplexer_addr = 0;
     char msg[MSG_SIZE] = {};
 
+    float temperature = 0.2f;
+    float humidity = 0.2f;
+    uint16_t co2 = 0;
+
     String sensor_type = "";
     String sensor = "";
 
@@ -65,8 +69,12 @@ void read_sensors(void)
                     DHT1.begin();
                     DHT1.read();
 
-                    temp_sensor_data[bus][slot][0] = DHT1.getTemperature();
-                    temp_sensor_data[bus][slot][1] = DHT1.getHumidity();
+                    //temp_sensor_data[bus][slot][0] = DHT1.getTemperature();
+                    //temp_sensor_data[bus][slot][1] = DHT1.getHumidity();
+                    temperature = DHT1.getTemperature();
+                    humidity = DHT1.getHumidity();
+                    temp_sensor_data[bus][slot][0] = temperature;
+                    temp_sensor_data[bus][slot][1] = humidity;
                     Wire.endTransmission();
                 }
                 if (bus == 1)
@@ -75,8 +83,12 @@ void read_sensors(void)
                     DHT2.begin();
                     DHT2.read();
 
-                    temp_sensor_data[bus][slot][0] = DHT2.getTemperature();
-                    temp_sensor_data[bus][slot][1] = DHT2.getHumidity();
+                    //temp_sensor_data[bus][slot][0] = DHT2.getTemperature();
+                    //temp_sensor_data[bus][slot][1] = DHT2.getHumidity();
+                    temperature = DHT2.getTemperature();
+                    humidity = DHT2.getHumidity();
+                    temp_sensor_data[bus][slot][0] = temperature;
+                    temp_sensor_data[bus][slot][1] = humidity;
                     Wire1.endTransmission();
                 }
             }
@@ -132,9 +144,10 @@ void read_sensors(void)
                     SCD4X_1.startPeriodicMeasurement();
 
                     uint16_t error;
-                    uint16_t co2 = 0;
-                    float temperature = 0.0f;
-                    float humidity = 0.0f;
+                    //uint16_t co2 = 0;
+                    //float temperature = 0.2f;
+                    //float humidity = 0.2f;
+                    //float co2 = 0.2f;
 
                     error = SCD4X_1.readMeasurement(co2, temperature, humidity);
                     if (error)
@@ -162,9 +175,10 @@ void read_sensors(void)
                     SCD4X_2.startPeriodicMeasurement();
 
                     uint16_t error;
-                    uint16_t co2 = 0;
-                    float temperature = 0.0f;
-                    float humidity = 0.0f;
+                    //uint16_t co2 = 0;
+                    //float temperature = 0.2f;
+                    //float humidity = 0.2f;
+                    //float co2 = 0.2f;
 
                     error = SCD4X_2.readMeasurement(co2, temperature, humidity);
                     if (error)
@@ -262,30 +276,24 @@ void display_sensors(void)
                 {
                     if (bus == 0)
                     {
-                        if (settings_sensor1_mutex != NULL)
+                        if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                         {
-                            if (xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
-                            {
-                                valve = sensor1settings[slot].wire_sensor_valve;
-                                location = sensor1settings[slot].wire_sensor_location;
-                                rh = sensor1settings[slot].wire_sensor_rh;
-                                co2 = sensor1settings[slot].wire_sensor_co2;
-                                xSemaphoreGive(settings_sensor1_mutex);
-                            }
+                            valve = sensor1settings[slot].wire_sensor_valve;
+                            location = sensor1settings[slot].wire_sensor_location;
+                            rh = sensor1settings[slot].wire_sensor_rh;
+                            co2 = sensor1settings[slot].wire_sensor_co2;
+                            xSemaphoreGive(settings_sensor1_mutex);
                         }
                     }
                     if (bus == 1)
                     {
-                        if (settings_sensor1_mutex != NULL)
+                        if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
                         {
-                            if (xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
-                            {
-                                valve = sensor2settings[slot].wire1_sensor_valve;
-                                location = sensor2settings[slot].wire1_sensor_location;
-                                rh = sensor2settings[slot].wire1_sensor_rh;
-                                co2 = sensor2settings[slot].wire1_sensor_co2;
-                                xSemaphoreGive(settings_sensor2_mutex);
-                            }
+                            valve = sensor2settings[slot].wire1_sensor_valve;
+                            location = sensor2settings[slot].wire1_sensor_location;
+                            rh = sensor2settings[slot].wire1_sensor_rh;
+                            co2 = sensor2settings[slot].wire1_sensor_co2;
+                            xSemaphoreGive(settings_sensor2_mutex);
                         }
                     }
 

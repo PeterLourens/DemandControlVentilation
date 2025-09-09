@@ -5,23 +5,28 @@ PubSubClient client(OSventilation);
 
 void publish_sensor_data(void)
 {
-    float queue_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
     int mqtt_port = 0;
-    char topic[200] = {};
-    char sensor_value[8] = {};
+    float queue_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+
+    char topic[XXLARGE_CONFIG_ITEM] = {};
+    char sensor_value[SMALL_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char measurement[MEDIUM_CONFIG_ITEM] = {};
+    char mqtt_server[LARGE_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-    const char *mqtt_server = {};
-    String measurement = "";
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
         strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
         enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
-        mqtt_server = mqttsettings.mqtt_server; // Because defined as pointer
+
+        strncpy(mqtt_server, mqttsettings.mqtt_server, sizeof(mqtt_server) - 1);
+        mqtt_server[sizeof(mqtt_server) - 1] = '\0';
+
         strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
         mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
+
         mqtt_port = mqttsettings.mqtt_port;
         xSemaphoreGive(settings_mqtt_mutex);
     }
@@ -43,28 +48,33 @@ void publish_sensor_data(void)
             {
                 for (int slot = 0; slot < 8; slot++)
                 {
-
                     if (queue_sensor_data[bus][slot][0] > 2)
                     {
-                        measurement = "/temperature";
-                        (String(mqtt_base_topic) + "/bus/" + String(bus) + "/sensor" + String(slot) + measurement).toCharArray(topic, 200);
-                        String(queue_sensor_data[bus][slot][0]).toCharArray(sensor_value, 8);
+                        strncpy(measurement, "/temperature", sizeof(measurement));
+                        measurement[sizeof(measurement) - 1] = '\0';
+
+                        snprintf(topic, sizeof(topic), "%s/bus/%d/sensor%d%s", mqtt_base_topic, bus, slot, measurement);
+                        snprintf(sensor_value, sizeof(sensor_value), "%.2f", queue_sensor_data[bus][slot][0]);
                         client.publish(topic, sensor_value);
                     }
 
                     if (queue_sensor_data[bus][slot][1] > 2)
                     {
-                        measurement = "/humidity";
-                        (String(mqtt_base_topic) + "/bus/" + String(bus) + "/sensor" + String(slot) + measurement).toCharArray(topic, 200);
-                        String(queue_sensor_data[bus][slot][1]).toCharArray(sensor_value, 8);
+                        strncpy(measurement, "/humidity", sizeof(measurement));
+                        measurement[sizeof(measurement) - 1] = '\0';
+
+                        snprintf(topic, sizeof(topic), "%s/bus/%d/sensor%d%s", mqtt_base_topic, bus, slot, measurement);
+                        snprintf(sensor_value, sizeof(sensor_value), "%f", queue_sensor_data[bus][slot][1]);
                         client.publish(topic, sensor_value);
                     }
 
                     if (queue_sensor_data[bus][slot][2] > 2)
                     {
-                        measurement = "/CO2";
-                        (String(mqtt_base_topic) + "/bus/" + String(bus) + "/sensor" + String(slot) + measurement).toCharArray(topic, 200);
-                        String(queue_sensor_data[bus][slot][2]).toCharArray(sensor_value, 8);
+                        strncpy(measurement, "/CO2", sizeof(measurement));
+                        measurement[sizeof(measurement) - 1] = '\0';
+
+                        snprintf(topic, sizeof(topic), "%s/bus/%d/sensor%d%s", mqtt_base_topic, bus, slot, measurement);
+                        snprintf(sensor_value, sizeof(sensor_value), "%.2f", queue_sensor_data[bus][slot][2]);
                         client.publish(topic, sensor_value);
                     }
                 }
@@ -80,22 +90,24 @@ void publish_sensor_data(void)
 
 void publish_avg_sensor_data(void)
 {
-    float queue_sensor_avg_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
     int mqtt_port = 0;
-    char topic[200] = {};
-    char sensor_avg_value[8] = {};
+    float queue_sensor_avg_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+
+    char topic[XXLARGE_CONFIG_ITEM] = {};
+    char sensor_avg_value[SMALL_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char measurement[MEDIUM_CONFIG_ITEM] = {};
+    char mqtt_server[LARGE_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-    const char *mqtt_server;
-    String measurement = "";
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
         strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
         enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
 
-        mqtt_server = mqttsettings.mqtt_server;
+        strncpy(mqtt_server, mqttsettings.mqtt_server, sizeof(mqtt_server) - 1);
+        mqtt_server[sizeof(mqtt_server) - 1] = '\0';
 
         strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
         mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
@@ -121,28 +133,33 @@ void publish_avg_sensor_data(void)
             {
                 for (int slot = 0; slot < 8; slot++)
                 {
-
                     if (queue_sensor_avg_data[bus][slot][0] > 2)
                     {
-                        measurement = "/temperature";
-                        (String(mqtt_base_topic) + "/bus/" + String(bus) + "/sensor" + String(slot) + "_avg" + measurement).toCharArray(topic, 200);
-                        String(queue_sensor_avg_data[bus][slot][0]).toCharArray(sensor_avg_value, 8);
+                        strncpy(measurement, "/temperature", sizeof(measurement));
+                        measurement[sizeof(measurement) - 1] = '\0';
+
+                        snprintf(topic, sizeof(topic), "%s/bus/%d/sensor_avg%d%s", mqtt_base_topic, bus, slot, measurement);
+                        snprintf(sensor_avg_value, sizeof(sensor_avg_value), "%.2f", queue_sensor_avg_data[bus][slot][0]);
                         client.publish(topic, sensor_avg_value);
                     }
 
                     if (queue_sensor_avg_data[bus][slot][1] > 2)
                     {
-                        measurement = "/humidity";
-                        (String(mqtt_base_topic) + "/bus/" + String(bus) + "/sensor" + String(slot) + "_avg" + measurement).toCharArray(topic, 200);
-                        String(queue_sensor_avg_data[bus][slot][1]).toCharArray(sensor_avg_value, 8);
+                        strncpy(measurement, "/humidity", sizeof(measurement));
+                        measurement[sizeof(measurement) - 1] = '\0';
+
+                        snprintf(topic, sizeof(topic), "%s/bus/%d/sensor_avg%d%s", mqtt_base_topic, bus, slot, measurement);
+                        snprintf(sensor_avg_value, sizeof(sensor_avg_value), "%f", queue_sensor_avg_data[bus][slot][1]);
                         client.publish(topic, sensor_avg_value);
                     }
 
                     if (queue_sensor_avg_data[bus][slot][2] > 2)
                     {
-                        measurement = "/CO2";
-                        (String(mqtt_base_topic) + "/bus/" + String(bus) + "/sensor" + String(slot) + "_avg" + measurement).toCharArray(topic, 200);
-                        String(queue_sensor_avg_data[bus][slot][2]).toCharArray(sensor_avg_value, 8);
+                        strncpy(measurement, "/CO2", sizeof(measurement));
+                        measurement[sizeof(measurement) - 1] = '\0';
+
+                        snprintf(topic, sizeof(topic), "%s/bus/%d/sensor_avg%d%s", mqtt_base_topic, bus, slot, measurement);
+                        snprintf(sensor_avg_value, sizeof(sensor_avg_value), "%.2f", queue_sensor_avg_data[bus][slot][2]);
                         client.publish(topic, sensor_avg_value);
                     }
                 }
@@ -159,16 +176,17 @@ void publish_avg_sensor_data(void)
 void publish_valve_positions(void)
 {
     int mqtt_port = 0;
+
     bool status_file_present = false;
-    char valve_pos[4] = {};
-    char valve_nr[10] = {};
-    char topic[100] = {};
+    char valve_pos[SMALL_CONFIG_ITEM] = {};
+    char valve_nr[SMALL_CONFIG_ITEM] = {};
+    char topic[XLARGE_CONFIG_ITEM] = {};
     char buffer[512] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char mqtt_server[LARGE_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-    const char *mqtt_server;
-    String json = "";
+
     JsonDocument doc;
 
     if (settings_mqtt_mutex != NULL)
@@ -178,13 +196,13 @@ void publish_valve_positions(void)
             strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
             enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
 
-            mqtt_server = mqttsettings.mqtt_server;
+            strncpy(mqtt_server, mqttsettings.mqtt_server, sizeof(mqtt_server) - 1);
+            mqtt_server[sizeof(mqtt_server) - 1] = '\0';
 
             strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
             mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
 
             mqtt_port = mqttsettings.mqtt_port;
-
             xSemaphoreGive(settings_mqtt_mutex);
         }
     }
@@ -198,25 +216,16 @@ void publish_valve_positions(void)
 
     client.setServer(mqtt_server, mqtt_port);
 
-    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
-    {
-        DeserializationError error = deserializeJson(doc, buffer);
-        if (error)
-        {
-            snprintf(msg, sizeof(msg), "Failed to parse %s with error: %s", VALVE_POSITIONS_PATH, error);
-            printmessage(LOG_ERROR, msg);
-        }
-    }
-
     if (client.connect("OSventilation"))
     {
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < MAX_VALVES; i++)
         {
-            String valve_nr_str = "valve" + String(i);
-            String valve_pos_str = doc[String(valve_nr_str)];
-            valve_nr_str.toCharArray(valve_nr, 10);
-            valve_pos_str.toCharArray(valve_pos, 4);
-            (String(mqtt_base_topic) + "/position/" + valve_nr_str).toCharArray(topic, 100);
+            if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
+            {
+                snprintf(valve_pos, sizeof(valve_pos), "%d", valvecontroldata.actual_valve_position[i]);
+                xSemaphoreGive(valve_control_data_mutex);
+            }
+            snprintf(topic, sizeof(topic), "%s/position/valve%d", mqtt_base_topic, i);
             client.publish(topic, valve_pos);
         }
     }
@@ -230,13 +239,13 @@ void publish_valve_positions(void)
 void publish_uptime(void)
 {
     int mqtt_port = 0;
+
     char topic[100] = {};
     char uptime_str[64] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
+    char mqtt_server[LARGE_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-    const char *mqtt_server;
-    String json = "";
 
     formatted_uptime(uptime_str, sizeof(uptime_str));
 
@@ -245,7 +254,8 @@ void publish_uptime(void)
         strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
         enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
 
-        mqtt_server = mqttsettings.mqtt_server;
+        strncpy(mqtt_server, mqttsettings.mqtt_server, sizeof(mqtt_server) - 1);
+        mqtt_server[sizeof(mqtt_server) - 1] = '\0';
 
         strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
         mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
@@ -282,17 +292,17 @@ void publish_fanspeed(void)
     char topic[XLARGE_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char mqtt_server[LARGE_CONFIG_ITEM] = {};
+    char temp_fanspeed[MEDIUM_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-
-    char *temp_fanspeed = NULL;
-    const char *mqtt_server = NULL;
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
         strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
         enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
 
-        mqtt_server = mqttsettings.mqtt_server;
+        strncpy(mqtt_server, mqttsettings.mqtt_server, sizeof(mqtt_server) - 1);
+        mqtt_server[sizeof(mqtt_server) - 1] = '\0';
 
         strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
         mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
@@ -313,7 +323,9 @@ void publish_fanspeed(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        temp_fanspeed = fanspeed;
+        // temp_fanspeed = fanspeed;
+        strncpy(temp_fanspeed, fanspeed, sizeof(temp_fanspeed) - 1);
+        temp_fanspeed[sizeof(temp_fanspeed) - 1] = '\0';
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -336,16 +348,16 @@ void publish_state(void)
     char topic[XLARGE_CONFIG_ITEM] = {};
     char enable_mqtt[SMALL_CONFIG_ITEM] = {};
     char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char mqtt_server[MEDIUM_CONFIG_ITEM] = {};
+    char temp_state[MEDIUM_CONFIG_ITEM] = {};
     char msg[MSG_SIZE] = {};
-
-    char *temp_state = NULL;
-    const char *mqtt_server;
 
     if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
     {
         strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
         enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
-        mqtt_server = mqttsettings.mqtt_server;
+        strncpy(mqtt_server, mqttsettings.mqtt_server, sizeof(mqtt_server) - 1);
+        mqtt_server[sizeof(mqtt_server) - 1] = '\0';
         strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
         mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
         mqtt_port = mqttsettings.mqtt_port;
@@ -361,7 +373,9 @@ void publish_state(void)
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        temp_state = state;
+        // temp_state = state;
+        strncpy(temp_state, state, sizeof(temp_state) - 1);
+        temp_state[sizeof(temp_state) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
 
