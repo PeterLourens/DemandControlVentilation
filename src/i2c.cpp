@@ -9,14 +9,18 @@ void read_sensors(void)
 
     int bus0_multiplexer_addr = 0;
     int bus1_multiplexer_addr = 0;
-    char msg[MSG_SIZE] = {};
 
     float temperature = 0.2f;
     float humidity = 0.2f;
-    uint16_t co2 = 0;
 
-    String sensor_type = "";
-    String sensor = "";
+    char msg[MSG_SIZE] = {};
+    char sensor_type[SMALL_CONFIG_ITEM] = {};
+
+    uint16_t co2 = 0;
+    uint16_t error;
+
+    // String sensor_type = "";
+    // String sensor = "";
 
     // Read address for TCA9548. I2C address for TCA9548 may be differently configured with resistors on the board.
     if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
@@ -43,7 +47,8 @@ void read_sensors(void)
             {
                 if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                 {
-                    sensor_type = String(sensor1settings[slot].wire_sensor_type);
+                    // sensor_type = String(sensor1settings[slot].wire_sensor_type);
+                    snprintf(sensor_type, sizeof(sensor_type), "%s", sensor1settings[slot].wire_sensor_type);
                     xSemaphoreGive(settings_sensor1_mutex);
                 }
                 Wire.beginTransmission(bus0_multiplexer_addr);
@@ -54,23 +59,21 @@ void read_sensors(void)
             {
                 if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)100) == pdTRUE)
                 {
-                    sensor_type = String(sensor2settings[slot].wire1_sensor_type);
+                    // sensor_type = String(sensor2settings[slot].wire1_sensor_type);
+                    snprintf(sensor_type, sizeof(sensor_type), "%s", sensor2settings[slot].wire1_sensor_type);
                     xSemaphoreGive(settings_sensor2_mutex);
                 }
                 Wire1.beginTransmission(bus1_multiplexer_addr);
                 Wire1.write(1 << slot);
                 Wire1.endTransmission();
             }
-            if (sensor_type == "DHT20" || sensor_type == "AHT20")
+            if (strcmp(sensor_type, "DHT20") == 0 || strcmp(sensor_type, "AHT20") == 0)
             {
                 if (bus == 0)
                 {
                     DHT20 DHT1(&Wire);
                     DHT1.begin();
                     DHT1.read();
-
-                    //temp_sensor_data[bus][slot][0] = DHT1.getTemperature();
-                    //temp_sensor_data[bus][slot][1] = DHT1.getHumidity();
                     temperature = DHT1.getTemperature();
                     humidity = DHT1.getHumidity();
                     temp_sensor_data[bus][slot][0] = temperature;
@@ -82,9 +85,6 @@ void read_sensors(void)
                     DHT20 DHT2(&Wire1);
                     DHT2.begin();
                     DHT2.read();
-
-                    //temp_sensor_data[bus][slot][0] = DHT2.getTemperature();
-                    //temp_sensor_data[bus][slot][1] = DHT2.getHumidity();
                     temperature = DHT2.getTemperature();
                     humidity = DHT2.getHumidity();
                     temp_sensor_data[bus][slot][0] = temperature;
@@ -135,19 +135,13 @@ void read_sensors(void)
                 }
             }*/
 
-            else if (sensor_type == "SCD40" || sensor_type == "SCD41")
+            else if (strcmp(sensor_type, "SCD40") == 0 || strcmp(sensor_type, "SCD41") == 0)
             {
                 if (bus == 0)
                 {
                     SensirionI2cScd4x SCD4X_1;
                     SCD4X_1.begin(Wire, SCD41_I2C_ADDR_62);
                     SCD4X_1.startPeriodicMeasurement();
-
-                    uint16_t error;
-                    //uint16_t co2 = 0;
-                    //float temperature = 0.2f;
-                    //float humidity = 0.2f;
-                    //float co2 = 0.2f;
 
                     error = SCD4X_1.readMeasurement(co2, temperature, humidity);
                     if (error)
@@ -173,12 +167,6 @@ void read_sensors(void)
                     SensirionI2cScd4x SCD4X_2;
                     SCD4X_2.begin(Wire1, SCD41_I2C_ADDR_62);
                     SCD4X_2.startPeriodicMeasurement();
-
-                    uint16_t error;
-                    //uint16_t co2 = 0;
-                    //float temperature = 0.2f;
-                    //float humidity = 0.2f;
-                    //float co2 = 0.2f;
 
                     error = SCD4X_2.readMeasurement(co2, temperature, humidity);
                     if (error)
