@@ -2,7 +2,6 @@
 
 void set_fanspeed(const char *speed)
 {
-
     int httpResponseCode = 0;
     bool settings_file_present = 0;
 
@@ -15,15 +14,12 @@ void set_fanspeed(const char *speed)
     char fanspeed_temp[MEDIUM_CONFIG_ITEM] = "";
     char http_payload[XLARGE_CONFIG_ITEM] = "";
 
-    //String fanspeed_temp = "";
-    //String http_payload = "";
-
     HTTPClient http;
     JsonDocument doc;
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)100) == pdTRUE)
     {
-        //fanspeed_temp = fanspeed;
+        // fanspeed_temp = fanspeed;
         strncpy(fanspeed_temp, fanspeed, sizeof(fanspeed_temp) - 1);
         fanspeed_temp[sizeof(fanspeed_temp) - 1] = '\0';
 

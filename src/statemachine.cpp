@@ -11,6 +11,19 @@ int rh_sensors_high = 0;
 int old_time = 0;
 int elapsed_time = 0;
 
+const char *STATE_INIT = "init";
+const char *STATE_STOPPED = "stopped";
+const char *STATE_DAY = "day";
+const char *STATE_NIGHT = "night";
+const char *STATE_HIGHCO2DAY = "highco2day";
+const char *STATE_HIGHCO2NIGHT = "highco2night";
+const char *STATE_HIGHRHDAY = "highrhday";
+const char *STATE_HIGHRHNIGHT = "highrhnight";
+const char *STATE_COOKING = "cooking";
+const char *STATE_CYCLINGDAY = "cyclingday";
+const char *STATE_CYCLINGNIGHT = "cyclingnight";
+const char *STATE_MANUAL_HIGH_SPEED = "manual_high_speed";
+
 struct CO2_Sensors
 {
     char *valve;
@@ -22,8 +35,8 @@ struct RH_Sensors
     float rh_reading;
 };
 
-CO2_Sensors co2_sensors[MAX_SENSORS];
-RH_Sensors rh_sensors[MAX_SENSORS];
+CO2_Sensors co2_sensors[MAX_SENSORS] = {};
+RH_Sensors rh_sensors[MAX_SENSORS] = {};
 
 void init_statemachine(void)
 {
@@ -31,7 +44,7 @@ void init_statemachine(void)
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(state, "init", sizeof(state));
+        strncpy(state, STATE_INIT, sizeof(state));
         state[sizeof(state) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
@@ -68,7 +81,7 @@ void run_statemachine(void)
         return;
     }
 
-    snprintf(msg, sizeof(msg), "Read average sensor data from queue for statemachine.");
+    snprintf(msg, sizeof(msg), "Read avg sensor data from queue for statemachine.");
     printmessage(LOG_INFO, msg);
 
     if (xQueuePeek(sensor_avg_queue, &statemachine_avg_sensor_data, 0) != pdTRUE)
@@ -78,51 +91,51 @@ void run_statemachine(void)
         return;
     }
 
-    if (strcmp(temp_state, "init") == 0)
+    if (strcmp(temp_state, STATE_INIT) == 0)
     {
         init_transitions();
     }
-    else if (strcmp(temp_state, "stopped") == 0)
+    else if (strcmp(temp_state, STATE_STOPPED) == 0)
     {
         stopped_transitions();
     }
-    else if (strcmp(temp_state, "day") == 0)
+    else if (strcmp(temp_state, STATE_DAY) == 0)
     {
         day_transitions();
     }
-    else if (strcmp(temp_state, "night") == 0)
+    else if (strcmp(temp_state, STATE_NIGHT) == 0)
     {
         night_transitions();
     }
-    else if (strcmp(temp_state, "highco2day") == 0)
+    else if (strcmp(temp_state, STATE_HIGHCO2DAY) == 0)
     {
         high_co2_day_transitions();
     }
-    else if (strcmp(temp_state, "highco2night") == 0)
+    else if (strcmp(temp_state, STATE_HIGHCO2NIGHT) == 0)
     {
         high_co2_night_transitions();
     }
-    else if (strcmp(temp_state, "highrhday") == 0)
+    else if (strcmp(temp_state, STATE_HIGHRHDAY) == 0)
     {
         high_rh_day_transitions();
     }
-    else if (strcmp(temp_state, "highrhnight") == 0)
+    else if (strcmp(temp_state, STATE_HIGHRHNIGHT) == 0)
     {
         high_rh_night_transitions();
     }
-    else if (strcmp(temp_state, "cooking") == 0)
+    else if (strcmp(temp_state, STATE_COOKING) == 0)
     {
         cooking_transitions();
     }
-    else if (strcmp(temp_state, "cyclingday") == 0)
+    else if (strcmp(temp_state, STATE_CYCLINGDAY) == 0)
     {
         valve_cycle_day_transitions();
     }
-    else if (strcmp(temp_state, "cyclingnight") == 0)
+    else if (strcmp(temp_state, STATE_CYCLINGNIGHT) == 0)
     {
         valve_cycle_night_transitions();
     }
-    else if (strcmp(temp_state, "fanhighspeed") == 0)
+    else if (strcmp(temp_state, STATE_MANUAL_HIGH_SPEED) == 0)
     {
         manual_high_speed_transitions();
     }
@@ -141,7 +154,7 @@ void stopped_transitions(void)
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(state, "stopped", sizeof(state));
+        strncpy(state, STATE_STOPPED, sizeof(state));
         state[sizeof(state) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
@@ -162,7 +175,7 @@ void init_transitions(void)
     // Actions for this state
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(state, "init", sizeof(state));
+        strncpy(state, STATE_INIT, sizeof(state));
         state[sizeof(state) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
@@ -183,14 +196,14 @@ void init_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "day", sizeof(new_state));
+        strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
     else
     {
         snprintf(msg, sizeof(msg), "Transit to night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "night", sizeof(new_state));
+        strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -236,8 +249,11 @@ void day_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -314,14 +330,14 @@ void day_transitions(void)
 
     if (co2_sensors_high > 0 && elapsed_time >= minimum_state_time)
     {
-        strncpy(new_state, "highco2day", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHCO2DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
     }
     else if (rh_sensors_high > 0 && elapsed_time >= minimum_state_time)
     {
-        strncpy(new_state, "highrhday", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHRHDAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -330,7 +346,7 @@ void day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "night", sizeof(new_state));
+        strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -339,14 +355,14 @@ void day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to cooking.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "cooking", sizeof(new_state));
+        strncpy(new_state, STATE_COOKING, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
     else if (valve_cycle_times_day() == true)
     {
         snprintf(msg, sizeof(msg), "Transit to valve cycling day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "cyclingday", sizeof(new_state));
+        strncpy(new_state, STATE_CYCLINGDAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
     // Manual high speed mode is ignored for now
@@ -354,7 +370,7 @@ void day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Stay in day state.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "day", sizeof(new_state));
+        strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -404,8 +420,11 @@ void night_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -485,7 +504,7 @@ void night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to highco2night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highco2night", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHCO2NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -494,7 +513,7 @@ void night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to highrhnight.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highrhnight", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHRHNIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -503,14 +522,14 @@ void night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "day", sizeof(new_state));
+        strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
     else if (valve_cycle_times_night() == true)
     {
         snprintf(msg, sizeof(msg), "Transit to valve cycling night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "cyclingnight", sizeof(new_state));
+        strncpy(new_state, STATE_CYCLINGNIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
     // Manual high speed mode is ignored for now
@@ -518,7 +537,7 @@ void night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Conditions have not changed, it's still night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "night", sizeof(new_state));
+        strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -572,8 +591,11 @@ void high_co2_day_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -696,7 +718,7 @@ void high_co2_day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "day", sizeof(new_state));
+        strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -705,7 +727,7 @@ void high_co2_day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to highco2night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highco2night", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHCO2NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -714,7 +736,7 @@ void high_co2_day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Remain in highco2day state.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highco2day", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHCO2DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -772,8 +794,11 @@ void high_co2_night_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -898,7 +923,7 @@ void high_co2_night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "night", sizeof(new_state));
+        strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -907,7 +932,7 @@ void high_co2_night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to highco2day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highco2day", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHCO2DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -916,7 +941,7 @@ void high_co2_night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Remain in highco2night state.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highco2night", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHCO2NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -967,8 +992,11 @@ void high_rh_day_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -1030,7 +1058,7 @@ void high_rh_day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "day", sizeof(new_state));
+        strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -1039,7 +1067,7 @@ void high_rh_day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to high_rh_night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highrhnight", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHRHNIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -1048,7 +1076,7 @@ void high_rh_day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Remain in high_rh_day state");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highrhday", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHRHDAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -1099,8 +1127,11 @@ void high_rh_night_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -1162,7 +1193,7 @@ void high_rh_night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "night", sizeof(new_state));
+        strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -1171,7 +1202,7 @@ void high_rh_night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to highrhday.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highrhday", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHRHDAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -1180,7 +1211,7 @@ void high_rh_night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Remain in high_rh_night state.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "highrhnight", sizeof(new_state));
+        strncpy(new_state, STATE_HIGHRHNIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -1225,8 +1256,11 @@ void cooking_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -1264,7 +1298,7 @@ void cooking_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "day", sizeof(new_state));
+        strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -1273,7 +1307,7 @@ void cooking_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "night", sizeof(new_state));
+        strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -1282,7 +1316,7 @@ void cooking_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Remain in cooking state.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "cooking", sizeof(new_state));
+        strncpy(new_state, STATE_COOKING, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -1331,8 +1365,11 @@ void valve_cycle_day_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -1370,7 +1407,7 @@ void valve_cycle_day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "day", sizeof(new_state));
+        strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -1379,7 +1416,7 @@ void valve_cycle_day_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Remain in cycling day.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "cyclingday", sizeof(new_state));
+        strncpy(new_state, STATE_CYCLINGDAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -1424,8 +1461,11 @@ void valve_cycle_night_transitions(void)
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        if (state_fanspeed)
+        {
+            strncpy(fanspeed, state_fanspeed, sizeof(fanspeed));
+            fanspeed[sizeof(fanspeed) - 1] = '\0';
+        }
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -1463,7 +1503,7 @@ void valve_cycle_night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Transit to night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "night", sizeof(new_state));
+        strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
         // elapsed_time = 0;
         // old_time = (esp_timer_get_time()) / 1000000;
@@ -1472,7 +1512,7 @@ void valve_cycle_night_transitions(void)
     {
         snprintf(msg, sizeof(msg), "Remain in cycling night.");
         printmessage(LOG_INFO, msg);
-        strncpy(new_state, "cyclingnight", sizeof(new_state));
+        strncpy(new_state, STATE_CYCLINGNIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
     }
 
@@ -1541,6 +1581,7 @@ void select_sensors(void)
     char *rh_sensor_wire1 = NULL;
     char *valve_wire = NULL;
     char *valve_wire1 = NULL;
+
     char msg[MSG_SIZE] = {};
 
     co2_sensor_counter = 0;
@@ -1558,7 +1599,6 @@ void select_sensors(void)
 
     for (int i = 0; i < SENSOR_COUNT; i++)
     {
-
         if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10))
         {
             co2_sensor_wire = sensor1settings[i].wire_sensor_co2;
