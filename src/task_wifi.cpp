@@ -31,10 +31,10 @@ void task_wifi_code(void *pvParameters)
         }
 
         // message = "Wifi status: " + String(WiFi.status()) + ", Wifi SSID: " + WiFi.SSID();
-        snprintf(msg, sizeof(msg), "[INFO] Wifi status: %d, Wifi SSID: %s", WiFi.status(), WiFi.SSID().c_str());
+        snprintf(msg, sizeof(msg), "Wifi status: %d, Wifi SSID: %s", WiFi.status(), WiFi.SSID().c_str());
         printmessage(LOG_INFO, msg);
 
-        snprintf(msg, sizeof(msg), "[INFO] Wifi BSSID: %s, Wifi RSSI: %d", WiFi.BSSIDstr().c_str(), WiFi.RSSI());
+        snprintf(msg, sizeof(msg), "Wifi BSSID: %s, Wifi RSSI: %d dBm", WiFi.BSSIDstr().c_str(), WiFi.RSSI());
         printmessage(LOG_INFO, msg);
 
         snprintf(msg, sizeof(msg), "IP Address: %s, Subnetmask: %s", WiFi.localIP().toString().c_str(), WiFi.subnetMask().toString().c_str());
@@ -43,7 +43,10 @@ void task_wifi_code(void *pvParameters)
         snprintf(msg, sizeof(msg), "Gateway IP: %s", WiFi.gatewayIP().toString().c_str());
         printmessage(LOG_INFO, msg);
 
-        snprintf(msg, sizeof(msg), "Primary DNS: %s, Secondary DNS: %s", WiFi.dnsIP(0).toString().c_str(), WiFi.dnsIP(1).toString().c_str());
+        snprintf(msg, sizeof(msg), "Primary DNS: %s", WiFi.dnsIP(0).toString().c_str());
+        printmessage(LOG_INFO, msg);
+
+        snprintf(msg, sizeof(msg), "Secondary DNS: %s", WiFi.dnsIP(1).toString().c_str());
         printmessage(LOG_INFO, msg);
 
         esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, baseMac);

@@ -19,9 +19,6 @@ void read_sensors(void)
     uint16_t co2 = 0;
     uint16_t error;
 
-    // String sensor_type = "";
-    // String sensor = "";
-
     // Read address for TCA9548. I2C address for TCA9548 may be differently configured with resistors on the board.
     if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -92,49 +89,6 @@ void read_sensors(void)
                     Wire1.endTransmission();
                 }
             }
-
-            /*
-            else if (sensor_type_temp == "AHT20") {
-                if (bus==0) {
-
-                    Adafruit_AHTX0 AHT20_1;
-                    sensors_event_t humidity, temperature;
-
-                    AHT20_1.begin();
-                    AHT20_1.getEvent(&humidity, &temperature);
-
-                    temp_sensor_data[bus][slot][0] = temperature.temperature;
-                    temp_sensor_data[bus][slot][1] = humidity.relative_humidity;
-
-                    Wire.endTransmission();
-
-                    DFRobot_AHT20 AHT20_1;
-                    AHT20_1.begin();
-                    temp_sensor_data[bus][slot][0] = AHT20_1.getTemperature_C();
-                    temp_sensor_data[bus][slot][1] = AHT20_1.getHumidity_RH();
-                    Wire.endTransmission();
-
-                }
-                if (bus==1) {
-                    Adafruit_AHTX0 AHT20_2;
-                    sensors_event_t humidity, temperature;
-
-                    AHT20_2.begin();
-                    AHT20_2.getEvent(&humidity, &temperature);
-
-                    temp_sensor_data[bus][slot][0] = temperature.temperature;
-                    temp_sensor_data[bus][slot][1] = humidity.relative_humidity;
-
-                    Wire1.endTransmission();
-
-                    DFRobot_AHT20 AHT20_2;
-                    AHT20_2.begin();
-                    temp_sensor_data[bus][slot][0] = AHT20_2.getTemperature_C();
-                    temp_sensor_data[bus][slot][1] = AHT20_2.getHumidity_RH();
-                    Wire.endTransmission();
-                }
-            }*/
-
             else if (strcmp(sensor_type, "SCD40") == 0 || strcmp(sensor_type, "SCD41") == 0)
             {
                 if (bus == 0)
@@ -242,10 +196,15 @@ void display_sensors(void)
     */
 
     float queue_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS]; // local variable to store sensor data from queue
-    String valve;
-    String location;
-    String rh;
-    String co2;
+    char valve[MEDIUM_CONFIG_ITEM] = {};
+    char location[LARGE_CONFIG_ITEM] = {};
+    char rh[SMALL_CONFIG_ITEM] = {};
+    char co2[SMALL_CONFIG_ITEM] = {};
+
+    //String valve;
+    //String location;
+    //String rh;
+    //String co2;
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
@@ -266,10 +225,23 @@ void display_sensors(void)
                     {
                         if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                         {
-                            valve = sensor1settings[slot].wire_sensor_valve;
+                            /*valve = sensor1settings[slot].wire_sensor_valve;
                             location = sensor1settings[slot].wire_sensor_location;
                             rh = sensor1settings[slot].wire_sensor_rh;
-                            co2 = sensor1settings[slot].wire_sensor_co2;
+                            co2 = sensor1settings[slot].wire_sensor_co2;*/
+
+                            strncpy(valve, sensor1settings[slot].wire_sensor_valve, sizeof(valve) - 1);
+                            valve[sizeof(valve) - 1] = '\0';
+
+                            strncpy(location, sensor1settings[slot].wire_sensor_location, sizeof(location) - 1);
+                            location[sizeof(location) - 1] = '\0';
+
+                            strncpy(rh, sensor1settings[slot].wire_sensor_rh, sizeof(rh) - 1);
+                            rh[sizeof(rh) - 1] = '\0';
+
+                            strncpy(co2, sensor1settings[slot].wire_sensor_co2, sizeof(co2) - 1);
+                            co2[sizeof(co2) - 1] = '\0';
+
                             xSemaphoreGive(settings_sensor1_mutex);
                         }
                     }
@@ -277,10 +249,23 @@ void display_sensors(void)
                     {
                         if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
                         {
-                            valve = sensor2settings[slot].wire1_sensor_valve;
+                            /*valve = sensor2settings[slot].wire1_sensor_valve;
                             location = sensor2settings[slot].wire1_sensor_location;
                             rh = sensor2settings[slot].wire1_sensor_rh;
-                            co2 = sensor2settings[slot].wire1_sensor_co2;
+                            co2 = sensor2settings[slot].wire1_sensor_co2;*/
+
+                            strncpy(valve, sensor2settings[slot].wire1_sensor_valve, sizeof(valve) - 1);
+                            valve[sizeof(valve) - 1] = '\0';
+
+                            strncpy(location, sensor2settings[slot].wire1_sensor_location, sizeof(location) - 1);
+                            location[sizeof(location) - 1] = '\0';
+
+                            strncpy(rh, sensor2settings[slot].wire1_sensor_rh, sizeof(rh) - 1);
+                            rh[sizeof(rh) - 1] = '\0';
+
+                            strncpy(co2, sensor2settings[slot].wire1_sensor_co2, sizeof(co2) - 1);
+                            co2[sizeof(co2) - 1] = '\0';
+
                             xSemaphoreGive(settings_sensor2_mutex);
                         }
                     }
@@ -352,78 +337,38 @@ void display_valve_positions(void)
     3   |	v   9	:	i   i		v   1	0	:	i	i		v   1   1	:	i	i
     */
 
+    int valve_pos[12];
     bool status_file_present = 0;
     char buffer[512] = {};
     char msg[MSG_SIZE] = {};
-    String json = "";
-    JsonDocument doc;
+    char valve_display[12][8] = {};
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
     lcd.backlight();
 
-    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
+    for (int i = 0; i < MAX_VALVES; i++)
     {
-        DeserializationError error = deserializeJson(doc, buffer);
-        if (error)
+        if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
         {
-            snprintf(msg, sizeof(msg), "Failed to parse %s with error %s", VALVE_POSITIONS_PATH, error);
-            printmessage(LOG_ERROR, msg);
+            valve_pos[i] = valvecontroldata.actual_valve_position[i];
+            xSemaphoreGive(valve_control_data_mutex);
         }
     }
 
-    int valve0_pos = doc["valve0"];
-    int valve1_pos = doc["valve1"];
-    int valve2_pos = doc["valve2"];
-    int valve3_pos = doc["valve3"];
-    int valve4_pos = doc["valve4"];
-    int valve5_pos = doc["valve5"];
-    int valve6_pos = doc["valve6"];
-    int valve7_pos = doc["valve7"];
-    int valve8_pos = doc["valve8"];
-    int valve9_pos = doc["valve9"];
-    int valve10_pos = doc["valve10"];
-    int valve11_pos = doc["valve11"];
-
-    lcd.setCursor(0, 0);
-    lcd.print("v0:");
-    lcd.print(valve0_pos);
-    lcd.setCursor(7, 0);
-    lcd.print("v1:");
-    lcd.print(valve1_pos);
-    lcd.setCursor(14, 0);
-    lcd.print("v2:");
-    lcd.print(valve2_pos);
-
-    lcd.setCursor(0, 1);
-    lcd.print("v3:");
-    lcd.print(valve3_pos);
-    lcd.setCursor(7, 1);
-    lcd.print("v4:");
-    lcd.print(valve4_pos);
-    lcd.setCursor(14, 1);
-    lcd.print("v5:");
-    lcd.print(valve5_pos);
-
-    lcd.setCursor(0, 2);
-    lcd.print("v6:");
-    lcd.print(valve6_pos);
-    lcd.setCursor(7, 2);
-    lcd.print("v7:");
-    lcd.print(valve7_pos);
-    lcd.setCursor(14, 2);
-    lcd.print("v8:");
-    lcd.print(valve8_pos);
-
-    lcd.setCursor(0, 3);
-    lcd.print("v9:");
-    lcd.print(valve9_pos);
-    lcd.setCursor(6, 3);
-    lcd.print("v10:");
-    lcd.print(valve10_pos);
-    lcd.setCursor(13, 3);
-    lcd.print("v11:");
-    lcd.print(valve11_pos);
+    for (int row = 0; row < 4; row++)
+    {
+        for (int col = 0; col < 3; col++)
+        {
+            int index = row * 3 + col;
+            int x = col * 7; // Adjust spacing between columns
+            lcd.setCursor(x, row);
+            lcd.print("v");
+            lcd.print(index);
+            lcd.print(":");
+            lcd.print(valve_pos[index]);
+        }
+    }
     vTaskDelay(5000);
     lcd.clear();
     Wire1.endTransmission();

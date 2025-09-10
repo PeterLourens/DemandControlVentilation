@@ -59,7 +59,7 @@ void formatted_daydatetime(char *buf, size_t bufsize)
         dayofweek = 0;
     }
 
-    snprintf(buf, bufsize, "%s %04d/%02d/%02d - %02d:%02d:%02d", day_names[dayofweek], year, month, day, hour, minute, second);
+    snprintf(buf, bufsize, "%s %04d/%02d/%02d-%02d:%02d:%02d", day_names[dayofweek], year, month, day, hour, minute, second);
 }
 
 void formatted_datetime(char *buf, size_t bufsize)
