@@ -38,15 +38,15 @@ void create_index_json(void)
     // General
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(state, state_tmp, sizeof(state));
-        state[sizeof(state) - 1] = '\0';
+        strncpy(state_tmp, state, sizeof(state_tmp));
+        state_tmp[sizeof(state_tmp) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        strncpy(fanspeed, fanspeed_tmp, sizeof(fanspeed));
-        fanspeed[sizeof(fanspeed) - 1] = '\0';
+        strncpy(fanspeed_tmp, fanspeed, sizeof(fanspeed_tmp));
+        fanspeed_tmp[sizeof(fanspeed_tmp) - 1] = '\0';
         xSemaphoreGive(fanspeed_mutex);
     }
 

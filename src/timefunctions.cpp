@@ -84,7 +84,6 @@ bool valve_cycle_times_day(void)
 
 bool valve_cycle_times_night(void)
 {
-
     int temp_hour = 0;
     int temp_minute = 0;
 
@@ -123,8 +122,8 @@ bool is_weekend(void)
     char day_buffer[10];
     formatted_day(day_buffer, sizeof(day_buffer));
 
-    //if (strcmp(day_buffer, "Saturday") == 0 || strcmp(day_buffer, "Sunday") == 0)
-    if (String(day_buffer) == "Saturday" || String(day_buffer) == "Sunday")
+    if (strcmp(day_buffer, "Saturday") == 0 || strcmp(day_buffer, "Sunday") == 0)
+    // if (String(day_buffer) == "Saturday" || String(day_buffer) == "Sunday")
     {
         return true;
     }
