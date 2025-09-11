@@ -106,6 +106,12 @@ char settings_state_highrhnight[XXLARGE_CONFIG_ITEM] = {};
 char settings_state_cooking[XXLARGE_CONFIG_ITEM] = {};
 char settings_state_cyclingday[XXLARGE_CONFIG_ITEM] = {};
 char settings_state_cyclingnight[XXLARGE_CONFIG_ITEM] = {};
+char settings_rtc[XXLARGE_CONFIG_ITEM] = {};
+char settings_influxdb[XXLARGE_CONFIG_ITEM] = {};
+char settings_i2c[XLARGE_CONFIG_ITEM] = {};
+char settings_mqtt[XXLARGE_CONFIG_ITEM] = {};
+char settings_fan[XXLARGE_CONFIG_ITEM] = {};
+char settings_network[XXLARGE_CONFIG_ITEM] = {};
 
 // Temporary chars for concatJsonChar function. Must be in globals because too big for stack
 // char concatJsonCharstemp1[5000]; // Adjust size as needed

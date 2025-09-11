@@ -60,7 +60,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
         // Build page_name from incoming data
         size_t copy_len = (len < sizeof(page_name) - 1) ? len : sizeof(page_name) - 1;
         memcpy(page_name, data, copy_len);
-        page_name[copy_len] = '\0'; // Ensure null termination
+        page_name[copy_len] = '\0';
 
         // Generate JSON based on page_name
         if (strcmp(page_name, "index") == 0)
@@ -71,8 +71,9 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
         }
         else if (strcmp(page_name, "settings") == 0)
         {
-            const char *json = create_settings_json().c_str();
-            notifyClients(json);
+            temp_settings_char[0] = '\0';
+            create_settings_json();
+            ws.textAll(temp_settings_char);
         }
         else if (strcmp(page_name, "sensor_config") == 0)
         {
@@ -85,12 +86,12 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
             temp_settings_char[0] = '\0';
             create_statemachine_json();
             ws.textAll(temp_settings_char);
-            // notifyClients();
         }
         else if (strcmp(page_name, "valvecontrol") == 0)
         {
-            // const char *json = create_valvecontrol_json().c_str();
-            // notifyClients(json);
+            temp_settings_char[0] = '\0';
+            create_valvecontrol_json();
+            ws.textAll(temp_settings_char);
         }
         else
         {

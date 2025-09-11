@@ -387,6 +387,12 @@ extern char settings_state_highrhnight[XXLARGE_CONFIG_ITEM];
 extern char settings_state_cooking[XXLARGE_CONFIG_ITEM];
 extern char settings_state_cyclingday[XXLARGE_CONFIG_ITEM];
 extern char settings_state_cyclingnight[XXLARGE_CONFIG_ITEM];
+extern char settings_rtc[XXLARGE_CONFIG_ITEM];
+extern char settings_influxdb[XXLARGE_CONFIG_ITEM];
+extern char settings_i2c[XLARGE_CONFIG_ITEM];
+extern char settings_mqtt[XXLARGE_CONFIG_ITEM];
+extern char settings_fan[XXLARGE_CONFIG_ITEM];
+extern char settings_network[XXLARGE_CONFIG_ITEM];
 
 // Data pins for 74HC595
 // extern int clockPin1;

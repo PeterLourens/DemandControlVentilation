@@ -72,7 +72,7 @@ const char valvecontrol_html[] = R"rawliteral(
                     <input type="submit" value="Start statemachine" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
-            <p>State statemachine: <font color="green"><span id="statemachine_state"></span></font></p>
+            <p>State statemachine: <span id="statemachine_state"></span></p>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/valvecontrol">
                     <fieldset>

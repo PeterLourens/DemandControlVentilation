@@ -1,60 +1,52 @@
 #include "websocket.h"
 
-/*
-1. Get data
-    a. Valve positions from file
-    b. sensor data from queue
-    c. time from global var
-2. Merge everything in one JsonDocument
-3. Serialise JsonDocument
-4. Send string over websocket
-*/
-
 void create_index_json(void)
 {
-    bool status_valve_file_present = 0;
     float temp_sensor_data[2][8][3];
     char daydatetime_buffer[50];
     char buffer[512];
     char uptime_str[64];
     char msg[MSG_SIZE] = {};
-
-    String json = "";
-    String json_valves = "";
-    String state_tmp = "";
-    String fanspeed_tmp = "";
+    char state_tmp[MEDIUM_CONFIG_ITEM] = {};
+    char fanspeed_tmp[SMALL_CONFIG_ITEM] = {};
 
     JsonDocument doc;
 
     // Read from sensor queue
     if (sensor_queue != 0)
     {
-        if (xQueuePeek(sensor_queue, &temp_sensor_data, (TickType_t)10))
+        if (xQueuePeek(sensor_avg_queue, &temp_sensor_data, (TickType_t)10))
         {
         }
     }
-
-    if (read_settings(VALVE_POSITIONS_PATH, buffer, sizeof(buffer), valve_position_file_mutex))
+    else
     {
-        DeserializationError error = deserializeJson(doc, buffer);
+        snprintf(msg, sizeof(msg), "Failed to read sensor data queue.");
+        printmessage(LOG_ERROR, msg);
+        return;
+    }
 
-        if (error)
+    for (int i = 0; i < MAX_VALVES; i++)
+    {
+        if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
         {
-            snprintf(msg, sizeof(msg), "Failed to parse: %s with error: %s", VALVE_POSITIONS_PATH, error);
-            printmessage(LOG_ERROR, msg);
+            doc["valve" + String(i)] = valvecontroldata.actual_valve_position[i];
+            xSemaphoreGive(valve_control_data_mutex);
         }
     }
 
     // General
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        state_tmp = state;
+        strncpy(state, state_tmp, sizeof(state));
+        state[sizeof(state) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        fanspeed_tmp = fanspeed;
+        strncpy(fanspeed, fanspeed_tmp, sizeof(fanspeed));
+        fanspeed[sizeof(fanspeed) - 1] = '\0';
         xSemaphoreGive(fanspeed_mutex);
     }
 
@@ -103,17 +95,9 @@ void create_index_json(void)
     serializeJson(doc, temp_settings_char, sizeof(temp_settings_char));
 }
 
-String create_settings_json()
+void create_settings_json(void)
 {
     char msg[MSG_SIZE] = {};
-
-    String settings_json = "";
-    String settings_rtc_str = "";
-    String settings_influxdb_str = "";
-    String settings_i2c_str = "";
-    String settings_mqtt_str = "";
-    String settings_fan_str = "";
-    String settings_network_str = "";
 
     JsonDocument settings_network_doc;
     JsonDocument settings_rtc_doc;
@@ -136,17 +120,18 @@ String create_settings_json()
         xSemaphoreGive(settings_network_mutex);
     }
 
-    serializeJson(settings_network_doc, settings_network_str);
+    serializeJson(settings_network_doc, settings_network, sizeof(settings_network));
 
-    if (settings_network_str == "")
+    if (settings_network == NULL)
     {
         snprintf(msg, sizeof(msg), "Network settings string is empty.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        settings_json = settings_network_str;
+        strncpy(temp_settings_char, settings_network, sizeof(temp_settings_char) - 1);
+        temp_settings_char[sizeof(temp_settings_char) - 1] = '\0';
     }
 
     // MQTT settings
@@ -159,17 +144,17 @@ String create_settings_json()
         xSemaphoreGive(settings_mqtt_mutex);
     }
 
-    serializeJson(settings_mqtt_doc, settings_mqtt_str);
+    serializeJson(settings_mqtt_doc, settings_mqtt, sizeof(settings_mqtt));
 
-    if (settings_mqtt_str == "")
+    if (settings_mqtt == NULL)
     {
         snprintf(msg, sizeof(msg), "MQTT settings string is empty.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        settings_json = concatJson(settings_json, settings_mqtt_str);
+        concatJsonChars(temp_settings_char, settings_mqtt, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // I2C settings
@@ -182,17 +167,17 @@ String create_settings_json()
         xSemaphoreGive(settings_i2c_mutex);
     }
 
-    serializeJson(settings_i2c_doc, settings_i2c_str);
+    serializeJson(settings_i2c_doc, settings_i2c, sizeof(settings_i2c));
 
-    if (settings_i2c_str == "")
+    if (settings_i2c == NULL)
     {
         snprintf(msg, sizeof(msg), "I2C settings string is empty.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        settings_json = concatJson(settings_json, settings_i2c_str);
+        concatJsonChars(temp_settings_char, settings_i2c, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // Fan settings
@@ -208,17 +193,17 @@ String create_settings_json()
         xSemaphoreGive(settings_fan_mutex);
     }
 
-    serializeJson(settings_fan_doc, settings_fan_str);
+    serializeJson(settings_fan_doc, settings_fan, sizeof(settings_fan));
 
-    if (settings_fan_str == "")
+    if (settings_fan == NULL)
     {
         snprintf(msg, sizeof(msg), "Fan settings string is empty.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        settings_json = concatJson(settings_json, settings_fan_str);
+        concatJsonChars(temp_settings_char, settings_fan, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // Influxdb settings
@@ -232,17 +217,17 @@ String create_settings_json()
         xSemaphoreGive(settings_influxdb_mutex);
     }
 
-    serializeJson(settings_influxdb_doc, settings_influxdb_str);
+    serializeJson(settings_influxdb_doc, settings_influxdb, sizeof(settings_influxdb));
 
-    if (settings_influxdb_str == "")
+    if (settings_influxdb == NULL)
     {
         snprintf(msg, sizeof(msg), "InfluxDB settings string is empty.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        settings_json = concatJson(settings_json, settings_influxdb_str);
+        concatJsonChars(temp_settings_char, settings_influxdb, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // RTC settings
@@ -253,25 +238,24 @@ String create_settings_json()
         xSemaphoreGive(settings_rtc_mutex);
     }
 
-    serializeJson(settings_rtc_doc, settings_rtc_str);
+    serializeJson(settings_rtc_doc, settings_rtc, sizeof(settings_rtc));
 
-    if (settings_rtc_str == "")
+    if (settings_rtc == NULL)
     {
         snprintf(msg, sizeof(msg), "RTC settings string is empty.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        settings_json = concatJson(settings_json, settings_rtc_str);
+        concatJsonChars(temp_settings_char, settings_rtc, temp_settings_char, sizeof(temp_settings_char));
     }
-    return settings_json;
 }
 
 void create_sensors_json(void)
 {
     char msg[MSG_SIZE] = {};
-    
+
     JsonDocument doc1;
     JsonDocument doc2;
 
@@ -332,7 +316,7 @@ void create_sensors_json(void)
         concatJsonChars(temp_settings_char, sensor_config2, temp_settings_char, sizeof(temp_settings_char));
     }
 
-    //return sensors_json;
+    // return sensors_json;
 }
 
 // void create_statemachine_json(char *result, size_t resultSize)
@@ -658,38 +642,33 @@ void create_statemachine_json(void)
     }
 }
 
-String create_valvecontrol_json()
+void create_valvecontrol_json(void)
 {
-    bool status_file_present;
-
-    String json;
-    String valve_status_file_state = "";
-    String temp_state = "";
-    String valvecontrol_json = "";
+    bool status_file_present = false;
+    char valve_status_file_state[LARGE_CONFIG_ITEM] = {};
 
     JsonDocument doc;
 
     status_file_present = check_file_exists(VALVE_POSITIONS_PATH);
 
-    if (status_file_present == 1)
+    if (status_file_present == true)
     {
-        valve_status_file_state = "Valve status file found.";
+        strncpy(valve_status_file_state, "Valve status file found.", sizeof(valve_status_file_state) - 1);
+        valve_status_file_state[sizeof(valve_status_file_state) - 1] = '\0';
         doc["status_valve_position_file"] = valve_status_file_state;
     }
     else
     {
-        valve_status_file_state = "Valve status file not found. Create a file with button below.";
+        strncpy(valve_status_file_state, "No valve status file. Create a file with button below..", sizeof(valve_status_file_state) - 1);
+        valve_status_file_state[sizeof(valve_status_file_state) - 1] = '\0';
         doc["status_valve_position_file"] = valve_status_file_state;
     }
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        temp_state = state;
+        doc["statemachine_state"] = state;
         xSemaphoreGive(statemachine_state_mutex);
     }
 
-    doc["statemachine_state"] = temp_state;
-    serializeJson(doc, valvecontrol_json);
-
-    return valvecontrol_json;
+    serializeJson(doc, temp_settings_char);
 }
