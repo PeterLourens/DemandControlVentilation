@@ -1049,7 +1049,6 @@ void high_rh_day_transitions(void)
         }
     }
 
-    // message = "Number of sensors measure high RH: " + String(rh_sensors_high);
     snprintf(msg, sizeof(msg), "Number of sensors have high RH: %d.", rh_sensors_high);
     printmessage(LOG_INFO, msg);
 

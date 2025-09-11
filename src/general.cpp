@@ -143,7 +143,7 @@ void ip_address(char *buf, size_t bufsize)
     snprintf(buf, bufsize, "%u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
 }
 
-String concatJson(String json1, String json2)
+/*String concatJson(String json1, String json2)
 {
     // Remove the closing brace from json1
     if (json1.endsWith("}"))
@@ -161,7 +161,7 @@ String concatJson(String json1, String json2)
     String result = json1 + "," + json2;
 
     return result;
-}
+}*/
 
 void concatJsonChars(const char *json1, const char *json2, char *result, size_t resultSize)
 {

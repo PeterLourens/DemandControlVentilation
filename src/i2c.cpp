@@ -201,11 +201,6 @@ void display_sensors(void)
     char rh[SMALL_CONFIG_ITEM] = {};
     char co2[SMALL_CONFIG_ITEM] = {};
 
-    //String valve;
-    //String location;
-    //String rh;
-    //String co2;
-
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
     lcd.backlight();
@@ -225,11 +220,6 @@ void display_sensors(void)
                     {
                         if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                         {
-                            /*valve = sensor1settings[slot].wire_sensor_valve;
-                            location = sensor1settings[slot].wire_sensor_location;
-                            rh = sensor1settings[slot].wire_sensor_rh;
-                            co2 = sensor1settings[slot].wire_sensor_co2;*/
-
                             strncpy(valve, sensor1settings[slot].wire_sensor_valve, sizeof(valve) - 1);
                             valve[sizeof(valve) - 1] = '\0';
 
@@ -249,11 +239,6 @@ void display_sensors(void)
                     {
                         if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10) == pdTRUE)
                         {
-                            /*valve = sensor2settings[slot].wire1_sensor_valve;
-                            location = sensor2settings[slot].wire1_sensor_location;
-                            rh = sensor2settings[slot].wire1_sensor_rh;
-                            co2 = sensor2settings[slot].wire1_sensor_co2;*/
-
                             strncpy(valve, sensor2settings[slot].wire1_sensor_valve, sizeof(valve) - 1);
                             valve[sizeof(valve) - 1] = '\0';
 
@@ -387,13 +372,14 @@ void display_time_and_date(void)
 
     int64_t uptime = 0;
 
-    char day_buffer[10];
-    char date_buffer[20];
-    char time_buffer[20];
-    char uptime_buffer[50];
-    char ip_buffer[20];
+    char day_buffer[10] = {};
+    char date_buffer[20] = {};
+    char time_buffer[20] = {};
+    char uptime_buffer[50] = {};
+    char ip_buffer[20] = {};
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
+
     lcd.init();
     lcd.backlight();
 
@@ -404,17 +390,20 @@ void display_time_and_date(void)
     ip_address(ip_buffer, sizeof(ip_buffer));
 
     lcd.setCursor(0, 0);
-    lcd.print(String(day_buffer) + " " + String(time_buffer));
+    lcd.print(day_buffer);
+    lcd.print(" ");
+    lcd.print(time_buffer);
 
     lcd.setCursor(0, 1);
-    lcd.print(String(date_buffer));
+    lcd.print(date_buffer);
 
-    uptime = esp_timer_get_time();
     lcd.setCursor(0, 2);
-    lcd.print("Up: " + String(uptime_buffer));
+    lcd.print("Up: ");
+    lcd.print(uptime_buffer);
 
     lcd.setCursor(0, 3);
-    lcd.print("IP: " + String(ip_buffer));
+    lcd.print("IP: ");
+    lcd.print(ip_buffer);
 
     vTaskDelay(5000);
     lcd.clear();
@@ -433,8 +422,8 @@ void display_state_fan(void)
        3 |
    */
 
-    String temp_state = "";
-    String temp_fanspeed = "";
+    char temp_state[MEDIUM_CONFIG_ITEM] = {};
+    char temp_fanspeed[SMALL_CONFIG_ITEM] = {};
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
@@ -444,20 +433,24 @@ void display_state_fan(void)
 
     if (statemachine_state_mutex && xSemaphoreTake(statemachine_state_mutex, (TickType_t)10) == pdTRUE)
     {
-        temp_state = state;
+        // temp_state = state;
+        strncpy(temp_state, state, sizeof(temp_state));
+        temp_state[sizeof(temp_state) - 1] = '\0';
         xSemaphoreGive(statemachine_state_mutex);
     }
 
     if (fanspeed_mutex && xSemaphoreTake(fanspeed_mutex, (TickType_t)10) == pdTRUE)
     {
-        temp_fanspeed = fanspeed;
+        // temp_fanspeed = fanspeed;
+        strncpy(temp_fanspeed, fanspeed, sizeof(temp_fanspeed));
+        temp_fanspeed[sizeof(temp_fanspeed) - 1] = '\0';
         xSemaphoreGive(fanspeed_mutex);
     }
 
-    lcd.print(state);
+    lcd.print(temp_state);
     lcd.setCursor(0, 1);
     lcd.print("Fan speed: ");
-    lcd.print(fanspeed);
+    lcd.print(temp_fanspeed);
 
     lcd.setCursor(0, 2);
     lcd.print("CO2 sensors high:");

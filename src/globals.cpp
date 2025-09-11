@@ -113,12 +113,6 @@ char settings_mqtt[XXLARGE_CONFIG_ITEM] = {};
 char settings_fan[XXLARGE_CONFIG_ITEM] = {};
 char settings_network[XXLARGE_CONFIG_ITEM] = {};
 
-// Temporary chars for concatJsonChar function. Must be in globals because too big for stack
-// char concatJsonCharstemp1[5000]; // Adjust size as needed
-// char concatJsonCharstemp2[600];
-
-// char json[5000] = {};
-
 // Data pins for 74HC595
 // int clockPin1 = 11; // IO11 on ESP32-S3 and D13 on ESP32, connected to SH_CP (11) of 74HC595
 // int latchPin1 = 12; // IO12 on ESP32-S3 and D12 on ESP32, connected to ST_CP (12) of 74HC595
