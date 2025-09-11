@@ -10,7 +10,7 @@
 4. Send string over websocket
 */
 
-String create_index_json()
+void create_index_json(void)
 {
     bool status_valve_file_present = 0;
     float temp_sensor_data[2][8][3];
@@ -84,7 +84,6 @@ String create_index_json()
         doc["bus0_sensor" + String(i) + "_co2"] = roundToTwoDecimals(temp_sensor_data[0][i][2]);
 
         // Bus1 sensor data
-
         if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
         {
             doc["bus1_sensor" + String(i) + "_type"] = sensor2settings[i].wire1_sensor_type;
@@ -101,8 +100,7 @@ String create_index_json()
     }
 
     // convert to JSON string
-    serializeJson(doc, json);
-    return json;
+    serializeJson(doc, temp_settings_char, sizeof(temp_settings_char));
 }
 
 String create_settings_json()
@@ -273,8 +271,7 @@ String create_settings_json()
 void create_sensors_json(void)
 {
     char msg[MSG_SIZE] = {};
-    char sensor_config1[1500] = {};
-    char sensor_config2[1500] = {};
+    
     JsonDocument doc1;
     JsonDocument doc2;
 
@@ -342,17 +339,6 @@ void create_sensors_json(void)
 void create_statemachine_json(void)
 {
     char msg[MSG_SIZE] = {};
-
-    char settings_statemachine[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_day[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_night[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_highco2day[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_highco2night[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_highrhday[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_highrhnight[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_cooking[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_cyclingday[XXLARGE_CONFIG_ITEM] = {};
-    char settings_state_cyclingnight[XXLARGE_CONFIG_ITEM] = {};
 
     JsonDocument doc_statemachine;
     JsonDocument doc_day;

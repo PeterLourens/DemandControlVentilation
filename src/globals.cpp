@@ -94,6 +94,18 @@ bool debug_mode = true;
 
 // Char for settings statemachine. In globals because too big for stack
 char temp_settings_char[5000] = {};
+char sensor_config1[1500] = {};
+char sensor_config2[1500] = {};
+char settings_statemachine[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_day[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_night[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_highco2day[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_highco2night[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_highrhday[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_highrhnight[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_cooking[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_cyclingday[XXLARGE_CONFIG_ITEM] = {};
+char settings_state_cyclingnight[XXLARGE_CONFIG_ITEM] = {};
 
 // Temporary chars for concatJsonChar function. Must be in globals because too big for stack
 // char concatJsonCharstemp1[5000]; // Adjust size as needed

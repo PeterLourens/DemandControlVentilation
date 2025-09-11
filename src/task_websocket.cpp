@@ -52,7 +52,6 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
 {
     char page_name[MEDIUM_CONFIG_ITEM] = {}; // Adjust size as needed
     char msg[MSG_SIZE] = {};
-    // char json[3000] = {};
 
     AwsFrameInfo *info = (AwsFrameInfo *)arg;
 
@@ -66,8 +65,9 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
         // Generate JSON based on page_name
         if (strcmp(page_name, "index") == 0)
         {
-            const char *json = create_index_json().c_str(); // Must return const char*
-            notifyClients(json);
+            temp_settings_char[0] = '\0';
+            create_index_json();
+            ws.textAll(temp_settings_char);
         }
         else if (strcmp(page_name, "settings") == 0)
         {
@@ -78,7 +78,7 @@ void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
         {
             temp_settings_char[0] = '\0';
             create_sensors_json();
-            notifyClients(temp_settings_char);
+            ws.textAll(temp_settings_char);
         }
         else if (strcmp(page_name, "statemachine") == 0)
         {

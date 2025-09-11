@@ -373,7 +373,20 @@ extern bool pb_toggle;
 extern bool ap_active;
 extern bool debug_mode;
 
+// Only for websocket task and function as chars are too large for stack
 extern char temp_settings_char[5000];
+extern char sensor_config1[1500];
+extern char sensor_config2[1500];
+extern char settings_statemachine[XXLARGE_CONFIG_ITEM];
+extern char settings_state_day[XXLARGE_CONFIG_ITEM];
+extern char settings_state_night[XXLARGE_CONFIG_ITEM];
+extern char settings_state_highco2day[XXLARGE_CONFIG_ITEM];
+extern char settings_state_highco2night[XXLARGE_CONFIG_ITEM];
+extern char settings_state_highrhday[XXLARGE_CONFIG_ITEM];
+extern char settings_state_highrhnight[XXLARGE_CONFIG_ITEM];
+extern char settings_state_cooking[XXLARGE_CONFIG_ITEM];
+extern char settings_state_cyclingday[XXLARGE_CONFIG_ITEM];
+extern char settings_state_cyclingnight[XXLARGE_CONFIG_ITEM];
 
 // Data pins for 74HC595
 // extern int clockPin1;
