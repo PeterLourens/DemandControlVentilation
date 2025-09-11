@@ -348,13 +348,12 @@ String valve6_direction = "", valve7_direction = "", valve8_direction = "", valv
 String check_valve_position = "";		  // True when check is required if valve moves within operating range
 String store_valve_position_in_file = ""; // True to enable storing of new position in valve position file
 
-
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
 void startTaskwebcode(void)
 {
-	xTaskCreate(Taskwebcode, "Task_web", 10000, NULL, 9, &h_Task_web);
+	xTaskCreate(Taskwebcode, "Task_web", 20000, NULL, 9, &h_Task_web);
 }
 
 void Taskwebcode(void *pvParameters)

@@ -74,7 +74,7 @@
 #define MEDIUM_CONFIG_ITEM 16
 #define LARGE_CONFIG_ITEM 36
 #define XLARGE_CONFIG_ITEM 64
-#define XXLARGE_CONFIG_ITEM 128
+#define XXLARGE_CONFIG_ITEM 650
 
 #define SENSOR_I2C_BUSSES 2  // Number of I2C busses
 #define SENSOR_COUNT 8       // Number of sensors per I2C bus
@@ -372,6 +372,8 @@ extern bool lock_valve_move;
 extern bool pb_toggle;
 extern bool ap_active;
 extern bool debug_mode;
+
+extern char temp_settings_char[5000];
 
 // Data pins for 74HC595
 // extern int clockPin1;

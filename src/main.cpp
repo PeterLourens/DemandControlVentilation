@@ -7,7 +7,7 @@
 void setup()
 {
 	float temp[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
-	char txBuffer[400] = {};
+	char txBuffer[200] = {};
 	char msg[MSG_SIZE] = {};
 
 	Serial.begin(115200);
@@ -57,7 +57,7 @@ void setup()
 	// Init queues for sensors and Webserial
 	sensor_queue = xQueueCreate(1, sizeof(temp));
 	sensor_avg_queue = xQueueCreate(1, sizeof(temp));
-	webserial_queue = xQueueCreate(30, sizeof(txBuffer));
+	webserial_queue = xQueueCreate(40, sizeof(txBuffer));
 
 	if (webserial_queue == 0 || sensor_queue == 0 || sensor_avg_queue == 0)
 	{
@@ -79,7 +79,7 @@ void setup()
 	// setup_wifi();
 
 	// New config
-	vTaskDelay(10000); // So can lauch serial monitor
+	//vTaskDelay(10000); // So can lauch serial monitor
 	if (!parse_i2c_settings())
 	{
 		snprintf(msg, sizeof(msg), "Failed to parse I2C settings");
@@ -195,7 +195,7 @@ void setup()
 	}
 	else
 	{
-		snprintf(msg, sizeof(msg), "[INFO] Successfully parsed state night settings");
+		snprintf(msg, sizeof(msg), "Successfully parsed state night settings");
 		printmessage(LOG_INFO, msg);
 	}
 

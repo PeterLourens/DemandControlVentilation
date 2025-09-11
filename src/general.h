@@ -21,6 +21,7 @@ typedef enum
 // Function definitions
 void printmessage(LogLevel level, const char *);
 String concatJson(String, String);
+void concatJsonChars(const char *, const char *, char *, size_t);
 void formatted_uptime(char *, size_t);
 void formatted_daydatetime(char *, size_t);
 void formatted_datetime(char *, size_t);

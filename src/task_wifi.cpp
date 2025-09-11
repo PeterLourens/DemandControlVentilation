@@ -31,13 +31,22 @@ void task_wifi_code(void *pvParameters)
         }
 
         // message = "Wifi status: " + String(WiFi.status()) + ", Wifi SSID: " + WiFi.SSID();
-        snprintf(msg, sizeof(msg), "Wifi status: %d, Wifi SSID: %s", WiFi.status(), WiFi.SSID().c_str());
+        snprintf(msg, sizeof(msg), "Wifi status: %d", WiFi.status());
         printmessage(LOG_INFO, msg);
 
-        snprintf(msg, sizeof(msg), "Wifi BSSID: %s, Wifi RSSI: %d dBm", WiFi.BSSIDstr().c_str(), WiFi.RSSI());
+        snprintf(msg, sizeof(msg), "Wifi SSID: %s", WiFi.SSID().c_str());
         printmessage(LOG_INFO, msg);
 
-        snprintf(msg, sizeof(msg), "IP Address: %s, Subnetmask: %s", WiFi.localIP().toString().c_str(), WiFi.subnetMask().toString().c_str());
+        snprintf(msg, sizeof(msg), "Wifi BSSID: %s", WiFi.BSSIDstr().c_str());
+        printmessage(LOG_INFO, msg);
+
+        snprintf(msg, sizeof(msg), "Wifi RSSI: %d dBm", WiFi.RSSI());
+        printmessage(LOG_INFO, msg);
+
+        snprintf(msg, sizeof(msg), "IP Address: %s", WiFi.localIP().toString().c_str());
+        printmessage(LOG_INFO, msg);
+
+        snprintf(msg, sizeof(msg), "Subnetmask: %s", WiFi.subnetMask().toString().c_str());
         printmessage(LOG_INFO, msg);
 
         snprintf(msg, sizeof(msg), "Gateway IP: %s", WiFi.gatewayIP().toString().c_str());

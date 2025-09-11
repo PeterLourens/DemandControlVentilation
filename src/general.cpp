@@ -6,7 +6,7 @@ const char *log_level_str[] = {"DEBUG", "INFO", "WARN", "ERROR"};
 
 void printmessage(LogLevel level, const char *message)
 {
-    char txBuffer[400] = {};
+    char txBuffer[200] = {};
     char msg[MSG_SIZE] = {};
 
     if (debug_mode && level >= min_log_level)
@@ -59,7 +59,7 @@ void formatted_daydatetime(char *buf, size_t bufsize)
         dayofweek = 0;
     }
 
-    snprintf(buf, bufsize, "%s %04d/%02d/%02d-%02d:%02d:%02d", day_names[dayofweek], year, month, day, hour, minute, second);
+    snprintf(buf, bufsize, "%s %04d/%02d/%02d - %02d:%02d:%02d", day_names[dayofweek], year, month, day, hour, minute, second);
 }
 
 void formatted_datetime(char *buf, size_t bufsize)
@@ -81,7 +81,7 @@ void formatted_datetime(char *buf, size_t bufsize)
         second = rtcdatetime.second;
         xSemaphoreGive(date_time_mutex);
     }
-    snprintf(buf, bufsize, "%04d/%02d/%02d - %02d:%02d:%02d", year, month, day, hour, minute, second);
+    snprintf(buf, bufsize, "%04d/%02d/%02d-%02d:%02d:%02d", year, month, day, hour, minute, second);
 }
 
 void formatted_date(char *buf, size_t bufsize)
@@ -161,6 +161,35 @@ String concatJson(String json1, String json2)
     String result = json1 + "," + json2;
 
     return result;
+}
+
+void concatJsonChars(const char *json1, const char *json2, char *result, size_t resultSize)
+{
+    char temp1[5000]; // Adjust size as needed
+    char temp2[1500];
+
+    //Serial.print(temp1);
+    //Serial.print(temp2);
+
+    // Copy json1 and remove trailing '}'
+    strncpy(temp1, json1, sizeof(temp1) - 1);
+    temp1[sizeof(temp1) - 1] = '\0';
+    size_t len1 = strlen(temp1);
+    if (len1 > 0 && temp1[len1 - 1] == '}')
+    {
+        temp1[len1 - 1] = '\0';
+    }
+
+    // Copy json2 and remove leading '{'
+    strncpy(temp2, json2, sizeof(temp2) - 1);
+    temp2[sizeof(temp2) - 1] = '\0';
+    if (temp2[0] == '{')
+    {
+        memmove(temp2, temp2 + 1, strlen(temp2)); // Shift left
+    }
+
+    // Concatenate with comma
+    snprintf(result, resultSize, "%s,%s", temp1, temp2);
 }
 
 void formatted_uptime(char *buf, size_t bufsize)

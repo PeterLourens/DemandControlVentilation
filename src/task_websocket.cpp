@@ -6,7 +6,7 @@ AsyncWebSocket ws("/ws");
 
 void start_task_websocket(void)
 {
-    xTaskCreate(task_websocket_code, "taskwebsocket", 10000, NULL, 1, &task_websocket);
+    xTaskCreate(task_websocket_code, "taskwebsocket", 20000, NULL, 1, &task_websocket);
 }
 
 void task_websocket_code(void *pvParameters)
@@ -30,13 +30,15 @@ void task_websocket_code(void *pvParameters)
         {
             formatted_datetime(datetime_buffer, sizeof(datetime_buffer));
             snprintf(msg, sizeof(msg), "\n%s %s", datetime_buffer, rxBuffer);
-            // Serial.print("\n");
             Serial.print(msg);
             vTaskDelay(20);
-            // webSerial.print("\n");
             webSerial.print(msg);
             vTaskDelay(20);
         }
+        // Serial.print("fAlarm ");
+        // Serial.print(uxTaskGetStackHighWaterMark(NULL));
+        // Serial.println();
+        // Serial.flush();
         vTaskDelay(500);
     }
 }
@@ -48,52 +50,55 @@ void notifyClients(String json)
 
 void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
 {
-    String page_name = "";
-    String json = "";
-
+    char page_name[MEDIUM_CONFIG_ITEM] = {}; // Adjust size as needed
     char msg[MSG_SIZE] = {};
+    // char json[3000] = {};
 
     AwsFrameInfo *info = (AwsFrameInfo *)arg;
 
     if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
     {
-        // Compile page_name from js
-        for (size_t i = 0; i < len; i++)
-        {
-            page_name += (char)data[i];
-        }
+        // Build page_name from incoming data
+        size_t copy_len = (len < sizeof(page_name) - 1) ? len : sizeof(page_name) - 1;
+        memcpy(page_name, data, copy_len);
+        page_name[copy_len] = '\0'; // Ensure null termination
 
-        // generate json based on page_name
-        if (page_name == "index")
+        // Generate JSON based on page_name
+        if (strcmp(page_name, "index") == 0)
         {
-            String json = create_index_json();
+            const char *json = create_index_json().c_str(); // Must return const char*
             notifyClients(json);
         }
-        else if (page_name == "settings")
+        else if (strcmp(page_name, "settings") == 0)
         {
-            json = create_settings_json();
+            const char *json = create_settings_json().c_str();
             notifyClients(json);
         }
-        else if (page_name == "sensor_config")
+        else if (strcmp(page_name, "sensor_config") == 0)
         {
-            json = create_sensors_json();
-            notifyClients(json);
+            temp_settings_char[0] = '\0';
+            create_sensors_json();
+            notifyClients(temp_settings_char);
         }
-        else if (page_name == "statemachine")
+        else if (strcmp(page_name, "statemachine") == 0)
         {
-            json = create_statemachine_json();
-            notifyClients(json);
+            temp_settings_char[0] = '\0';
+            create_statemachine_json();
+            ws.textAll(temp_settings_char);
+            // notifyClients();
         }
-        else if (page_name == "valvecontrol")
+        else if (strcmp(page_name, "valvecontrol") == 0)
         {
-            json = create_valvecontrol_json();
-            notifyClients(json);
+            // const char *json = create_valvecontrol_json().c_str();
+            // notifyClients(json);
         }
         else
         {
-            page_name = "[INFO] Page without form data requested, nothing to transmit over websocket";
+            strncpy(page_name, "Page without form data requested, nothing to transmit over websocket", sizeof(page_name) - 1);
+            page_name[sizeof(page_name) - 1] = '\0';
         }
-        snprintf(msg, sizeof(msg), "[INFO] Request json for page: %d", page_name);
+
+        snprintf(msg, sizeof(msg), "Request json for page: %s", page_name);
         printmessage(LOG_INFO, msg);
     }
 }

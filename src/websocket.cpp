@@ -40,7 +40,7 @@ String create_index_json()
 
         if (error)
         {
-            snprintf(msg, sizeof(msg), "Failed to parse: %s with erro: %s", VALVE_POSITIONS_PATH, error);
+            snprintf(msg, sizeof(msg), "Failed to parse: %s with error: %s", VALVE_POSITIONS_PATH, error);
             printmessage(LOG_ERROR, msg);
         }
     }
@@ -63,7 +63,6 @@ String create_index_json()
 
     doc["statemachine_state"] = state_tmp;
     doc["fanspeed"] = fanspeed_tmp;
-    // doc["uptime"] = formatted_uptime();
     doc["uptime"] = uptime_str;
     doc["date_time"] = daydatetime_buffer;
 
@@ -271,12 +270,11 @@ String create_settings_json()
     return settings_json;
 }
 
-String create_sensors_json()
+void create_sensors_json(void)
 {
     char msg[MSG_SIZE] = {};
-    String sensor_config1_str = "";
-    String sensor_config2_str = "";
-    String sensors_json = "";
+    char sensor_config1[1500] = {};
+    char sensor_config2[1500] = {};
     JsonDocument doc1;
     JsonDocument doc2;
 
@@ -294,7 +292,20 @@ String create_sensors_json()
     }
 
     doc1.shrinkToFit(); // optional
-    serializeJson(doc1, sensor_config1_str);
+    serializeJson(doc1, sensor_config1, sizeof(sensor_config1));
+
+    if (sensor_config1 == NULL)
+    {
+        snprintf(msg, sizeof(msg), "String is empty or failed to read file.");
+        printmessage(LOG_ERROR, msg);
+        return;
+    }
+    else
+    {
+        // sensors_json = concatJson(sensor_config1_str, sensor_config2_str);
+        strncpy(temp_settings_char, sensor_config1, sizeof(temp_settings_char) - 1);
+        temp_settings_char[sizeof(temp_settings_char) - 1] = '\0';
+    }
 
     if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)10))
     {
@@ -310,37 +321,38 @@ String create_sensors_json()
     }
 
     doc2.shrinkToFit();
-    serializeJson(doc2, sensor_config2_str);
+    serializeJson(doc2, sensor_config2, sizeof(sensor_config2));
 
-    if (sensor_config1_str == "" || sensor_config2_str == "")
+    if (sensor_config2 == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty or failed to read file.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        sensors_json = concatJson(sensor_config1_str, sensor_config2_str);
+        // sensors_json = concatJson(sensor_config1_str, sensor_config2_str);
+        concatJsonChars(temp_settings_char, sensor_config2, temp_settings_char, sizeof(temp_settings_char));
     }
 
-    return sensors_json;
+    //return sensors_json;
 }
 
-String create_statemachine_json()
+// void create_statemachine_json(char *result, size_t resultSize)
+void create_statemachine_json(void)
 {
     char msg[MSG_SIZE] = {};
 
-    String settings_statemachine_str = "";
-    String settings_state_day_str = "";
-    String settings_state_night_str = "";
-    String settings_state_highco2day_str = "";
-    String settings_state_highco2night_str = "";
-    String settings_state_highrhday_str = "";
-    String settings_state_highrhnight_str = "";
-    String settings_state_cooking_str = "";
-    String settings_state_cyclingday_str = "";
-    String settings_state_cyclingnight_str = "";
-    String statemachine_json = "";
+    char settings_statemachine[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_day[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_night[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_highco2day[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_highco2night[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_highrhday[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_highrhnight[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_cooking[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_cyclingday[XXLARGE_CONFIG_ITEM] = {};
+    char settings_state_cyclingnight[XXLARGE_CONFIG_ITEM] = {};
 
     JsonDocument doc_statemachine;
     JsonDocument doc_day;
@@ -371,17 +383,19 @@ String create_statemachine_json()
     }
 
     doc_statemachine.shrinkToFit();
-    serializeJson(doc_statemachine, settings_statemachine_str);
+    serializeJson(doc_statemachine, settings_statemachine, sizeof(settings_statemachine));
 
-    if (settings_statemachine_str == "")
+    if (settings_statemachine == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read statemachine settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = settings_statemachine_str;
+        // statemachine_json = settings_statemachine_str;
+        strncpy(temp_settings_char, settings_statemachine, sizeof(temp_settings_char) - 1);
+        temp_settings_char[sizeof(temp_settings_char) - 1] = '\0';
     }
 
     // State day settings
@@ -393,7 +407,7 @@ String create_statemachine_json()
         doc_day["state_day_highco2"] = statedaysettings.state_day_highco2;
         doc_day["state_day_highrh"] = statedaysettings.state_day_highrh;
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < MAX_VALVES; i++)
         {
             doc_day["valve" + String(i) + "_position_day"] = statedaysettings.valve_position_day[i];
         }
@@ -401,17 +415,18 @@ String create_statemachine_json()
     }
 
     doc_day.shrinkToFit();
-    serializeJson(doc_day, settings_state_day_str);
+    serializeJson(doc_day, settings_state_day, sizeof(settings_state_day));
 
-    if (settings_state_day_str == "")
+    if (settings_state_day == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read state day settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = concatJson(statemachine_json, settings_state_day_str);
+        // statemachine_json = concatJson(statemachine_json, settings_state_day_str);
+        concatJsonChars(temp_settings_char, settings_state_day, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // State night settings
@@ -423,7 +438,7 @@ String create_statemachine_json()
         doc_night["state_night_highco2"] = statenightsettings.state_night_highco2;
         doc_night["state_night_highrh"] = statenightsettings.state_night_highrh;
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < MAX_VALVES; i++)
         {
             doc_night["valve" + String(i) + "_position_night"] = statenightsettings.valve_position_night[i];
         }
@@ -431,17 +446,18 @@ String create_statemachine_json()
     }
 
     doc_night.shrinkToFit();
-    serializeJson(doc_night, settings_state_night_str);
+    serializeJson(doc_night, settings_state_night, sizeof(settings_state_night));
 
-    if (settings_state_night_str == "")
+    if (settings_state_night == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read state night settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = concatJson(statemachine_json, settings_state_night_str);
+        // statemachine_json = concatJson(statemachine_json, settings_state_night_str);
+        concatJsonChars(temp_settings_char, settings_state_night, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // State highco2day settings
@@ -460,16 +476,18 @@ String create_statemachine_json()
         xSemaphoreGive(settings_state_highco2day_mutex);
     }
     doc_highco2day.shrinkToFit();
-    serializeJson(doc_highco2day, settings_state_highco2day_str);
-    if (settings_state_highco2day_str == "")
+    serializeJson(doc_highco2day, settings_state_highco2day, sizeof(settings_state_highco2day));
+
+    if (settings_state_highco2day == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read state highco2day settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = concatJson(statemachine_json, settings_state_highco2day_str);
+        // statemachine_json = concatJson(statemachine_json, settings_state_highco2day_str);
+        concatJsonChars(temp_settings_char, settings_state_highco2day, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // State highco2night settings
@@ -488,18 +506,21 @@ String create_statemachine_json()
         xSemaphoreGive(settings_state_highco2night_mutex);
     }
     doc_highco2night.shrinkToFit();
-    serializeJson(doc_highco2night, settings_state_highco2night_str);
-    if (settings_state_highco2night_str == "")
+    serializeJson(doc_highco2night, settings_state_highco2night, sizeof(settings_state_highco2day));
+
+    if (settings_state_highco2night == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read state highco2night settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = concatJson(statemachine_json, settings_state_highco2night_str);
+        // statemachine_json = concatJson(statemachine_json, settings_state_highco2night_str);
+        concatJsonChars(temp_settings_char, settings_state_highco2night, temp_settings_char, sizeof(temp_settings_char));
     }
 
+    // State highrhday settings
     if (settings_state_highrhday_mutex && xSemaphoreTake(settings_state_highrhday_mutex, (TickType_t)10) == pdTRUE)
     {
         doc_highrhday["enable_state_highrhday"] = statehighrhdaysettings.enable_state_highrhday;
@@ -515,18 +536,21 @@ String create_statemachine_json()
         xSemaphoreGive(settings_state_highrhday_mutex);
     }
     doc_highrhday.shrinkToFit();
-    serializeJson(doc_highrhday, settings_state_highrhday_str);
-    if (settings_state_highrhday_str == "")
+    serializeJson(doc_highrhday, settings_state_highrhday, sizeof(settings_state_highrhday));
+
+    if (settings_state_highrhday == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read state highrhday settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = concatJson(statemachine_json, settings_state_highrhday_str);
+        // statemachine_json = concatJson(statemachine_json, settings_state_highrhday_str);
+        concatJsonChars(temp_settings_char, settings_state_highrhday, temp_settings_char, sizeof(temp_settings_char));
     }
 
+    // State highrhnight settings
     if (settings_state_highrhnight_mutex && xSemaphoreTake(settings_state_highrhnight_mutex, (TickType_t)10) == pdTRUE)
     {
         doc_highrhnight["enable_state_highrhnight"] = statehighrhnightsettings.enable_state_highrhnight;
@@ -542,16 +566,18 @@ String create_statemachine_json()
         xSemaphoreGive(settings_state_highrhnight_mutex);
     }
     doc_highrhnight.shrinkToFit();
-    serializeJson(doc_highrhnight, settings_state_highrhnight_str);
-    if (settings_state_highrhnight_str == "")
+    serializeJson(doc_highrhnight, settings_state_highrhnight, sizeof(settings_state_highrhnight));
+
+    if (settings_state_highrhnight == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read state highrhnight settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = concatJson(statemachine_json, settings_state_highrhnight_str);
+        // statemachine_json = concatJson(statemachine_json, settings_state_highrhnight_str);
+        concatJsonChars(temp_settings_char, settings_state_highrhnight, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // Cooking state settings
@@ -572,16 +598,18 @@ String create_statemachine_json()
         xSemaphoreGive(settings_state_cooking_mutex);
     }
     doc_cooking.shrinkToFit();
-    serializeJson(doc_cooking, settings_state_cooking_str);
-    if (settings_state_cooking_str == "")
+    serializeJson(doc_cooking, settings_state_cooking, sizeof(settings_state_cooking));
+
+    if (settings_state_cooking == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read state cooking settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = concatJson(statemachine_json, settings_state_cooking_str);
+        // statemachine_json = concatJson(statemachine_json, settings_state_cooking_str);
+        concatJsonChars(temp_settings_char, settings_state_cooking, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // Cycling day state settings
@@ -598,16 +626,19 @@ String create_statemachine_json()
         xSemaphoreGive(settings_state_cyclingday_mutex);
     }
     doc_cyclingday.shrinkToFit();
-    serializeJson(doc_cyclingday, settings_state_cyclingday_str);
-    if (settings_state_cyclingday_str == "")
+
+    serializeJson(doc_cyclingday, settings_state_cyclingday, sizeof(settings_state_cyclingday));
+
+    if (settings_state_cyclingday == NULL)
     {
         snprintf(msg, sizeof(msg), "String is empty. Failed to read state cyclingday settings.");
         printmessage(LOG_ERROR, msg);
-        return "";
+        return;
     }
     else
     {
-        statemachine_json = concatJson(statemachine_json, settings_state_cyclingday_str);
+        // statemachine_json = concatJson(statemachine_json, settings_state_cyclingday_str);
+        concatJsonChars(temp_settings_char, settings_state_cyclingday, temp_settings_char, sizeof(temp_settings_char));
     }
 
     // Cycling night state settings
@@ -624,19 +655,21 @@ String create_statemachine_json()
         xSemaphoreGive(settings_state_cyclingnight_mutex);
 
         doc_cyclingnight.shrinkToFit();
-        serializeJson(doc_cyclingnight, settings_state_cyclingnight_str);
-        if (settings_state_cyclingnight_str == "")
+
+        serializeJson(doc_cyclingnight, settings_state_cyclingnight, sizeof(settings_state_cyclingnight));
+
+        if (settings_state_cyclingnight == NULL)
         {
             snprintf(msg, sizeof(msg), "String is empty. Failed to read state cyclingnight settings.");
             printmessage(LOG_ERROR, msg);
-            return "";
+            return;
         }
         else
         {
-            statemachine_json = concatJson(statemachine_json, settings_state_cyclingnight_str);
+            // statemachine_json = concatJson(statemachine_json, settings_state_cyclingnight_str);
+            concatJsonChars(temp_settings_char, settings_state_cyclingnight, temp_settings_char, sizeof(temp_settings_char));
         }
     }
-    return statemachine_json;
 }
 
 String create_valvecontrol_json()
