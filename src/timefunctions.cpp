@@ -123,7 +123,8 @@ bool is_weekend(void)
     char day_buffer[10];
     formatted_day(day_buffer, sizeof(day_buffer));
 
-    if (strcmp(day_buffer, "Saturday") == 0 || strcmp(day_buffer, "Sunday") == 0)
+    //if (strcmp(day_buffer, "Saturday") == 0 || strcmp(day_buffer, "Sunday") == 0)
+    if (String(day_buffer) == "Saturday" || String(day_buffer) == "Sunday")
     {
         return true;
     }
