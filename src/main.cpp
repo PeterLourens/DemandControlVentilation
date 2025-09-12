@@ -79,7 +79,7 @@ void setup()
 	// setup_wifi();
 
 	// New config
-	//vTaskDelay(10000); // So can lauch serial monitor
+	// vTaskDelay(10000); // So can lauch serial monitor
 	if (!parse_i2c_settings())
 	{
 		snprintf(msg, sizeof(msg), "Failed to parse I2C settings");
@@ -303,7 +303,7 @@ void setup()
 	// start_task_espnow();
 	start_task_influxdb();
 
-	check_task_status();
+	//check_task_status();
 }
 
 void loop() {}

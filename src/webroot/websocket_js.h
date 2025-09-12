@@ -39,6 +39,8 @@ function get_json(){
     websocket.send(page.innerHTML);
 }
 
+
+
 // Function that receives the message from the ESP32 with the readings and matches ids of the json with ids in the html
 function onMessage(event) {
     console.log(event.data);

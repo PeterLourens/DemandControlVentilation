@@ -3,7 +3,7 @@
 void start_task_system(void)
 {
 
-    xTaskCreate(task_system_code, "taskSystem", 15000, NULL, 1, &task_sys);
+    xTaskCreate(task_system_code, "taskSystem", 5000, NULL, 1, &task_sys);
 }
 
 void task_system_code(void *pvParameters)
@@ -23,8 +23,8 @@ void task_system_code(void *pvParameters)
         snprintf(msg, sizeof(msg), "Minimum ever free heap size: %d", minimum_ever_free_heap_size);
         printmessage(LOG_INFO, msg);
 
-        check_task_status();
+        //check_task_status();
 
-        vTaskDelay(120000);
+        vTaskDelay(600000);
     }
 }

@@ -20,7 +20,7 @@ typedef enum
 
 // Function definitions
 void printmessage(LogLevel level, const char *);
-//String concatJson(String, String);
+// String concatJson(String, String);
 void concatJsonChars(const char *, const char *, char *, size_t);
 void formatted_uptime(char *, size_t);
 void formatted_daydatetime(char *, size_t);
@@ -34,6 +34,6 @@ void fifoPush(int, int, int, float, int);
 float roundToTwoDecimals(float);
 int get_free_heap_size(void);
 int get_min_ever_heap_size(void);
-void check_task_status(void);
+//void check_task_status(void);
 
 #endif

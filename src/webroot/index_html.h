@@ -318,7 +318,14 @@ const char index_html[] = R"rawliteral(
         </div>
     </div>
     <div id="page_name">index</div>
-
+    <script>
+        setInterval(function()
+        {
+            const page = document.getElementById("page_name");
+            websocket.send(page.innerHTML);
+            //get_json();
+        }, 10000);
+    </script>
     <script src="ui.js"></script>
     <script src="websocket.js"></script>
 

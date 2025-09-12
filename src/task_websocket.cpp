@@ -6,7 +6,7 @@ AsyncWebSocket ws("/ws");
 
 void start_task_websocket(void)
 {
-    xTaskCreate(task_websocket_code, "taskwebsocket", 20000, NULL, 1, &task_websocket);
+    xTaskCreate(task_websocket_code, "taskwebsocket", 10000, NULL, 1, &task_websocket);
 }
 
 void task_websocket_code(void *pvParameters)

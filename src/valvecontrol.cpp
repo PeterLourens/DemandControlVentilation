@@ -146,7 +146,7 @@ void move_valve(void)
                     }
                     xSemaphoreGive(valve_control_data_mutex);
                 }
-                snprintf(msg, sizeof(msg), "[INFO] Valve positions stored successfully in: %s", VALVE_POSITIONS_PATH);
+                snprintf(msg, sizeof(msg), "Valve positions stored successfully in: %s", VALVE_POSITIONS_PATH);
                 printmessage(LOG_INFO, msg);
             }
         }

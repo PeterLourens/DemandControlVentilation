@@ -168,8 +168,8 @@ void concatJsonChars(const char *json1, const char *json2, char *result, size_t 
     char temp1[5000]; // Adjust size as needed
     char temp2[1500];
 
-    //Serial.print(temp1);
-    //Serial.print(temp2);
+    // Serial.print(temp1);
+    // Serial.print(temp2);
 
     // Copy json1 and remove trailing '}'
     strncpy(temp1, json1, sizeof(temp1) - 1);
@@ -290,11 +290,12 @@ int get_min_ever_heap_size(void)
     return xPortGetMinimumEverFreeHeapSize();
 }
 
-void check_task_status(void) {
+/*void check_task_status(void)
+{
 
     char msg[MSG_SIZE] = {};
 
-    /*eTaskState wifi_state = eTaskGetState(task_wifi);
+    eTaskState wifi_state = eTaskGetState(task_wifi);
     eTaskState i2c_state = eTaskGetState(task_i2c);
     eTaskState statemachine_state = eTaskGetState(task_statemach);
     eTaskState influxdb_state = eTaskGetState(task_influxdb);
@@ -305,54 +306,105 @@ void check_task_status(void) {
     eTaskState h_Task_web_state = eTaskGetState(h_Task_web);
     eTaskState websocket_state = eTaskGetState(task_websocket);
 
+    UBaseType_t task_HWM;
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_wifi);
+    snprintf(msg, sizeof(msg), "Wifi HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_i2c);
+    snprintf(msg, sizeof(msg), "I2C HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_mqtt);
+    snprintf(msg, sizeof(msg), "MQTT HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_np);
+    snprintf(msg, sizeof(msg), "Neopixel HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_statemach);
+    snprintf(msg, sizeof(msg), "Statemachine HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_sys);
+    snprintf(msg, sizeof(msg), "System HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_valvectrl);
+    snprintf(msg, sizeof(msg), "Valvecontrol HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(h_Task_web);
+    snprintf(msg, sizeof(msg), "Web HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_websocket);
+    snprintf(msg, sizeof(msg), "Websocket HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
+    task_HWM = uxTaskGetStackHighWaterMark(task_influxdb);
+    snprintf(msg, sizeof(msg), "Influxdb HWM: %d", task_HWM);
+    printmessage(LOG_INFO, msg);
+
     if (wifi_state != eDeleted && wifi_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task WIFI has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (i2c_state != eDeleted && i2c_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task I2C has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (influxdb_state != eDeleted && influxdb_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task InfluxDB has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (mqtt_state != eDeleted && mqtt_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task MQTT has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (np_state != eDeleted && np_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task Neopixel has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (statemachine_state != eDeleted && statemachine_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task statemachine has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (system_state != eDeleted && system_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task system has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (valvectrl_state != eDeleted && valvectrl_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task valvecontrol has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (h_Task_web_state != eDeleted && h_Task_web_state != eInvalid)
     {
         snprintf(msg, sizeof(msg), "Task web has started or is running.");
         printmessage(LOG_INFO, msg);
     }
+
     if (websocket_state != eDeleted && websocket_state != eInvalid)
     {
-        snprintf(msg, sizeof(msg), "Task web has started or is running.");
+        snprintf(msg, sizeof(msg), "Task websocket has started or is running.");
         printmessage(LOG_INFO, msg);
-    }*/
-}
+    }
+}*/
