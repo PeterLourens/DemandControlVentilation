@@ -48,6 +48,8 @@ const char sensor_config_html[] = R"rawliteral(
                 <form method ="POST" action="/delete_sensor_config_file1">
                     <input type="submit" value="Delete sensor config file1" class="pure-button-primary button-xsmall pure-button">
                 </form>
+            </div>
+            <div>
                 <form method ="POST" action="/delete_sensor_config_file2">
                     <input type="submit" value="Delete sensor config file2" class="pure-button-primary button-xsmall pure-button">
                 </form>
@@ -55,7 +57,7 @@ const char sensor_config_html[] = R"rawliteral(
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/sensorconfig1">
                     <fieldset>
-                        <legend>I2C bus 1 (wire) - Sensor 0 - 7 -  <span id="status_sensor_config1_file"></span></legend>
+                        <legend>I2C bus 1 (wire) - Sensor 0 - 7</legend>
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire_sensor0_type">Type:</label>
@@ -442,7 +444,7 @@ const char sensor_config_html[] = R"rawliteral(
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/sensorconfig2">
                     <fieldset>
-                        <legend>I2C bus 2 (wire1) - Sensor 0 - 7 -  <span id="status_sensor_config2_file"></span></legend>
+                        <legend>I2C bus 2 (wire1) - Sensor 0 - 7</legend>
                         <div class="pure-g">
                             <div class="pure-u-1 pure-u-md-5-24">
                                 <label for="wire1_sensor0_type">Type:</label>

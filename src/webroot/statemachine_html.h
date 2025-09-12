@@ -40,7 +40,7 @@ const char statemachine_html[] = R"rawliteral(
         </div>
 
         <div class="content">  
-            <h4 class="content-subhead">General settings statemachine"></span></h4>
+            <h4 class="content-subhead">General settings statemachine.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_statemachine">
                     <fieldset>
@@ -627,7 +627,7 @@ const char statemachine_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">Cooking valve settings</h4>
+            <h4 class="content-subhead">Cooking valve settings.</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_valve_cooking">
                     <fieldset>

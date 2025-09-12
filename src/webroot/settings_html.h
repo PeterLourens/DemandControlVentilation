@@ -45,7 +45,7 @@ const char settings_html[] = R"rawliteral(
                     <input type="submit" value="Restart ESP32" class="pure-button-primary button-xsmall pure-button">
                 </form>
             </p>
-            <h4 class="content-subhead">Network configuration (requires ESP32 restart): <span id="status_network_config"></span></h4>
+            <h4 class="content-subhead">Network configuration (requires ESP32 restart)</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_network">
                     <fieldset>
@@ -92,7 +92,7 @@ const char settings_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">MQTT configuration: <span id="status_mqtt_config"></span> </h4>
+            <h4 class="content-subhead">MQTT configuration</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_mqtt">
                     <fieldset>
@@ -123,7 +123,7 @@ const char settings_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p> 
-            <h4 class="content-subhead">Hardware I2C configuration (requires ESP32 restart):  <span id="status_i2c_hardware_config"></span></h4>   
+            <h4 class="content-subhead">Hardware I2C configuration (requires ESP32 restart)</h4>   
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_i2c">
                     <fieldset>
@@ -154,7 +154,7 @@ const char settings_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">Fan control settings, by MQTT subscribe or http request:  <span id="status_fan_control_config"></span> </h4> 
+            <h4 class="content-subhead">Fan control settings, by MQTT subscribe or http request</h4> 
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_fan">
                     <fieldset>
@@ -197,7 +197,7 @@ const char settings_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">InfluxDB configuration (requires ESP32 restart): <span id="status_influxdb_config"></span></h4>
+            <h4 class="content-subhead">InfluxDB configuration</h4>
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_influxdb">
                     <fieldset>
@@ -232,7 +232,7 @@ const char settings_html[] = R"rawliteral(
                     </fieldset>
                 </form>
             </p>
-            <h4 class="content-subhead">Time configuration (requires ESP32 restart): <span id="status_rtc_config"></span></h4>   
+            <h4 class="content-subhead">Time configuration (requires ESP32 restart)</h4>   
             <p>
                 <form class="pure-form pure-form-stacked" method="POST" action="/settings_rtc">
                     <fieldset>
