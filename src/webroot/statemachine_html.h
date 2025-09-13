@@ -153,7 +153,7 @@ const char statemachine_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve2_position_day">Valve2:</label>
-                                <input type="number" value="0" min="0" max="24" class="pure-input-1-1" name="valve2_position_day" id="valve0_position_day" />
+                                <input type="number" value="0" min="0" max="24" class="pure-input-1-1" name="valve2_position_day" id="valve2_position_day" />
                             </div>
                             <div class="pure-u-1 pure-u-md-1-6">
                                 <label for="valve3_position_day">Valve3:</label>
