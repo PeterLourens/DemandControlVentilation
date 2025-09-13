@@ -95,7 +95,8 @@ void move_valve(void)
             printmessage(LOG_INFO, msg);
             valvecontrol(direction, new_valve_position_change, valve_number, dataPin, clockPin, latchPin);
         }
-        else if (check_valve_position == 0 && (valve_pos + valve_position_change) <= 24 && (valve_pos - valve_position_change) >= 0)
+        //else if (check_valve_position == 0 && (valve_pos + valve_position_change) <= 24 && (valve_pos - valve_position_change) >= 0)
+        else if (check_valve_position == 0)
         {
             valvecontrol(direction, valve_position_change, valve_number, dataPin, clockPin, latchPin);
         }

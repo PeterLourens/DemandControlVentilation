@@ -348,7 +348,7 @@ bool parse_fan_settings(void)
     const char *fan_control_mqtt_topic = doc["fan_control_mqtt_topic"];
     const char *fan_control_url_high_speed = doc["fan_control_url_high_speed"];
     const char *fan_control_url_medium_speed = doc["fan_control_url_medium_speed"];
-    const char *fan_control_url_low_speed = doc["fan_control_url_high_speed"];
+    const char *fan_control_url_low_speed = doc["fan_control_url_low_speed"];
 
     if (settings_fan_mutex && xSemaphoreTake(settings_fan_mutex, (TickType_t)10))
     {
