@@ -1,9 +1,9 @@
 #include "system.h"
 
-void task_list(void)
+/*void task_list(void)
 {
 
-    /*char ptrTaskList[250];
+    char ptrTaskList[250];
 
     vTaskList(ptrTaskList);
 
@@ -30,5 +30,5 @@ void task_list(void)
 
     //printf("Available heap space: %u\n", xHeapStats.xAvailableHeapSpaceInBytes);
     //printf("Number of allocations: %u\n", xHeapStats.xNumberOfSuccessfulAllocations);
-    //printf("Number of frees: %u\n", xHeapStats.xNumberOfSuccessfulFrees);*/
-}
+    //printf("Number of frees: %u\n", xHeapStats.xNumberOfSuccessfulFrees);
+}*/

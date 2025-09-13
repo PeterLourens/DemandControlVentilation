@@ -1,5 +1,37 @@
 #include "mqtt.h"
 
+/*void callback(char *topic, byte *message, unsigned int length)
+{
+    Serial.print("Message arrived on topic: ");
+    Serial.print(topic);
+    Serial.print(". Message: ");
+    String messageTemp;
+
+    for (int i = 0; i < length; i++)
+    {
+        Serial.print((char)message[i]);
+        messageTemp += (char)message[i];
+    }
+    Serial.println();
+
+    // If a message is received on the topic esp32/output, you check if the message is either "on" or "off".
+    // Changes the output state according to the message
+    // if (String(topic) == "zigbee2mqtt/fan_button1/action")
+    /*{
+        Serial.print("Fan_button1 output: ");
+        if (messageTemp == "on")
+        {
+            Serial.println("on");
+
+        }
+        else if (messageTemp == "off")
+        {
+            Serial.println("off");
+
+        }
+    }
+}*/
+
 WiFiClient OSventilation;
 PubSubClient client(OSventilation);
 
@@ -392,3 +424,37 @@ void publish_state(void)
         printmessage(LOG_ERROR, msg);
     }
 }
+
+/*void setup_mqtt_remotes(void) {
+
+    int mqtt_port = 0;
+
+    char topic[XLARGE_CONFIG_ITEM] = {};
+    char enable_mqtt[SMALL_CONFIG_ITEM] = {};
+    char mqtt_base_topic[LARGE_CONFIG_ITEM] = {};
+    char mqtt_server[MEDIUM_CONFIG_ITEM] = {};
+    char temp_state[MEDIUM_CONFIG_ITEM] = {};
+    char msg[MSG_SIZE] = {};
+
+    if (settings_mqtt_mutex && xSemaphoreTake(settings_mqtt_mutex, (TickType_t)10) == pdTRUE)
+    {
+        strncpy(enable_mqtt, mqttsettings.enable_mqtt, sizeof(enable_mqtt) - 1);
+        enable_mqtt[sizeof(enable_mqtt) - 1] = '\0';
+        strncpy(mqtt_server, mqttsettings.mqtt_server, sizeof(mqtt_server) - 1);
+        mqtt_server[sizeof(mqtt_server) - 1] = '\0';
+        strncpy(mqtt_base_topic, mqttsettings.mqtt_base_topic, sizeof(mqtt_base_topic) - 1);
+        mqtt_base_topic[sizeof(mqtt_base_topic) - 1] = '\0';
+        mqtt_port = mqttsettings.mqtt_port;
+        xSemaphoreGive(settings_mqtt_mutex);
+    }
+
+    client.setServer(mqtt_server, mqtt_port);
+    client.setCallback(callback);
+    client.subscribe("zigbee2mqtt/fan_button1/action");
+    Serial.print("\nsubscribed to topic");
+}*/
+
+/*void loop_client(void) {
+    client.loop();
+}*/
+
