@@ -73,8 +73,14 @@ State_cyclingnight_settings statecyclingnightsettings;
 // Used to store settings when sensors reach high CO2 or high RH and a single valve is required to move
 State_temp_settings statetempsettings;
 
-// Store data for valve control from web page
-Valve_control_data valvecontroldata;
+// Store data for valve control from web page. Initialize valve_number array and other fields
+Valve_control_data valvecontroldata = {
+    .valve_number = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
+    .position_change = {0},
+    .direction = {0},
+    .actual_valve_position = {0},
+    .check_position = 0,
+    .write_new_position = 0};
 
 // Date and time information from RTC
 RTC_date_time rtcdatetime;

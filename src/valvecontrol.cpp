@@ -51,7 +51,7 @@ void move_valve(void)
     }
 
     // Debug
-    snprintf(msg, sizeof(msg), "Store new valve Position: %d, Check valve position: ", store_valve_position, check_valve_position);
+    snprintf(msg, sizeof(msg), "Store new valve Position: %d, Check valve position: %d", store_valve_position, check_valve_position);
     printmessage(LOG_INFO, msg);
 
     for (int i = 0; i < MAX_VALVES; i++)
@@ -91,11 +91,11 @@ void move_valve(void)
                 new_valve_position_change = min(valve_position_change, 24 - valve_pos);
                 new_valve_position = valve_pos + new_valve_position_change;
             }
-            snprintf(msg, sizeof(msg), "Valve: %d, req.: %d, cur.: %d, move: %d, dir.: %s", i, valve_position_change, valve_pos, new_valve_position_change, (direction == 0 ? "close" : "open"));
+            snprintf(msg, sizeof(msg), "Valve: %d, req.: %d, cur.: %d, move: %d, dir.: %s", valve_number, valve_position_change, valve_pos, new_valve_position_change, (direction == 0 ? "close" : "open"));
             printmessage(LOG_INFO, msg);
             valvecontrol(direction, new_valve_position_change, valve_number, dataPin, clockPin, latchPin);
         }
-        //else if (check_valve_position == 0 && (valve_pos + valve_position_change) <= 24 && (valve_pos - valve_position_change) >= 0)
+        // else if (check_valve_position == 0 && (valve_pos + valve_position_change) <= 24 && (valve_pos - valve_position_change) >= 0)
         else if (check_valve_position == 0)
         {
             valvecontrol(direction, valve_position_change, valve_number, dataPin, clockPin, latchPin);
@@ -350,7 +350,6 @@ void valve_position_statemachine(String statemachine_state)
 
     for (int i = 0; i < MAX_VALVES; i++)
     {
-        // actual_valve_pos = actual_valve_pos_doc["valve" + String(i)];
         if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
         {
             actual_valve_pos = valvecontroldata.actual_valve_position[i];
@@ -460,7 +459,6 @@ void valve_position_statemachine(String statemachine_state)
 
         if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
         {
-            valvecontroldata.valve_number[i] = valve_number;
             valvecontroldata.position_change[i] = move;
             valvecontroldata.direction[i] = direction;
             xSemaphoreGive(valve_control_data_mutex);
