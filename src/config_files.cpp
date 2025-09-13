@@ -1088,6 +1088,11 @@ void valve_status_file_create()
         file.close();
         xSemaphoreGive(valve_position_file_mutex);
     }
+
+    //Update global variable
+    for (int i = 0; i < MAX_VALVES;i++) {
+        valvecontroldata.actual_valve_position[i] = 0;
+    }
 }
 
 // Delete file with path as input variable
