@@ -31,9 +31,10 @@ bool cooking_times(void)
             xSemaphoreGive(settings_state_cooking_mutex);
         }
     }
+
     if (temp_hour == start_hour_state_cooking && temp_minute > start_min_state_cooking)
         return true;
-    if (temp_hour == stop_hour_state_cooking && temp_minute >= stop_min_state_cooking)
+    else if (temp_hour == stop_hour_state_cooking && temp_minute >= stop_min_state_cooking)
         return false;
     else
         return false;
