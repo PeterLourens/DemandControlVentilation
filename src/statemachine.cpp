@@ -554,7 +554,7 @@ void high_co2_day_transitions(void)
 {
     int co2highlevel = 0;
     int co2lowlevel = 0;
-    int reading = 0;
+    float reading = 0;
     int valve_nr = 0;
     int new_time = 0;
     int minimum_state_time = 0;
@@ -749,7 +749,8 @@ void high_co2_night_transitions(void)
 {
     int co2highlevel = 0;
     int co2lowlevel = 0;
-    int reading = 0;
+    float reading = 0;
+    float prev = 0;
     int minimum_state_time = 0;
     int valve_nr = 0;
     int new_time = 0;
@@ -758,6 +759,7 @@ void high_co2_night_transitions(void)
 
     bool valve_move_locked = 0;
     bool state_valve_pos_file_present = 0;
+    bool valve_open[MAX_SENSORS] = {false};
 
     char msg[MSG_SIZE] = {};
     char statemachine_state[MEDIUM_CONFIG_ITEM] = "highco2night";
@@ -765,6 +767,8 @@ void high_co2_night_transitions(void)
     char valve[MEDIUM_CONFIG_ITEM] = {};
 
     char *state_fanspeed = NULL;
+
+    float previous_reading[MAX_SENSORS];
 
     co2_sensors_high = 0;
 
@@ -848,19 +852,35 @@ void high_co2_night_transitions(void)
         }
         valve_nr = atoi(valve);
         reading = co2_sensors[i].co2_reading;
+        prev = previous_reading[i];
 
         if (strcmp(valve, "Fan inlet") != 0) // If fan inlet is high no need to move valves other than default state
         {
-            if (reading <= co2lowlevel)
+            if (reading <= co2lowlevel && prev > co2lowlevel)
             {
-                // CO2 is low so close the valve re-route the air to valves with high CO2
+                // CO₂ dropped below low threshold → close valve
                 state_valve_position[valve_nr] = 4;
-                snprintf(msg, sizeof(msg), "Sensor at %s has low CO2.", co2_sensors[i].valve);
+                snprintf(msg, sizeof(msg), "Sensor at %s dropped below low threshold (%.1f ppm). Closing valve.", co2_sensors[i].valve, reading);
                 printmessage(LOG_INFO, msg);
-                snprintf(msg, sizeof(msg), "Valve reamains at 4 until CO2 exceeds the CO2 high level.");
+            }
+            else if (reading > co2highlevel && prev <= co2highlevel)
+            {
+                // CO₂ rose above high threshold → open valve
+                state_valve_position[valve_nr] = 20;
+                snprintf(msg, sizeof(msg), "Sensor at %s rose above high threshold (%.1f ppm). Opening valve.", co2_sensors[i].valve, reading);
                 printmessage(LOG_INFO, msg);
             }
             else
+            {
+                // Within hysteresis band → keep default unless overridden
+                snprintf(msg, sizeof(msg), "Sensor at %s within hysteresis band (%.1f ppm). Keeping default.", co2_sensors[i].valve, reading);
+                printmessage(LOG_INFO, msg);
+            }
+
+            // Update previous reading
+            previous_reading[i] = reading;
+
+            /*if (reading > co2highlevel)
             {
                 // The sensor value is above co2highlevel so default valve setting applies (20)
                 snprintf(msg, sizeof(msg), "Sensor at %s has CO2 reading higher than co2highlevel.", co2_sensors[i].valve);
@@ -868,6 +888,23 @@ void high_co2_night_transitions(void)
                 snprintf(msg, sizeof(msg), "Default valve setting applies.");
                 printmessage(LOG_INFO, msg);
             }
+            else if (reading <= co2lowlevel)
+            {
+                // CO2 is low so close the valve re-route the air to valves with high CO2
+                state_valve_position[valve_nr] = 4;
+                snprintf(msg, sizeof(msg), "Sensor at %s has low CO2.", co2_sensors[i].valve);
+                printmessage(LOG_INFO, msg);
+                snprintf(msg, sizeof(msg), "Valve position setting: 4.");
+                printmessage(LOG_INFO, msg);
+            }
+            else
+            {
+                state_valve_position[valve_nr] = 4;
+                snprintf(msg, sizeof(msg), "Sensor at %s has CO2 lower than co2highlevel but higher than co2lowlevel.", co2_sensors[i].valve);
+                printmessage(LOG_INFO, msg);
+                snprintf(msg, sizeof(msg), "Valve position setting: 4.");
+                printmessage(LOG_INFO, msg);
+            }*/
         }
 
         if (reading > co2highlevel)
