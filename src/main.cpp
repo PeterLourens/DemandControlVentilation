@@ -45,6 +45,7 @@ void setup()
 	settings_state_cooking_mutex = xSemaphoreCreateMutex();
 	settings_state_cyclingday_mutex = xSemaphoreCreateMutex();
 	settings_state_cyclingnight_mutex = xSemaphoreCreateMutex();
+	settings_state_temp_mutex = xSemaphoreCreateMutex();
 
 	// Global data mutexes
 	date_time_mutex = xSemaphoreCreateMutex();

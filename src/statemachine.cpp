@@ -475,8 +475,6 @@ void night_transitions(void)
         {
             snprintf(msg, sizeof(msg), "Sensor located at %s has high CO2.", co2_sensors[i].valve);
             printmessage(LOG_INFO, msg);
-            snprintf(msg, sizeof(msg), "Transit to highco2day if minimum state time has expired.");
-            printmessage(LOG_INFO, msg);
             co2_sensors_high++;
         }
     }
@@ -486,8 +484,6 @@ void night_transitions(void)
         if (rh_sensors[i].rh_reading > rhhighlevel)
         {
             snprintf(msg, sizeof(msg), "Sensor located at %s has high RH.", rh_sensors[i].valve);
-            printmessage(LOG_INFO, msg);
-            snprintf(msg, sizeof(msg), "Transit to highrhday if minimum state time has expired.");
             printmessage(LOG_INFO, msg);
             rh_sensors_high++;
         }
@@ -661,8 +657,6 @@ void high_co2_day_transitions(void)
                 state_valve_position[valve_nr] = 20;
                 snprintf(msg, sizeof(msg), "Sensor located at %s has high CO2.", co2_sensors[i].valve);
                 printmessage(LOG_INFO, msg);
-                snprintf(msg, sizeof(msg), "Transit to highco2day if minimum state time has expired.");
-                printmessage(LOG_INFO, msg);
             }
             else if (reading >= co2lowlevel && reading < co2highlevel)
             {
@@ -671,8 +665,6 @@ void high_co2_day_transitions(void)
                 // settings_state_temp[valve + "_position_state_temp"] = 20;
                 state_valve_position[valve_nr] = 20;
                 snprintf(msg, sizeof(msg), "Sensor located at %s has reading between low and high CO2.", co2_sensors[i].valve);
-                printmessage(LOG_INFO, msg);
-                snprintf(msg, sizeof(msg), "Valve remain at 20 until CO2 reduces to the CO2 low level.");
                 printmessage(LOG_INFO, msg);
             }
             else
@@ -857,7 +849,7 @@ void high_co2_night_transitions(void)
         valve_nr = atoi(valve);
         reading = co2_sensors[i].co2_reading;
 
-        if (valve != "Fan inlet")
+        if (strcmp(valve, "Fan inlet") != 0) // If fan inlet is high no need to move valves other than default state
         {
             if (reading <= co2lowlevel)
             {
@@ -865,22 +857,12 @@ void high_co2_night_transitions(void)
                 state_valve_position[valve_nr] = 4;
                 snprintf(msg, sizeof(msg), "Sensor at %s has low CO2.", co2_sensors[i].valve);
                 printmessage(LOG_INFO, msg);
-                snprintf(msg, sizeof(msg), "Valve reamains at 4 until CO2 exceeds the CO2 low level.");
-                printmessage(LOG_INFO, msg);
-            }
-            else if (reading > co2lowlevel && reading < co2highlevel)
-            {
-                // The sensor value is between 900 and 1000 ppm so the valve position should remain at 4 until low co2 level is reached. The valve was set at 20 by default.
-                // This logic corrects the default setting of 4 to 20 and to make sure a deadband of the difference between highco2level and lowc02level is achieved
-                state_valve_position[valve_nr] = 4;
-                snprintf(msg, sizeof(msg), "Sensor at %s has CO2 reading between low and high CO2 level.");
-                printmessage(LOG_INFO, msg);
-                snprintf(msg, sizeof(msg), "Valve remain at 20 until CO2 reduces to the CO2 low level", co2_sensors[i].valve);
+                snprintf(msg, sizeof(msg), "Valve reamains at 4 until CO2 exceeds the CO2 high level.");
                 printmessage(LOG_INFO, msg);
             }
             else
             {
-                // The sensor value is above co2highlevel so default valve setting applies
+                // The sensor value is above co2highlevel so default valve setting applies (20)
                 snprintf(msg, sizeof(msg), "Sensor at %s has CO2 reading higher than co2highlevel.", co2_sensors[i].valve);
                 printmessage(LOG_INFO, msg);
                 snprintf(msg, sizeof(msg), "Default valve setting applies.");

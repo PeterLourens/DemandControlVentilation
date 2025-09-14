@@ -346,8 +346,6 @@ void valve_position_statemachine(String statemachine_state)
     char buffer[512];
     char msg[MSG_SIZE] = {};
 
-    JsonDocument actual_valve_pos_doc;
-
     for (int i = 0; i < MAX_VALVES; i++)
     {
         if (valve_control_data_mutex && xSemaphoreTake(valve_control_data_mutex, (TickType_t)10) == pdTRUE)
