@@ -502,8 +502,6 @@ void night_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_HIGHCO2NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else if (rh_sensors_high > 0 && elapsed_time >= minimum_state_time)
     {
@@ -511,8 +509,6 @@ void night_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_HIGHRHNIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else if (is_day() == true)
     {
@@ -554,12 +550,15 @@ void high_co2_day_transitions(void)
 {
     int co2highlevel = 0;
     int co2lowlevel = 0;
-    float reading = 0;
     int valve_nr = 0;
     int new_time = 0;
     int minimum_state_time = 0;
-    int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
+    int state_valve_position[MAX_VALVES] = {0}; // Array for valvepositions from statemachine settings
+
+    float reading = 0.2f;
+
     bool valve_move_locked = 0;
+    bool valve_open[MAX_VALVES] = {false};
 
     char msg[MSG_SIZE] = {};
     char statemachine_state[MEDIUM_CONFIG_ITEM] = "highco2day";
@@ -652,26 +651,40 @@ void high_co2_day_transitions(void)
 
         if (strcmp(valve, "Fan inlet") != 0)
         {
-            if (reading >= co2highlevel)
+            // Hysteresis logic
+            if (valve_open[valve_nr])
             {
-                state_valve_position[valve_nr] = 20;
-                snprintf(msg, sizeof(msg), "Sensor located at %s has high CO2.", co2_sensors[i].valve);
-                printmessage(LOG_INFO, msg);
-            }
-            else if (reading >= co2lowlevel && reading < co2highlevel)
-            {
-                // The sensor value is between 900 and 1000 ppm so the valve position should remain at 20 until low co2 level is reached. The valve was set at 4 by default in above statements
-                // This logic corrects the default setting of 4 to 20 and to make sure a deadband of the difference between highco2level and lowc02level is achieved
-                // settings_state_temp[valve + "_position_state_temp"] = 20;
-                state_valve_position[valve_nr] = 20;
-                snprintf(msg, sizeof(msg), "Sensor located at %s has reading between low and high CO2.", co2_sensors[i].valve);
-                printmessage(LOG_INFO, msg);
+                // Valve is currently open → only close if CO₂ drops below low threshold
+                if (reading < co2lowlevel)
+                {
+                    valve_open[valve_nr] = false;
+                    state_valve_position[valve_nr] = 4;
+                    snprintf(msg, sizeof(msg), "CO₂ dropped below low threshold (%.1f ppm). Closing valve %s.", reading, co2_sensors[i].valve);
+                    printmessage(LOG_INFO, msg);
+                }
+                else
+                {
+                    state_valve_position[valve_nr] = 20;
+                    snprintf(msg, sizeof(msg), "CO₂ still above low threshold (%.1f ppm). Keeping valve %s open.", reading, co2_sensors[i].valve);
+                    printmessage(LOG_INFO, msg);
+                }
             }
             else
             {
-                // Do nothing because valve is already back to default position according to sate
-                snprintf(msg, sizeof(msg), "No sensor has high CO2. Valve set to default state pos.");
-                printmessage(LOG_INFO, msg);
+                // Valve is currently closed → only open if CO₂ rises above high threshold
+                if (reading > co2highlevel)
+                {
+                    valve_open[valve_nr] = true;
+                    state_valve_position[valve_nr] = 20;
+                    snprintf(msg, sizeof(msg), "CO₂ rose above high threshold (%.1f ppm). Opening valve %s.", reading, co2_sensors[i].valve);
+                    printmessage(LOG_INFO, msg);
+                }
+                else
+                {
+                    state_valve_position[valve_nr] = 4;
+                    snprintf(msg, sizeof(msg), "CO₂ still below high threshold (%.1f ppm). Keeping valve %s closed.", reading, co2_sensors[i].valve);
+                    printmessage(LOG_INFO, msg);
+                }
             }
         }
 
@@ -712,8 +725,6 @@ void high_co2_day_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else if (is_day() == false && co2_sensors_high > 0) // Night with high CO2 readings
     {
@@ -721,8 +732,6 @@ void high_co2_day_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_HIGHCO2NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else
     {
@@ -749,17 +758,16 @@ void high_co2_night_transitions(void)
 {
     int co2highlevel = 0;
     int co2lowlevel = 0;
-    float reading = 0;
-    float prev = 0;
     int minimum_state_time = 0;
     int valve_nr = 0;
     int new_time = 0;
+    int state_valve_position[MAX_VALVES] = {0}; // Array for valvepositions from statemachine settings
 
-    int state_valve_position[12] = {0}; // Array for valvepositions from statemachine settings
+    float reading = 0.2f;
 
     bool valve_move_locked = 0;
     bool state_valve_pos_file_present = 0;
-    bool valve_open[MAX_SENSORS] = {false};
+    bool valve_open[MAX_VALVES] = {false};
 
     char msg[MSG_SIZE] = {};
     char statemachine_state[MEDIUM_CONFIG_ITEM] = "highco2night";
@@ -767,8 +775,6 @@ void high_co2_night_transitions(void)
     char valve[MEDIUM_CONFIG_ITEM] = {};
 
     char *state_fanspeed = NULL;
-
-    float previous_reading[MAX_SENSORS];
 
     co2_sensors_high = 0;
 
@@ -852,59 +858,44 @@ void high_co2_night_transitions(void)
         }
         valve_nr = atoi(valve);
         reading = co2_sensors[i].co2_reading;
-        prev = previous_reading[i];
 
-        if (strcmp(valve, "Fan inlet") != 0) // If fan inlet is high no need to move valves other than default state
+        if (strcmp(valve, "Fan inlet") != 0) // If fan inlet is high or if no co2 sensors have high reading there is no need to move the valves
         {
-            if (reading <= co2lowlevel && prev > co2lowlevel)
+            // Hysteresis logic
+            if (valve_open[valve_nr])
             {
-                // CO₂ dropped below low threshold → close valve
-                state_valve_position[valve_nr] = 4;
-                snprintf(msg, sizeof(msg), "Sensor at %s dropped below low threshold (%.1f ppm). Closing valve.", co2_sensors[i].valve, reading);
-                printmessage(LOG_INFO, msg);
-            }
-            else if (reading > co2highlevel && prev <= co2highlevel)
-            {
-                // CO₂ rose above high threshold → open valve
-                state_valve_position[valve_nr] = 20;
-                snprintf(msg, sizeof(msg), "Sensor at %s rose above high threshold (%.1f ppm). Opening valve.", co2_sensors[i].valve, reading);
-                printmessage(LOG_INFO, msg);
-            }
-            else
-            {
-                // Within hysteresis band → keep default unless overridden
-                snprintf(msg, sizeof(msg), "Sensor at %s within hysteresis band (%.1f ppm). Keeping default.", co2_sensors[i].valve, reading);
-                printmessage(LOG_INFO, msg);
-            }
-
-            // Update previous reading
-            previous_reading[i] = reading;
-
-            /*if (reading > co2highlevel)
-            {
-                // The sensor value is above co2highlevel so default valve setting applies (20)
-                snprintf(msg, sizeof(msg), "Sensor at %s has CO2 reading higher than co2highlevel.", co2_sensors[i].valve);
-                printmessage(LOG_INFO, msg);
-                snprintf(msg, sizeof(msg), "Default valve setting applies.");
-                printmessage(LOG_INFO, msg);
-            }
-            else if (reading <= co2lowlevel)
-            {
-                // CO2 is low so close the valve re-route the air to valves with high CO2
-                state_valve_position[valve_nr] = 4;
-                snprintf(msg, sizeof(msg), "Sensor at %s has low CO2.", co2_sensors[i].valve);
-                printmessage(LOG_INFO, msg);
-                snprintf(msg, sizeof(msg), "Valve position setting: 4.");
-                printmessage(LOG_INFO, msg);
+                // Valve is currently open → only close if CO₂ drops below low threshold
+                if (reading < co2lowlevel)
+                {
+                    valve_open[valve_nr] = false;
+                    state_valve_position[valve_nr] = 4;
+                    snprintf(msg, sizeof(msg), "CO₂ dropped below low threshold (%.1f ppm). Closing %s.", reading, co2_sensors[i].valve);
+                    printmessage(LOG_INFO, msg);
+                }
+                else
+                {
+                    state_valve_position[valve_nr] = 20;
+                    snprintf(msg, sizeof(msg), "CO₂ still above low threshold (%.1f ppm). Keeping %s open.", reading, co2_sensors[i].valve);
+                    printmessage(LOG_INFO, msg);
+                }
             }
             else
             {
-                state_valve_position[valve_nr] = 4;
-                snprintf(msg, sizeof(msg), "Sensor at %s has CO2 lower than co2highlevel but higher than co2lowlevel.", co2_sensors[i].valve);
-                printmessage(LOG_INFO, msg);
-                snprintf(msg, sizeof(msg), "Valve position setting: 4.");
-                printmessage(LOG_INFO, msg);
-            }*/
+                // Valve is currently closed → only open if CO₂ rises above high threshold
+                if (reading > co2highlevel)
+                {
+                    valve_open[valve_nr] = true;
+                    state_valve_position[valve_nr] = 20;
+                    snprintf(msg, sizeof(msg), "CO₂ rose above high threshold (%.1f ppm). Opening %s.", reading, co2_sensors[i].valve);
+                    printmessage(LOG_INFO, msg);
+                }
+                else
+                {
+                    state_valve_position[valve_nr] = 4;
+                    snprintf(msg, sizeof(msg), "CO₂ still below high threshold (%.1f ppm). Keeping %s closed.", reading, co2_sensors[i].valve);
+                    printmessage(LOG_INFO, msg);
+                }
+            }
         }
 
         if (reading > co2highlevel)

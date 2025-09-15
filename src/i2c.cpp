@@ -44,7 +44,6 @@ void read_sensors(void)
             {
                 if (settings_sensor1_mutex && xSemaphoreTake(settings_sensor1_mutex, (TickType_t)10) == pdTRUE)
                 {
-                    // sensor_type = String(sensor1settings[slot].wire_sensor_type);
                     snprintf(sensor_type, sizeof(sensor_type), "%s", sensor1settings[slot].wire_sensor_type);
                     xSemaphoreGive(settings_sensor1_mutex);
                 }
@@ -56,7 +55,6 @@ void read_sensors(void)
             {
                 if (settings_sensor2_mutex && xSemaphoreTake(settings_sensor2_mutex, (TickType_t)100) == pdTRUE)
                 {
-                    // sensor_type = String(sensor2settings[slot].wire1_sensor_type);
                     snprintf(sensor_type, sizeof(sensor_type), "%s", sensor2settings[slot].wire1_sensor_type);
                     xSemaphoreGive(settings_sensor2_mutex);
                 }
