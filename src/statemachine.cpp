@@ -1,8 +1,8 @@
 /* Statemachine code */
 #include "statemachine.h"
 
-float statemachine_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
-float statemachine_avg_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS];
+float statemachine_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS] = {0};
+float statemachine_avg_sensor_data[SENSOR_I2C_BUSSES][SENSOR_COUNT][SENSOR_DATA_FIELDS] = {0};
 
 int co2_sensor_counter = 0;
 int rh_sensor_counter = 0;
@@ -332,15 +332,11 @@ void day_transitions(void)
     {
         strncpy(new_state, STATE_HIGHCO2DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else if (rh_sensors_high > 0 && elapsed_time >= minimum_state_time)
     {
         strncpy(new_state, STATE_HIGHRHDAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else if (is_day() == false)
     {
@@ -348,8 +344,6 @@ void day_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else if (cooking_times() == true)
     {
@@ -717,8 +711,7 @@ void high_co2_day_transitions(void)
         printmessage(LOG_INFO, msg);
     }
 
-    // Conditions for transition.
-    // This state always transits back to day first or to highco2night if night time.
+    // Conditions for transition. This state always transits back to day first or to highco2night if night time.
     if (is_day() == true && co2_sensors_high == 0 && elapsed_time >= minimum_state_time) // Day with no high CO2 readings
     {
         snprintf(msg, sizeof(msg), "Transit to day.");
@@ -846,7 +839,7 @@ void high_co2_night_transitions(void)
     }
 
     // High CO2 has been detected to come into this state. Iterate through CO2 sensors to see which sensor detects high CO2. Valves with CO2 sensors are default
-    // set to 20 for this state. Valves with a CO2 value lower than 900 ppm will be closed to 4 to direct airflow to the rooms with high CO2 reading.
+    // set to 20 for this state. Valves with a CO2 value lower than co2lowlevel will be closed to 4 to direct airflow to the rooms with high CO2 reading.
     for (int i = 0; i < co2_sensor_counter; i++)
     {
         strncpy(valve, co2_sensors[i].valve, sizeof(valve) - 1);
@@ -974,6 +967,7 @@ void high_rh_day_transitions(void)
     int minimum_state_time = 0;
     int maximum_state_time = 0;
     int new_time = 0;
+
     bool valve_move_locked = 0;
 
     char msg[MSG_SIZE] = {};
@@ -1309,8 +1303,6 @@ void cooking_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else if (cooking_times() == false && is_day() == false)
     {
@@ -1318,8 +1310,6 @@ void cooking_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else
     {
@@ -1418,8 +1408,6 @@ void valve_cycle_day_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_DAY, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else
     {
@@ -1514,8 +1502,6 @@ void valve_cycle_night_transitions(void)
         printmessage(LOG_INFO, msg);
         strncpy(new_state, STATE_NIGHT, sizeof(new_state));
         new_state[sizeof(new_state) - 1] = '\0';
-        // elapsed_time = 0;
-        // old_time = (esp_timer_get_time()) / 1000000;
     }
     else
     {
@@ -1665,6 +1651,7 @@ void select_sensors(void)
     rh_sensor_counter = k;
 }
 
+// Helper functions to have data available in other tasks
 int parse_co2_sensors_high(void)
 {
     return co2_sensors_high;
