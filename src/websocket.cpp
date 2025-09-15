@@ -2,10 +2,10 @@
 
 void create_index_json(void)
 {
-    float temp_sensor_data[2][8][3];
-    char daydatetime_buffer[50];
-    char buffer[512];
-    char uptime_str[64];
+    float temp_sensor_data[2][8][3] = {0};
+    char daydatetime_buffer[50] = {};
+    char buffer[512] = {};
+    char uptime_str[64] = {};
     char msg[MSG_SIZE] = {};
     char state_tmp[MEDIUM_CONFIG_ITEM] = {};
     char fanspeed_tmp[SMALL_CONFIG_ITEM] = {};
@@ -57,6 +57,8 @@ void create_index_json(void)
     doc["fanspeed"] = fanspeed_tmp;
     doc["uptime"] = uptime_str;
     doc["date_time"] = daydatetime_buffer;
+    doc["co2_sensors_high"] = parse_co2_sensors_high();
+    doc["rh_sensors_high"] = parse_rh_sensors_high();
 
     for (int i = 0; i < 8; i++)
     {
@@ -283,7 +285,6 @@ void create_sensors_json(void)
     }
     else
     {
-        // sensors_json = concatJson(sensor_config1_str, sensor_config2_str);
         strncpy(temp_settings_char, sensor_config1, sizeof(temp_settings_char) - 1);
         temp_settings_char[sizeof(temp_settings_char) - 1] = '\0';
     }
@@ -312,14 +313,10 @@ void create_sensors_json(void)
     }
     else
     {
-        // sensors_json = concatJson(sensor_config1_str, sensor_config2_str);
         concatJsonChars(temp_settings_char, sensor_config2, temp_settings_char, sizeof(temp_settings_char));
     }
-
-    // return sensors_json;
 }
 
-// void create_statemachine_json(char *result, size_t resultSize)
 void create_statemachine_json(void)
 {
     char msg[MSG_SIZE] = {};
@@ -363,7 +360,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = settings_statemachine_str;
         strncpy(temp_settings_char, settings_statemachine, sizeof(temp_settings_char) - 1);
         temp_settings_char[sizeof(temp_settings_char) - 1] = '\0';
     }
@@ -395,7 +391,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = concatJson(statemachine_json, settings_state_day_str);
         concatJsonChars(temp_settings_char, settings_state_day, temp_settings_char, sizeof(temp_settings_char));
     }
 
@@ -426,7 +421,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = concatJson(statemachine_json, settings_state_night_str);
         concatJsonChars(temp_settings_char, settings_state_night, temp_settings_char, sizeof(temp_settings_char));
     }
 
@@ -456,7 +450,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = concatJson(statemachine_json, settings_state_highco2day_str);
         concatJsonChars(temp_settings_char, settings_state_highco2day, temp_settings_char, sizeof(temp_settings_char));
     }
 
@@ -486,7 +479,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = concatJson(statemachine_json, settings_state_highco2night_str);
         concatJsonChars(temp_settings_char, settings_state_highco2night, temp_settings_char, sizeof(temp_settings_char));
     }
 
@@ -516,7 +508,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = concatJson(statemachine_json, settings_state_highrhday_str);
         concatJsonChars(temp_settings_char, settings_state_highrhday, temp_settings_char, sizeof(temp_settings_char));
     }
 
@@ -546,7 +537,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = concatJson(statemachine_json, settings_state_highrhnight_str);
         concatJsonChars(temp_settings_char, settings_state_highrhnight, temp_settings_char, sizeof(temp_settings_char));
     }
 
@@ -578,7 +568,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = concatJson(statemachine_json, settings_state_cooking_str);
         concatJsonChars(temp_settings_char, settings_state_cooking, temp_settings_char, sizeof(temp_settings_char));
     }
 
@@ -607,7 +596,6 @@ void create_statemachine_json(void)
     }
     else
     {
-        // statemachine_json = concatJson(statemachine_json, settings_state_cyclingday_str);
         concatJsonChars(temp_settings_char, settings_state_cyclingday, temp_settings_char, sizeof(temp_settings_char));
     }
 
@@ -636,7 +624,6 @@ void create_statemachine_json(void)
         }
         else
         {
-            // statemachine_json = concatJson(statemachine_json, settings_state_cyclingnight_str);
             concatJsonChars(temp_settings_char, settings_state_cyclingnight, temp_settings_char, sizeof(temp_settings_char));
         }
     }

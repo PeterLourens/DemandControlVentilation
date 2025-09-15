@@ -8,6 +8,7 @@
 #include "config_files.h"
 #include "globals.h"
 #include "general.h"
+#include "statemachine.h"
 
 // function declarations
 void create_index_json(void);
