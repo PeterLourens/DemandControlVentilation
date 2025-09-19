@@ -1,0 +1,5 @@
+const char settings_statemachine_json[] = R"rawliteral(
+
+{"weekday_day_hour_start":"8","weekday_day_minute_start":"0","weekday_night_hour_start":"21","weekday_night_minute_start":"0","weekend_day_hour_start":"9","weekend_day_minute_start":"0","weekend_night_hour_start":"21","weekend_night_minute_start":"30","weekend_day_1":"Saturday","weekend_day_2":"Sunday","minimum_state_time":"600"}
+
+)rawliteral";

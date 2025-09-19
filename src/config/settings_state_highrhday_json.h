@@ -1,0 +1,5 @@
+const char settings_state_highrhday_json[] = R"rawliteral(
+
+{"enable_state_highrhday":"On","state_highrhday_fanspeed":"High","name_state_highrhday":"highrhday","rh_low_state_highrhday":"80","maximum_state_time_highrhday":"600","valve0_position_highrhday":"4","valve1_position_highrhday":"4","valve2_position_highrhday":"4","valve3_position_highrhday":"0","valve4_position_highrhday":"0","valve5_position_highrhday":"4","valve6_position_highrhday":"20","valve7_position_highrhday":"0","valve8_position_highrhday":"4","valve9_position_highrhday":"4","valve10_position_highrhday":"4","valve11_position_highrhday":"4"}
+
+)rawliteral";

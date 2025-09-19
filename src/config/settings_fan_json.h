@@ -1,0 +1,5 @@
+const char settings_fan_json[] = R"rawliteral(
+
+{"fan_control_mode":"MQTT subscribe","fan_control_mqtt_server":"","fan_control_mqtt_port":"","fan_control_mqtt_topic":"","fan_control_url_high_speed":"","fan_control_url_medium_speed":"","fan_control_url_low_speed":""}
+
+)rawliteral";

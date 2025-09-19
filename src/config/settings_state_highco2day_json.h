@@ -1,0 +1,5 @@
+const char settings_state_highco2day_json[] = R"rawliteral(
+
+{"enable_state_highco2day":"On","state_highco2day_fanspeed":"High","name_state_highco2day":"highco2day","co2_low_state_highco2day":"700","co2_high_state_highco2day":"1000","valve0_position_highco2day":"4","valve1_position_highco2day":"4","valve2_position_highco2day":"0","valve3_position_highco2day":"0","valve4_position_highco2day":"0","valve5_position_highco2day":"4","valve6_position_highco2day":"20","valve7_position_highco2day":"0","valve8_position_highco2day":"4","valve9_position_highco2day":"4","valve10_position_highco2day":"4","valve11_position_highco2day":"4"}
+
+)rawliteral";
