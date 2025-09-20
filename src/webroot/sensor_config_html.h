@@ -1,20 +1,6 @@
 const char sensor_config_html[] = R"rawliteral(
 <!doctype html>
 <html lang="en">
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The front-end for configuration of the open source demand controlled ventilation system">
-    <title>Open Source demand driven ventilation system &ndash; Configuration and Monitoring</title>
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="pure-min.css">
-    <link rel="stylesheet" href="styles.css">
-</head>
-=======
-=======
->>>>>>> Stashed changes
 
 <head>
     <meta charset="utf-8">
@@ -27,10 +13,6 @@ const char sensor_config_html[] = R"rawliteral(
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 <body>
 
     <div id="layout">
@@ -39,41 +21,11 @@ const char sensor_config_html[] = R"rawliteral(
             <!-- Hamburger icon -->
             <span></span>
         </a>
-<<<<<<< Updated upstream
-    <div id="layout">
-        <!-- Menu toggle -->
-        <a href="#menu" id="menuLink" class="menu-link">
-            <!-- Hamburger icon -->
-            <span></span>
-        </a>
-
-<<<<<<< Updated upstream
-    <div id="menu">
-        <div class="pure-menu">
-            <li class="pure-menu-heading">OSVentilation</li>
-=======
-        <div id="menu">
-            <div class="pure-menu">
-                <div class="pure-menu-heading">OSVentilation</div>
->>>>>>> Stashed changes
-=======
 
         <div id="menu">
             <div class="pure-menu">
                 <div class="pure-menu-heading">OSVentilation</div>
->>>>>>> Stashed changes
 
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">Status</a></li>
-                    <li class="pure-menu-item"><a href="/settings" class="pure-menu-link">Settings</a></li>
-                    <li class="pure-menu-item"><a href="/valvecontrol" class="pure-menu-link">Valve Control</a></li>
-                    <li class="pure-menu-item"><a href="/sensorconfig" class="pure-menu-link">Sensors</a></li>
-                    <li class="pure-menu-item"><a href="/statemachine" class="pure-menu-link">Statemachine</a></li>
-                    <li class="pure-menu-item"><a href="/web_serial" class="pure-menu-link">Webserial</a></li>
-                </ul>
-<<<<<<< Updated upstream
-            </div>
-        </div>
                 <ul class="pure-menu-list">
                     <li class="pure-menu-item"><a href="/" class="pure-menu-link">Status</a></li>
                     <li class="pure-menu-item"><a href="/settings" class="pure-menu-link">Settings</a></li>
@@ -89,23 +41,6 @@ const char sensor_config_html[] = R"rawliteral(
             <div class="header">
                 <h2>Sensors</h2>
             </div>
-<<<<<<< Updated upstream
-            <div>
-                <form method ="POST" action="/delete_sensor_config_file2">
-                    <input type="submit" value="Delete sensor config file2" class="pure-button-primary button-xsmall pure-button">
-                </form>
-            </div>
-            <p>
-=======
-=======
-            </div>
-        </div>
-
-        <div id="main">
-            <div class="header">
-                <h2>Sensors</h2>
-            </div>
->>>>>>> Stashed changes
 
             <div class="content">
                 <h2 class="content-subhead">Sensor config</h2>
@@ -128,10 +63,6 @@ const char sensor_config_html[] = R"rawliteral(
                     </form>
                 </div>
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
                 <form class="pure-form pure-form-stacked" method="POST" action="/sensorconfig1">
                     <fieldset>
                         <legend>I2C bus 1 (wire) - Sensor 0 - 7</legend>
@@ -169,11 +100,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor0_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor0_location"
                                     id="wire_sensor0_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor0_location"
-                                    id="wire_sensor0_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor0_rh">RH:</label>
@@ -222,11 +148,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor1_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor1_location"
                                     id="wire_sensor1_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor1_location"
-                                    id="wire_sensor1_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor1_rh">RH:</label>
@@ -275,11 +196,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor2_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor2_location"
                                     id="wire_sensor2_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor2_location"
-                                    id="wire_sensor2_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor2_rh">RH:</label>
@@ -328,11 +244,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor3_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor3_location"
                                     id="wire_sensor3_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor3_location"
-                                    id="wire_sensor3_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor3_rh">RH:</label>
@@ -381,11 +292,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor4_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor4_location"
                                     id="wire_sensor4_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor4_location"
-                                    id="wire_sensor4_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor4_rh">RH:</label>
@@ -434,11 +340,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor5_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor5_location"
                                     id="wire_sensor5_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor5_location"
-                                    id="wire_sensor5_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor5_rh">RH:</label>
@@ -487,11 +388,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor6_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor6_location"
                                     id="wire_sensor6_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor6_location"
-                                    id="wire_sensor6_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor6_rh">RH:</label>
@@ -540,11 +436,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor7_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor7_location"
                                     id="wire_sensor7_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor7_location"
-                                    id="wire_sensor7_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor7_rh">RH:</label>
@@ -564,24 +455,10 @@ const char sensor_config_html[] = R"rawliteral(
                         <br><br>
                         <input type="submit" value="Save sensor configuration"
                             class="pure-button-primary button-xsmall pure-button">
-<<<<<<< Updated upstream
-                        <input type="submit" value="Save sensor configuration"
-                            class="pure-button-primary button-xsmall pure-button">
-                    </fieldset>
-                </form>
-<<<<<<< Updated upstream
-            </p>
-            <p>
-=======
-
-
->>>>>>> Stashed changes
-=======
                     </fieldset>
                 </form>
 
 
->>>>>>> Stashed changes
                 <form class="pure-form pure-form-stacked" method="POST" action="/sensorconfig2">
                     <fieldset>
                         <legend>I2C bus 2 (wire1) - Sensor 0 - 7</legend>
@@ -619,11 +496,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor0_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor0_location"
                                     id="wire1_sensor0_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor0_location"
-                                    id="wire1_sensor0_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor0_rh">RH:</label>
@@ -672,11 +544,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor1_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor1_location"
                                     id="wire1_sensor1_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor1_location"
-                                    id="wire1_sensor1_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor1_rh">RH:</label>
@@ -725,11 +592,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor2_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor2_location"
                                     id="wire1_sensor2_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor2_location"
-                                    id="wire1_sensor2_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor2_rh">RH:</label>
@@ -778,11 +640,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor3_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor3_location"
                                     id="wire1_sensor3_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor3_location"
-                                    id="wire1_sensor3_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor3_rh">RH:</label>
@@ -831,11 +688,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor4_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor4_location"
                                     id="wire1_sensor4_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor4_location"
-                                    id="wire1_sensor4_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor4_rh">RH:</label>
@@ -884,11 +736,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor5_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor5_location"
                                     id="wire1_sensor5_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor5_location"
-                                    id="wire1_sensor5_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor5_rh">RH:</label>
@@ -937,11 +784,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor6_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor6_location"
                                     id="wire1_sensor6_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor6_location"
-                                    id="wire1_sensor6_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor6_rh">RH:</label>
@@ -990,11 +832,6 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor7_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor7_location"
                                     id="wire1_sensor7_location" class="pure-input-3-4">
-<<<<<<< Updated upstream
-                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor7_location"
-                                    id="wire1_sensor7_location" class="pure-input-3-4">
-=======
->>>>>>> Stashed changes
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor7_rh">RH:</label>
@@ -1014,43 +851,16 @@ const char sensor_config_html[] = R"rawliteral(
                         <br><br>
                         <input type="submit" value="Save sensor configuration"
                             class="pure-button-primary button-xsmall pure-button">
-<<<<<<< Updated upstream
-                        <input type="submit" value="Save sensor configuration"
-                            class="pure-button-primary button-xsmall pure-button">
-                    </fieldset>
-                </form>
-<<<<<<< Updated upstream
-            </p>
-
-=======
-            </div>
->>>>>>> Stashed changes
-        </div>
-        <div id="page_name">sensor_config</div>
-    </div>
-<<<<<<< Updated upstream
-    <div id="page_name">sensor_config</div>
-
-    <script src="ui.js"></script>
-    <script src="websocket.js"></script>
-
-  </body>
-  </html>
-  )rawliteral";
-=======
-=======
                     </fieldset>
                 </form>
             </div>
         </div>
         <div id="page_name">sensor_config</div>
     </div>
->>>>>>> Stashed changes
     <script src="ui.js"></script>
     <script src="websocket.js"></script>
 
 </body>
 
 </html>
-)rawliteral";
->>>>>>> Stashed changes
+  )rawliteral";

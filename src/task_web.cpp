@@ -358,14 +358,9 @@ void startTaskwebcode(void)
 
 void Taskwebcode(void *pvParameters)
 {
-
 	// Main page
 	server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/html", index_html); });
-
-	// Test main page
-	server.on("/test", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/html", test2_html); });
 
 	// Request for CSS file
 	server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -378,8 +373,8 @@ void Taskwebcode(void *pvParameters)
 			  { request->send(200, "text/javascript", ui_js); });
 	server.on("/websocket.js", HTTP_GET, [](AsyncWebServerRequest *request)
 			  { request->send(200, "text/javascript", websocket_js); });
-	server.on("/jquery-min.js", HTTP_GET, [](AsyncWebServerRequest *request)
-			  { request->send(200, "text/javascript", jquery_min_js); });
+	//server.on("/jquery-min.js", HTTP_GET, [](AsyncWebServerRequest *request)
+	//		  { request->send(200, "text/javascript", jquery_min_js); });
 
 	// Favicon image
 	server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest *request)

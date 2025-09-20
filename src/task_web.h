@@ -25,8 +25,6 @@
 #include "webroot/websocket_js.h"
 #include "webroot/valvecontrol_html.h"
 #include "webroot/web_serial_html.h"
-#include "webroot/test2_html.h"
-#include "webroot/jquery_min_js.h"
 #include "webroot/favicon_ico.h"
 
 // function declarations
