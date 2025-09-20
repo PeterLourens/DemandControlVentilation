@@ -33,6 +33,12 @@ const char sensor_config_html[] = R"rawliteral(
             <!-- Hamburger icon -->
             <span></span>
         </a>
+    <div id="layout">
+        <!-- Menu toggle -->
+        <a href="#menu" id="menuLink" class="menu-link">
+            <!-- Hamburger icon -->
+            <span></span>
+        </a>
 
 <<<<<<< Updated upstream
     <div id="menu">
@@ -44,6 +50,16 @@ const char sensor_config_html[] = R"rawliteral(
                 <div class="pure-menu-heading">OSVentilation</div>
 >>>>>>> Stashed changes
 
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">Status</a></li>
+                    <li class="pure-menu-item"><a href="/settings" class="pure-menu-link">Settings</a></li>
+                    <li class="pure-menu-item"><a href="/valvecontrol" class="pure-menu-link">Valve Control</a></li>
+                    <li class="pure-menu-item"><a href="/sensorconfig" class="pure-menu-link">Sensors</a></li>
+                    <li class="pure-menu-item"><a href="/statemachine" class="pure-menu-link">Statemachine</a></li>
+                    <li class="pure-menu-item"><a href="/web_serial" class="pure-menu-link">Webserial</a></li>
+                </ul>
+            </div>
+        </div>
                 <ul class="pure-menu-list">
                     <li class="pure-menu-item"><a href="/" class="pure-menu-link">Status</a></li>
                     <li class="pure-menu-item"><a href="/settings" class="pure-menu-link">Settings</a></li>
@@ -127,6 +143,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor0_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor0_location"
                                     id="wire_sensor0_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor0_location"
+                                    id="wire_sensor0_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor0_rh">RH:</label>
@@ -173,6 +191,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-8-24">
                                 <label for="wire_sensor1_location">Room name:</label>
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor1_location"
+                                    id="wire_sensor1_location" class="pure-input-3-4">
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor1_location"
                                     id="wire_sensor1_location" class="pure-input-3-4">
                             </div>
@@ -223,6 +243,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor2_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor2_location"
                                     id="wire_sensor2_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor2_location"
+                                    id="wire_sensor2_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor2_rh">RH:</label>
@@ -269,6 +291,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-8-24">
                                 <label for="wire_sensor3_location">Room name:</label>
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor3_location"
+                                    id="wire_sensor3_location" class="pure-input-3-4">
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor3_location"
                                     id="wire_sensor3_location" class="pure-input-3-4">
                             </div>
@@ -319,6 +343,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor4_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor4_location"
                                     id="wire_sensor4_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor4_location"
+                                    id="wire_sensor4_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor4_rh">RH:</label>
@@ -365,6 +391,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-8-24">
                                 <label for="wire_sensor5_location">Room name:</label>
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor5_location"
+                                    id="wire_sensor5_location" class="pure-input-3-4">
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor5_location"
                                     id="wire_sensor5_location" class="pure-input-3-4">
                             </div>
@@ -415,6 +443,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor6_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor6_location"
                                     id="wire_sensor6_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor6_location"
+                                    id="wire_sensor6_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor6_rh">RH:</label>
@@ -463,6 +493,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire_sensor7_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire_sensor7_location"
                                     id="wire_sensor7_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire_sensor7_location"
+                                    id="wire_sensor7_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire_sensor7_rh">RH:</label>
@@ -480,6 +512,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br><br>
+                        <input type="submit" value="Save sensor configuration"
+                            class="pure-button-primary button-xsmall pure-button">
                         <input type="submit" value="Save sensor configuration"
                             class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
@@ -526,6 +560,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-8-24">
                                 <label for="wire1_sensor0_location">Room name:</label>
+                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor0_location"
+                                    id="wire1_sensor0_location" class="pure-input-3-4">
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor0_location"
                                     id="wire1_sensor0_location" class="pure-input-3-4">
                             </div>
@@ -576,6 +612,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor1_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor1_location"
                                     id="wire1_sensor1_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor1_location"
+                                    id="wire1_sensor1_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor1_rh">RH:</label>
@@ -622,6 +660,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-8-24">
                                 <label for="wire1_sensor2_location">Room name:</label>
+                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor2_location"
+                                    id="wire1_sensor2_location" class="pure-input-3-4">
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor2_location"
                                     id="wire1_sensor2_location" class="pure-input-3-4">
                             </div>
@@ -672,6 +712,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor3_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor3_location"
                                     id="wire1_sensor3_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor3_location"
+                                    id="wire1_sensor3_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor3_rh">RH:</label>
@@ -718,6 +760,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-8-24">
                                 <label for="wire1_sensor4_location">Room name:</label>
+                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor4_location"
+                                    id="wire1_sensor4_location" class="pure-input-3-4">
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor4_location"
                                     id="wire1_sensor4_location" class="pure-input-3-4">
                             </div>
@@ -768,6 +812,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor5_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor5_location"
                                     id="wire1_sensor5_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor5_location"
+                                    id="wire1_sensor5_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor5_rh">RH:</label>
@@ -814,6 +860,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                             <div class="pure-u-1 pure-u-md-8-24">
                                 <label for="wire1_sensor6_location">Room name:</label>
+                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor6_location"
+                                    id="wire1_sensor6_location" class="pure-input-3-4">
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor6_location"
                                     id="wire1_sensor6_location" class="pure-input-3-4">
                             </div>
@@ -864,6 +912,8 @@ const char sensor_config_html[] = R"rawliteral(
                                 <label for="wire1_sensor7_location">Room name:</label>
                                 <input type="text" placeholder="e.g. bathroom" name="wire1_sensor7_location"
                                     id="wire1_sensor7_location" class="pure-input-3-4">
+                                <input type="text" placeholder="e.g. bathroom" name="wire1_sensor7_location"
+                                    id="wire1_sensor7_location" class="pure-input-3-4">
                             </div>
                             <div class="pure-u-1 pure-u-md-3-24">
                                 <label for="wire1_sensor7_rh">RH:</label>
@@ -881,6 +931,8 @@ const char sensor_config_html[] = R"rawliteral(
                             </div>
                         </div>
                         <br><br>
+                        <input type="submit" value="Save sensor configuration"
+                            class="pure-button-primary button-xsmall pure-button">
                         <input type="submit" value="Save sensor configuration"
                             class="pure-button-primary button-xsmall pure-button">
                     </fieldset>
