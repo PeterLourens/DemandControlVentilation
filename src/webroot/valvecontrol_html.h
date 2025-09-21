@@ -8,7 +8,7 @@ const char valvecontrol_html[] = R"rawliteral(
     <meta name="description"
         content="The front-end for configuration of the open source demand controlled ventilation system">
     <title>Open Source demand driven ventilation system &ndash; Configuration and Monitoring</title>
-    <link rel="stylesheet" href="pure_min.css">
+    <link rel="stylesheet" href="pure-min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
