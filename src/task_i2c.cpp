@@ -1,5 +1,7 @@
 #include "task_i2c.h"
 
+
+
 void start_task_i2c(void)
 {
     xTaskCreate(task_i2c_code, "taski2c", 10000, NULL, 6, &task_i2c);

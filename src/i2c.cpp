@@ -19,6 +19,9 @@ void read_sensors(void)
     uint16_t co2 = 0;
     uint16_t error;
 
+    Wire.begin(I2C_SDA1, I2C_SCL1, 100000);
+    Wire1.begin(I2C_SDA2, I2C_SCL2, 100000);
+
     // Read address for TCA9548. I2C address for TCA9548 may be differently configured with resistors on the board.
     if (settings_i2c_mutex && xSemaphoreTake(settings_i2c_mutex, (TickType_t)10) == pdTRUE)
     {
@@ -29,15 +32,6 @@ void read_sensors(void)
 
     for (int bus = 0; bus < 2; bus++)
     {
-        if (bus == 0)
-        {
-            Wire.begin(I2C_SDA1, I2C_SCL1, 100000);
-        }
-        if (bus == 1)
-        {
-            Wire1.begin(I2C_SDA2, I2C_SCL2, 100000);
-        }
-
         for (int slot = 0; slot < 8; slot++)
         {
             if (bus == 0)
@@ -377,7 +371,6 @@ void display_time_and_date(void)
     char ip_buffer[20] = {};
 
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
-
     lcd.init();
     lcd.backlight();
 
@@ -426,6 +419,7 @@ void display_state_fan(void)
     Wire1.begin(I2C_SDA2, I2C_SCL2, 100000); // Display is on Wire1 bus
     lcd.init();
     lcd.backlight();
+
     lcd.setCursor(0, 0);
     lcd.print("State: ");
 
@@ -559,7 +553,6 @@ void pb_start_display(void)
         display_sensors();
         display_valve_positions();
 
-        // LiquidCrystal_I2C lcd(display_i2c_addr_tmp, LCD_COLUMNS, LCD_ROWS);
         Wire1.begin(I2C_SDA2, I2C_SCL2, 100000);
         lcd.noBacklight();
         Wire1.endTransmission();
