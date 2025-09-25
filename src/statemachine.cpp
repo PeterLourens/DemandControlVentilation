@@ -24,6 +24,8 @@ const char *STATE_CYCLINGDAY = "cyclingday";
 const char *STATE_CYCLINGNIGHT = "cyclingnight";
 const char *STATE_MANUAL_HIGH_SPEED = "manual_high_speed";
 
+bool valve_open[MAX_VALVES] = {false};
+
 struct CO2_Sensors
 {
     char *valve;
@@ -552,7 +554,7 @@ void high_co2_day_transitions(void)
     float reading = 0.2f;
 
     bool valve_move_locked = 0;
-    bool valve_open[MAX_VALVES] = {false};
+    //bool valve_open[MAX_VALVES] = {false};
 
     char msg[MSG_SIZE] = {};
     char statemachine_state[MEDIUM_CONFIG_ITEM] = "highco2day";
@@ -682,7 +684,7 @@ void high_co2_day_transitions(void)
             }
         }
 
-        if (reading > co2highlevel)
+        if (reading > co2lowlevel)
         {
             co2_sensors_high++;
         }
@@ -760,7 +762,7 @@ void high_co2_night_transitions(void)
 
     bool valve_move_locked = 0;
     bool state_valve_pos_file_present = 0;
-    bool valve_open[MAX_VALVES] = {false};
+    //bool valve_open[MAX_VALVES] = {false};
 
     char msg[MSG_SIZE] = {};
     char statemachine_state[MEDIUM_CONFIG_ITEM] = "highco2night";
@@ -891,7 +893,7 @@ void high_co2_night_transitions(void)
             }
         }
 
-        if (reading > co2highlevel)
+        if (reading > co2lowlevel)
         {
             co2_sensors_high++;
         }
