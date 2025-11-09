@@ -291,6 +291,7 @@ void setup()
 	// parse_state_temp_settings();
 	vTaskDelay(100);
 	start_task_wifi();
+	vTaskDelay(10000);		//Wait for Wifi
 	start_task_i2c();
 	start_task_statemachine();
 	start_task_valvecontrol();

@@ -17,6 +17,10 @@ void task_wifi_code(void *pvParameters)
         {
             snprintf(msg, sizeof(msg), "No Wifi connection. Trying to connect to Wifi.");
             printmessage(LOG_INFO, msg);
+            esp_wifi_stop();
+            vTaskDelay(1000);
+            esp_wifi_deinit();
+            vTaskDelay(1000);
             config_wifi();
         }
         else if (ap_active == 1)
